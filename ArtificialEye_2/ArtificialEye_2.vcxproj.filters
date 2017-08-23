@@ -13,5 +13,183 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\SoftBody">
+      <UniqueIdentifier>{fd49fd33-05f8-4f4b-a36e-09f949b1a42f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SoftBody\Integrators">
+      <UniqueIdentifier>{c9f12e9f-c6a5-4a35-a288-a608091d9484}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SoftBody">
+      <UniqueIdentifier>{db2aaff4-e92b-4c84-8e04-57246c31e59e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SoftBody\ForceGens">
+      <UniqueIdentifier>{0da562a0-a06b-42b8-a8d2-026b60546f5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SoftBody\Objects">
+      <UniqueIdentifier>{bf397206-074a-4955-b36c-1ccd31752b61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SoftBody\Constraints">
+      <UniqueIdentifier>{54dcccd0-4c7f-4e49-8075-96cec8a19ff0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Rendering">
+      <UniqueIdentifier>{fe01b982-6412-4f07-a23e-7e9fdf162b72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SoftBody\Simulation">
+      <UniqueIdentifier>{838714fb-3fec-47d6-a577-63389a988b46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dependencies">
+      <UniqueIdentifier>{7ff174a0-f822-4414-9b63-fc5477b4b3f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Rendering">
+      <UniqueIdentifier>{de28ee28-511c-44ec-ab1a-99dc5ec7bff6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\glad\src\glad.c">
+      <Filter>Source Files\Dependencies</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Renderer.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Camera.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Model.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Drawable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\DynamicModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\RenderingUtilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\UniColorTextPack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoftBody\Simulation\SBClothSim.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoftBody\Simulation\SBSimulation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoftBody\Objects\SBModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoftBody\Objects\SBVertex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoftBody\Objects\SBObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoftBody\ForceGens\SBGravity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoftBody\ForceGens\SBMedium.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoftBody\Constraints\SBLengthConstraint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoftBody\Constraints\SBPointConstraint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoftBody\Integrators\SBForwardEuler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoftBody\Integrators\SBVerletIntegrator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoftBody\Integrators\SBIntegrator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoftBody\SBSpring.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Types.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\Integrators\SBIntegrator.hpp">
+      <Filter>Header Files\SoftBody\Integrators</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\Integrators\SBForwardEuler.hpp">
+      <Filter>Header Files\SoftBody\Integrators</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\Objects\SBObject.hpp">
+      <Filter>Header Files\SoftBody\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\Objects\SBModel.hpp">
+      <Filter>Header Files\SoftBody\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\ForceGens\SBGravity.hpp">
+      <Filter>Header Files\SoftBody\ForceGens</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\ForceGens\SBMedium.hpp">
+      <Filter>Header Files\SoftBody\ForceGens</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\ForceGens\SBForceGen.hpp">
+      <Filter>Header Files\SoftBody\ForceGens</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\Constraints\SBConstraint.hpp">
+      <Filter>Header Files\SoftBody\Constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\Constraints\SBLengthConstraint.hpp">
+      <Filter>Header Files\SoftBody\Constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\Constraints\SBPointConstraint.hpp">
+      <Filter>Header Files\SoftBody\Constraints</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\Integrators\SBVerletIntegrator.hpp">
+      <Filter>Header Files\SoftBody\Integrators</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\Objects\SBVertex.hpp">
+      <Filter>Header Files\SoftBody\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\Simulation\SBSimulation.hpp">
+      <Filter>Header Files\SoftBody\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\Simulation\SBClothSim.hpp">
+      <Filter>Header Files\SoftBody\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\Drawable.hpp">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\Renderer.hpp">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\DynamicModel.hpp">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\Camera.hpp">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\TexturePack.hpp">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\Model.hpp">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\UniColorTextPack.hpp">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\RenderingUtilities.hpp">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\shader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\SBSpring.hpp">
+      <Filter>Header Files\SoftBody\Objects</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

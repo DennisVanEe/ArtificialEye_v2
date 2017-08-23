@@ -69,13 +69,37 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <SourcePath>$(VC_SourcePath)src;</SourcePath>
+    <IncludePath>$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)output/$(Platform)/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)interm/$(Platform)/$(Configuration)/</IntDir>
+    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <SourcePath>$(VC_SourcePath)src;</SourcePath>
+    <IncludePath>$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)output/$(Platform)/$(Configuration)/</OutDir>
+    <IntDir>$(SolutionDir)interm/$(Platform)/$(Configuration)/</IntDir>
+    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -83,6 +107,9 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -95,6 +122,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -108,9 +136,60 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\dependencies\glad\src\glad.c" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Rendering\Camera.cpp" />
+    <ClCompile Include="src\Rendering\Drawable.cpp" />
+    <ClCompile Include="src\Rendering\DynamicModel.cpp" />
+    <ClCompile Include="src\Rendering\Model.cpp" />
+    <ClCompile Include="src\Rendering\Renderer.cpp" />
+    <ClCompile Include="src\Rendering\RenderingUtilities.cpp" />
+    <ClCompile Include="src\Rendering\shader.cpp" />
+    <ClCompile Include="src\Rendering\UniColorTextPack.cpp" />
+    <ClCompile Include="src\SoftBody\Constraints\SBLengthConstraint.cpp" />
+    <ClCompile Include="src\SoftBody\Constraints\SBPointConstraint.cpp" />
+    <ClCompile Include="src\SoftBody\ForceGens\SBGravity.cpp" />
+    <ClCompile Include="src\SoftBody\ForceGens\SBMedium.cpp" />
+    <ClCompile Include="src\SoftBody\SBSpring.cpp" />
+    <ClCompile Include="src\SoftBody\Integrators\SBForwardEuler.cpp" />
+    <ClCompile Include="src\SoftBody\Integrators\SBIntegrator.cpp" />
+    <ClCompile Include="src\SoftBody\Integrators\SBVerletIntegrator.cpp" />
+    <ClCompile Include="src\SoftBody\Objects\SBModel.cpp" />
+    <ClCompile Include="src\SoftBody\Objects\SBObject.cpp" />
+    <ClCompile Include="src\SoftBody\Objects\SBVertex.cpp" />
+    <ClCompile Include="src\SoftBody\Simulation\SBClothSim.cpp" />
+    <ClCompile Include="src\SoftBody\Simulation\SBSimulation.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Rendering\Camera.hpp" />
+    <ClInclude Include="src\Rendering\Drawable.hpp" />
+    <ClInclude Include="src\Rendering\DynamicModel.hpp" />
+    <ClInclude Include="src\Rendering\Model.hpp" />
+    <ClInclude Include="src\Rendering\Renderer.hpp" />
+    <ClInclude Include="src\Rendering\RenderingUtilities.hpp" />
+    <ClInclude Include="src\Rendering\shader.hpp" />
+    <ClInclude Include="src\Rendering\TexturePack.hpp" />
+    <ClInclude Include="src\Rendering\UniColorTextPack.hpp" />
+    <ClInclude Include="src\SoftBody\Constraints\SBConstraint.hpp" />
+    <ClInclude Include="src\SoftBody\Constraints\SBLengthConstraint.hpp" />
+    <ClInclude Include="src\SoftBody\Constraints\SBPointConstraint.hpp" />
+    <ClInclude Include="src\SoftBody\ForceGens\SBForceGen.hpp" />
+    <ClInclude Include="src\SoftBody\ForceGens\SBGravity.hpp" />
+    <ClInclude Include="src\SoftBody\ForceGens\SBMedium.hpp" />
+    <ClInclude Include="src\SoftBody\Integrators\SBForwardEuler.hpp" />
+    <ClInclude Include="src\SoftBody\Integrators\SBIntegrator.hpp" />
+    <ClInclude Include="src\SoftBody\Integrators\SBVerletIntegrator.hpp" />
+    <ClInclude Include="src\SoftBody\Objects\SBModel.hpp" />
+    <ClInclude Include="src\SoftBody\Objects\SBObject.hpp" />
+    <ClInclude Include="src\SoftBody\SBSpring.hpp" />
+    <ClInclude Include="src\SoftBody\Objects\SBVertex.hpp" />
+    <ClInclude Include="src\SoftBody\Simulation\SBClothSim.hpp" />
+    <ClInclude Include="src\SoftBody\Simulation\SBSimulation.hpp" />
+    <ClInclude Include="src\Types.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
