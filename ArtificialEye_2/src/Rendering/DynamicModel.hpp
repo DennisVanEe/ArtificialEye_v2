@@ -16,11 +16,6 @@ namespace ee
         DynamicModel(const DynamicModel& model);
         DynamicModel(DynamicModel&& model);
 
-        const Vertex& getVertex(std::size_t vertexID) const;
         void setVertex(const Vertex& vertex, std::size_t vertexID);
-        std::size_t getNumVertices() const;
-
-        std::size_t getVertexID(std::size_t indexID) const;
-        std::size_t getNumIndices() const;
     };
 }

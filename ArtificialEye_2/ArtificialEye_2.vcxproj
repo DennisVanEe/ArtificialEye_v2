@@ -96,6 +96,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <FloatingPointModel>Precise</FloatingPointModel>
     </ClCompile>
     <Link>
       <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -106,6 +107,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <FloatingPointModel>Precise</FloatingPointModel>
     </ClCompile>
     <Link>
       <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -118,6 +120,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <FloatingPointModel>Precise</FloatingPointModel>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -132,6 +135,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <FloatingPointModel>Precise</FloatingPointModel>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -161,6 +165,7 @@
     <ClCompile Include="src\SoftBody\Objects\SBModel.cpp" />
     <ClCompile Include="src\SoftBody\Objects\SBObject.cpp" />
     <ClCompile Include="src\SoftBody\Objects\SBVertex.cpp" />
+    <ClCompile Include="src\SoftBody\Simulation\SBClosedBody.cpp" />
     <ClCompile Include="src\SoftBody\Simulation\SBClothSim.cpp" />
     <ClCompile Include="src\SoftBody\Simulation\SBSimulation.cpp" />
   </ItemGroup>
@@ -177,8 +182,9 @@
     <ClInclude Include="src\SoftBody\Constraints\SBConstraint.hpp" />
     <ClInclude Include="src\SoftBody\Constraints\SBLengthConstraint.hpp" />
     <ClInclude Include="src\SoftBody\Constraints\SBPointConstraint.hpp" />
-    <ClInclude Include="src\SoftBody\ForceGens\SBForceGen.hpp" />
+    <ClInclude Include="src\SoftBody\ForceGens\SBGlobalForceGen.hpp" />
     <ClInclude Include="src\SoftBody\ForceGens\SBGravity.hpp" />
+    <ClInclude Include="src\SoftBody\ForceGens\SBLocalForceGen.hpp" />
     <ClInclude Include="src\SoftBody\ForceGens\SBMedium.hpp" />
     <ClInclude Include="src\SoftBody\Integrators\SBForwardEuler.hpp" />
     <ClInclude Include="src\SoftBody\Integrators\SBIntegrator.hpp" />
@@ -187,6 +193,7 @@
     <ClInclude Include="src\SoftBody\Objects\SBObject.hpp" />
     <ClInclude Include="src\SoftBody\SBSpring.hpp" />
     <ClInclude Include="src\SoftBody\Objects\SBVertex.hpp" />
+    <ClInclude Include="src\SoftBody\Simulation\SBClosedBody.hpp" />
     <ClInclude Include="src\SoftBody\Simulation\SBClothSim.hpp" />
     <ClInclude Include="src\SoftBody\Simulation\SBSimulation.hpp" />
     <ClInclude Include="src\Types.hpp" />

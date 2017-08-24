@@ -114,6 +114,9 @@
     <ClCompile Include="src\SoftBody\SBSpring.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\SoftBody\Simulation\SBClosedBody.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Types.hpp">
@@ -135,9 +138,6 @@
       <Filter>Header Files\SoftBody\ForceGens</Filter>
     </ClInclude>
     <ClInclude Include="src\SoftBody\ForceGens\SBMedium.hpp">
-      <Filter>Header Files\SoftBody\ForceGens</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SoftBody\ForceGens\SBForceGen.hpp">
       <Filter>Header Files\SoftBody\ForceGens</Filter>
     </ClInclude>
     <ClInclude Include="src\SoftBody\Constraints\SBConstraint.hpp">
@@ -190,6 +190,15 @@
     </ClInclude>
     <ClInclude Include="src\SoftBody\SBSpring.hpp">
       <Filter>Header Files\SoftBody\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\Simulation\SBClosedBody.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\ForceGens\SBGlobalForceGen.hpp">
+      <Filter>Header Files\SoftBody\ForceGens</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\ForceGens\SBLocalForceGen.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

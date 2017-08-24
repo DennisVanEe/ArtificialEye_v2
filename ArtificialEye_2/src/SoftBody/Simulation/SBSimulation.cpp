@@ -17,14 +17,19 @@ void ee::SBSimulation::addObject(SBObject* const obj)
     m_objects.push_back(std::unique_ptr<SBObject>(obj->getCopy()));
 }
 
-void ee::SBSimulation::addGlobalForceGen(SBForceGen* force)
+void ee::SBSimulation::addGlobalForceGen(SBGlobalForceGen* force)
 {
-    m_globalForceGens.push_back(std::unique_ptr<SBForceGen>(force->getCopy()));
+    m_globalForceGens.push_back(std::unique_ptr<SBGlobalForceGen>(force->getCopy()));
+}
+
+void ee::SBSimulation::addLocalForceGen(SBLocalForceGen* force)
+{
+    m_localForceGens.push_back(std::unique_ptr<SBLocalForceGen>(force->getCopy()));
 }
 
 void ee::SBSimulation::addConstraint(SBConstraint* constraint)
 {
-    m_constraints.push_back(std::unique_ptr<SBConstraint>(constraint));
+    m_constraints.push_back(std::unique_ptr<SBConstraint>(constraint->getCopy()));
 }
 
 void ee::SBSimulation::addIntegrator(SBIntegrator* integrator)
@@ -50,6 +55,12 @@ void ee::SBSimulation::update(Float timeStep)
                 force->applyForce(object.get());
             }
         }
+    }
+
+    // apply yhe local forces:
+    for (auto& force : m_localForceGens)
+    {
+        force->applyForces();
     }
 
     // integrate:

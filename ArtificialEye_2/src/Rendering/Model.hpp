@@ -37,10 +37,18 @@ namespace ee
 
         virtual ~Model();
 
+        virtual const Vertex& getVertex(std::size_t vertexID) const;
+        virtual std::size_t getNumVertices() const;
+
+        virtual std::size_t getVertexID(std::size_t indexID) const;
+        virtual std::size_t getNumIndices() const;
+
         // used to position the model in the world
         glm::mat4 m_modelTrans;
 
         virtual void draw() override;
+
+        virtual ee::Float calcVolume() const;
 
     private:
         void constructVAO();

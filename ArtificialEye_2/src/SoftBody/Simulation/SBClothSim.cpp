@@ -37,8 +37,12 @@ void ee::SBClothSim::connectSprings(Float structStiffness, Float structDampening
     {
         GLuint index1 = m_model->getVertexID(i);
         GLuint index2 = m_model->getVertexID(i + 1);
+        if (index1 == index2)
+        {
+            continue; // if we have two that are the same, this could lead to some major issues
+        }
         SBSimulation::addSpring(structStiffness, structDampening, m_objects[index1].get(), m_objects[index2].get());
-        
+
         // this is for now, I guess:
         Float length = glm::length(m_objects[index1]->m_currPosition - m_objects[index2]->m_currPosition);
         SBSimulation::addConstraint(new SBLengthConstraint(length, m_objects[index1].get(), m_objects[index2].get()));

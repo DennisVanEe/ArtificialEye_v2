@@ -3,7 +3,7 @@
 #include "Rendering/DynamicModel.hpp"
 #include "Rendering/RenderingUtilities.hpp"
 
-#include "SoftBody/Simulation/SBClothSim.hpp"
+#include "SoftBody/Simulation/SBClosedBody.hpp"
 #include "SoftBody/ForceGens/SBGravity.hpp"
 #include "SoftBody/Constraints/SBPointConstraint.hpp"
 #include "SoftBody/Integrators/SBVerletIntegrator.hpp"
@@ -11,7 +11,8 @@
 #include <string>
 #include <iostream>
 
-bool setSpace = false;
+bool g_startSoftBody = false;
+bool g_enableWireFram = false;
 
 void setSpaceCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -19,7 +20,14 @@ void setSpaceCallback(GLFWwindow* window, int key, int scancode, int action, int
     {
         if (action == GLFW_PRESS)
         {
-            setSpace = !setSpace;
+            g_startSoftBody = !g_startSoftBody;
+        }
+    }
+    else if (key == GLFW_KEY_N)
+    {
+        if (action == GLFW_PRESS)
+        {
+            g_enableWireFram = !g_enableWireFram;
         }
     }
 }
@@ -49,7 +57,7 @@ int main()
 
         ee::VertBuffer vertBuffer;
         ee::IndexBuffer indBuffer;
-        ee::loadIndexedRectangle(&vertBuffer, &indBuffer);
+        ee::loadIndexedCube(&vertBuffer, &indBuffer);
 
         //// now create a model:
 
@@ -60,7 +68,7 @@ int main()
 
         ee::Renderer::setClearColor(ee::Color3(105 / F(255), 105 / F(255), 105 / F(255)));
 
-        ee::SBClothSim clothSim(&dynModel, F(3), F(2), F(0.02), F(0), F(0), F(0), F(0));
+        ee::SBClosedBody clothSim(F(10), &dynModel, F(3), F(2), F(0.02), F(0), F(0), F(0), F(0));
         clothSim.m_constIterations = 10;
 
         ee::SBGravity* gravity = new ee::SBGravity();
@@ -71,13 +79,26 @@ int main()
 
         clothSim.addIntegrator(&ee::SBVerletIntegrator(F(0.01), F(1) / 60));
 
+        ee::Float v = dynModel.calcVolume();
+
         while (ee::Renderer::isInitialized())
         {
+            if (g_enableWireFram)
+            {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            }
+            else
+            {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            }
+
             ee::Renderer::clearBuffers();
 
             ee::Float time = ee::Renderer::timeElapsed();
-            if (setSpace)
+            if (g_startSoftBody)
+            {
                 clothSim.update(time);
+            }
             dynModel.draw();
 
             ee::Renderer::update(time);

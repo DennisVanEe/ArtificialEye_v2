@@ -14,11 +14,11 @@ namespace ee
         SBClothSim(DynamicModel* model, Float mass, Float structStiffness, Float structDampening, Float shearStiffness,
             Float shearDampening, Float bendStiffness, Float bendDampening);
 
-        void update(Float timeStep) override;
+        virtual void update(Float timeStep) override;
 
         SBObject* getVertexObject(std::size_t VertexID);
 
-    private:
+    protected:
         DynamicModel* m_model;
 
         void createSimVertices(Float mass);

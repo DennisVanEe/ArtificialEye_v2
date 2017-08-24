@@ -4,10 +4,10 @@
 
 namespace ee
 {
-    class SBForceGen
+    class SBGlobalForceGen
     {
     public:
         virtual void applyForce(SBObject* io_object) = 0;
-        virtual SBForceGen* getCopy() const = 0;
+        virtual SBGlobalForceGen* getCopy() const = 0;
     };
 }

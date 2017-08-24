@@ -15,7 +15,7 @@ void ee::SBGravity::applyForce(SBObject* io_object)
     io_object->m_resultantForce += io_object->m_mass * m_acceleration;
 }
 
-ee::SBForceGen* ee::SBGravity::getCopy() const
+ee::SBGlobalForceGen* ee::SBGravity::getCopy() const
 {
     return new SBGravity(*this);
 }

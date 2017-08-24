@@ -11,6 +11,26 @@ ee::Model::Model(TexturePack* const textPack, const VertBuffer vertices, const I
     constructVAO();
 }
 
+const ee::Vertex& ee::Model::getVertex(std::size_t vertexID) const
+{
+    return m_vertices[vertexID];
+}
+
+std::size_t ee::Model::getNumVertices() const
+{
+    return m_vertices.size();
+}
+
+std::size_t ee::Model::getVertexID(std::size_t indexID) const
+{
+    return m_indices[indexID];
+}
+
+std::size_t ee::Model::getNumIndices() const
+{
+    return m_indices.size();
+}
+
 ee::Model::Model(const Model& model) :
     Drawable(model),
     m_type(model.m_type),
@@ -55,6 +75,24 @@ void ee::Model::draw()
     glBindVertexArray(m_VAO);
     glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+}
+
+ee::Float ee::Model::calcVolume() const
+{
+    Float total = F(0);
+    for (std::size_t i = 0; i < m_indices.size();)
+    {
+        // get triangle indices:
+        std::size_t i0 = m_indices[i++];
+        std::size_t i1 = m_indices[i++];
+        std::size_t i2 = m_indices[i++];
+
+        Float stv = glm::dot(m_vertices[i0].m_position, 
+            glm::cross(m_vertices[i1].m_position, m_vertices[i2].m_position)) / F(6);
+        total += stv;
+    }
+
+    return std::abs(total);
 }
 
 void ee::Model::constructVAO()

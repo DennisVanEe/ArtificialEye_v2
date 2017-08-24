@@ -1,18 +1,18 @@
 #pragma once
 
-#include "SBForceGen.hpp"
+#include "SBGlobalForceGen.hpp"
 #include "../../Types.hpp"
 
 namespace ee
 {
-    class SBGravity : public SBForceGen
+    class SBGravity : public SBGlobalForceGen
     {
     public:
         SBGravity();
         SBGravity(Vector3 acceleration);
 
         void applyForce(SBObject* io_object) override;
-        SBForceGen* getCopy() const override;
+        SBGlobalForceGen* getCopy() const override;
 
     public:
         Vector3 m_acceleration;

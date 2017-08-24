@@ -12,7 +12,7 @@ namespace ee
     namespace Renderer
     {
         std::string g_rootShaderDir;
-        std::unordered_map < std::string, std::unique_ptr<Shader>> g_shaders;
+        std::unordered_map <std::string, std::unique_ptr<Shader>> g_shaders;
         Camera g_camera = Camera(Vector3(), Vector3(), F(0), F(0)); // not the cleanest thing I have ever done,
                                                                       // but I need to initialize it to some dummy.
         glm::mat4 g_perspective;
