@@ -46,6 +46,12 @@ void ee::Shader::assignColor(const std::string name, const Color4 vec)
     glUniform4f(loc, vec.x, vec.y, vec.z, vec.w);
 }
 
+void ee::Shader::assignVec3(std::string name, Vector3 vec)
+{
+    GLint loc = glGetUniformLocation(m_programID, name.c_str());
+    glUniform3f(loc, vec.x, vec.y, vec.z);
+}
+
 bool ee::Shader::initialize(const std::string& vtxPath, const std::string& frgPath)
 {
 	std::ifstream vtxStream, frgStream;
@@ -112,6 +118,7 @@ bool ee::Shader::initialize(const std::string& vtxPath, const std::string& frgPa
 	if (!resultChk)
 	{
 		glGetProgramInfoLog(m_programID, 512, nullptr, resultLog);
+        std::cout << resultLog << endl;
         return false;
 	}
 

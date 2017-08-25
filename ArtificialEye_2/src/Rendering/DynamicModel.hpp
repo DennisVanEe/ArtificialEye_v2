@@ -12,10 +12,15 @@ namespace ee
     class DynamicModel : public Model
     {
     public:
-        DynamicModel(TexturePack* texturePack, VertBuffer vertices, IndexBuffer indices);
+        DynamicModel(std::string textPack, VertBuffer vertices, IndexBuffer indices);
         DynamicModel(const DynamicModel& model);
         DynamicModel(DynamicModel&& model);
 
         void setVertex(const Vertex& vertex, std::size_t vertexID);
+
+        void recalcNormals();
+
+    private:
+        std::vector<Vector3> m_tempNormals;
     };
 }

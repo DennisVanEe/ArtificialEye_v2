@@ -29,6 +29,7 @@ namespace ee
         void assignBool(std::string name, bool value);
         void assignColor(std::string name, Color3 color);
         void assignColor(std::string name, Color4 color);
+        void assignVec3(std::string name, Vector3 vec);
 
     private:
         GLuint m_programID;

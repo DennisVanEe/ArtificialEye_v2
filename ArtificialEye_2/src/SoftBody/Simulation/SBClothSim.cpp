@@ -2,12 +2,12 @@
 
 #include "../Constraints/SBLengthConstraint.hpp"
 
-ee::SBClothSim::SBClothSim(DynamicModel* model, Float mass, Float structStiffness, Float structDampening, Float shearStiffness, Float shearDampening, Float bendStiffness, Float bendDampening) :
+ee::SBClothSim::SBClothSim(DynamicModel* model, Float mass, Float structStiffness, Float structDampening) :
     SBSimulation(),
     m_model(model)
 {
     createSimVertices(mass);
-    connectSprings(structStiffness, structDampening, shearStiffness, shearDampening, bendStiffness, bendDampening);
+    connectSprings(structStiffness, structDampening);
 }
 
 void ee::SBClothSim::update(Float timeStep)
@@ -31,7 +31,7 @@ void ee::SBClothSim::createSimVertices(Float mass)
     }
 }
 
-void ee::SBClothSim::connectSprings(Float structStiffness, Float structDampening, Float shearStiffness, Float shearDampening, Float bendStiffness, Float bendDampening)
+void ee::SBClothSim::connectSprings(Float structStiffness, Float structDampening)
 {
     for (std::size_t i = 0; i < m_model->getNumIndices() - 1; i++)
     {
@@ -45,6 +45,8 @@ void ee::SBClothSim::connectSprings(Float structStiffness, Float structDampening
 
         // this is for now, I guess:
         Float length = glm::length(m_objects[index1]->m_currPosition - m_objects[index2]->m_currPosition);
-        SBSimulation::addConstraint(new SBLengthConstraint(length, m_objects[index1].get(), m_objects[index2].get()));
+
+        // constraints aren't realistic enough....
+        //SBSimulation::addConstraint(new SBLengthConstraint(length, m_objects[index1].get(), m_objects[index2].get()));
     }
 }

@@ -2,7 +2,10 @@
 
 #include "Shader.hpp"
 #include "Camera.hpp"
+#include "TexturePacks/TexturePack.hpp"
 #include <functional>
+#include <unordered_map>
+#include <memory>
 
 #include <glm/mat4x4.hpp>
 #include <glfw/glfw3.h>
@@ -57,6 +60,28 @@ namespace ee
         void pollEvents();
         void swapBuffers();
 
+        template<typename T>
+        T* addTexturePack(std::string name, T* pack);
+
+        void insertTextPackIntoMap(std::string name, ee::TexturePack* pack);
+        bool checkTextPackMap(std::string name);
+
+        TexturePack* getTexturePack(std::string name);
         Shader* loadShader(std::string vertName, std::string fragName);
     };
+}
+
+// template definitions
+
+template<typename T>
+T* ee::Renderer::addTexturePack(std::string name, T* pack)
+{
+    if (checkTextPackMap(name))
+    {
+        T* ptr = new T(*pack);
+        insertTextPackIntoMap(name, ptr);
+        return ptr;
+    }
+
+    return nullptr;
 }

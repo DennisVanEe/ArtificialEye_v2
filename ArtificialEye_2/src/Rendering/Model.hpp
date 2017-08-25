@@ -2,7 +2,7 @@
 
 #include "Drawable.hpp"
 #include "Renderer.hpp"
-#include "TexturePack.hpp"
+#include "TexturePacks/TexturePack.hpp"
 #include "../Types.hpp"
 
 #include <vector>
@@ -31,7 +31,7 @@ namespace ee
     class Model : public Drawable
     {
     public:
-        explicit Model(TexturePack* textPack, VertBuffer vertices, IndexBuffer indices, GLenum dataUsage);
+        explicit Model(std::string textPack, VertBuffer vertices, IndexBuffer indices, GLenum dataUsage);
         explicit Model(const Model& model);
         Model(Model&& model);
 
@@ -53,7 +53,6 @@ namespace ee
     private:
         void constructVAO();
         const GLenum m_type; // for when copying the object
-        std::unique_ptr<TexturePack> m_texturePack;
 
     protected:
         VertBuffer m_vertices;

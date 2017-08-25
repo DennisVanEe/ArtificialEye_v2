@@ -11,8 +11,7 @@ namespace ee
     class SBClothSim : public SBSimulation
     {
     public:
-        SBClothSim(DynamicModel* model, Float mass, Float structStiffness, Float structDampening, Float shearStiffness,
-            Float shearDampening, Float bendStiffness, Float bendDampening);
+        SBClothSim(DynamicModel* model, Float mass, Float structStiffness, Float structDampening);
 
         virtual void update(Float timeStep) override;
 
@@ -22,7 +21,6 @@ namespace ee
         DynamicModel* m_model;
 
         void createSimVertices(Float mass);
-        void connectSprings(Float structStiffness, Float structDampening, Float shearStiffness, Float shearDampening,
-            Float bendStiffness, Float bendDampening);
+        void connectSprings(Float structStiffness, Float structDampening);
     };
 }

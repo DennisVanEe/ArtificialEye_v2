@@ -17,10 +17,10 @@ ee::TexturePack* ee::UniColorTextPack::getCopy() const
 
 std::string ee::UniColorTextPack::getVShaderName() const
 {
-    return std::move(std::string("modelUniColor_vert"));
+    return "modelUniColor_vert";
 }
 
 std::string ee::UniColorTextPack::getFShaderName() const
 {
-    return std::move(std::string("modelUniColor_frag"));
+    return "modelUniColor_frag";
 }

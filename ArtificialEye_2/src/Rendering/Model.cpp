@@ -1,9 +1,8 @@
 #include "Model.hpp"
 
-ee::Model::Model(TexturePack* const textPack, const VertBuffer vertices, const IndexBuffer indices, GLenum type) :
-    Drawable(textPack->getVShaderName(), textPack->getFShaderName()),
+ee::Model::Model(std::string textPack, const VertBuffer vertices, const IndexBuffer indices, GLenum type) :
+    Drawable(textPack),
     m_type(type),
-    m_texturePack(textPack->getCopy()),
     m_vertices(vertices),
     m_indices(indices),
     m_VAO(0)
@@ -34,7 +33,6 @@ std::size_t ee::Model::getNumIndices() const
 ee::Model::Model(const Model& model) :
     Drawable(model),
     m_type(model.m_type),
-    m_texturePack(model.m_texturePack->getCopy()),
     m_vertices(model.m_vertices),
     m_indices(model.m_indices),
     m_VAO(0)
@@ -45,7 +43,6 @@ ee::Model::Model(const Model& model) :
 ee::Model::Model(Model&& model) :
     Drawable(model),
     m_type(model.m_type),
-    m_texturePack(std::move(model.m_texturePack)),
     m_vertices(std::move(model.m_vertices)),
     m_indices(std::move(model.m_indices)),
     m_VAO(model.m_VAO)
@@ -62,7 +59,7 @@ ee::Model::~Model()
 void ee::Model::draw()
 {
     Drawable::m_shader->use();
-    m_texturePack->setTexture(Drawable::m_shader); // sets the appropriate color
+    m_texturePack->setTexture(Drawable::m_shader); // sets whatever values it may want to set
 
     const Camera* camera = Renderer::getCamera();
     glm::mat4 lookAt = camera->viewMatrix();
@@ -71,6 +68,7 @@ void ee::Model::draw()
     glm::mat4 trans = perspective * lookAt * m_modelTrans;
 
     Drawable::m_shader->assignMat4f("u_posTrans", trans);
+    Drawable::m_shader->assignMat4f("u_model", m_modelTrans);
 
     glBindVertexArray(m_VAO);
     glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);

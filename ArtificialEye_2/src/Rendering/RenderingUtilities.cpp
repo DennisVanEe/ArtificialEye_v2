@@ -31,24 +31,25 @@ void ee::loadIndexedRectangle(VertBuffer* const vertList, IndexBuffer* const ind
  /* init_resources */
  const GLuint g_cubeElements[] = 
  {
-     // front
-     0, 1, 2,
-     2, 3, 0,
-     // top
-     1, 5, 6,
-     6, 2, 1,
-     // back
-     7, 6, 5,
-     5, 4, 7,
-     // bottom
-     4, 0, 3,
-     3, 7, 4,
-     // left
-     4, 5, 1,
-     1, 0, 4,
-     // right
-     3, 2, 6,
-     6, 7, 3,
+     // -- winding is counter-clockwise (facing camera)
+     0,1,2,                // pos z
+     0,2,3,
+
+     1,5,6,                // pos x
+     1,6,2,
+
+     2,6,7,                // pos y
+     2,7,3,
+
+     // -- winding is clockwise (facing away from camera)
+     3,4,0,                // neg x
+     3,7,4,
+
+     4,5,1,                // neg y
+     4,1,0,
+
+     5,7,6,                // neg z
+     5,4,7,
  };
 
 void ee::loadIndexedCube(VertBuffer* const vertList, IndexBuffer* const indexList)

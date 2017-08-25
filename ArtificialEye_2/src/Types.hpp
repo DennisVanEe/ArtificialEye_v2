@@ -8,7 +8,7 @@ namespace ee
 {
 #ifdef USE_DOUBLE
     using Float = double;
-#   define F(x);
+#   define F(x) static_cast<double>(x)
 #else
     using Float = float;
 #   define F(x) static_cast<float>(x)

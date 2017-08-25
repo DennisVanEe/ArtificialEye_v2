@@ -27,8 +27,13 @@ namespace ee
         void addSpring(Float stiffness, Float dampening, Float length, SBObject* objA, SBObject* objB);
         void addObject(SBObject* obj);
         void addGlobalForceGen(SBGlobalForceGen* force);
-        void addLocalForceGen(SBLocalForceGen* force);
-        void addConstraint(SBConstraint* constraint);
+
+        template<typename T>
+        T* addLocalForceGen(T* force);
+
+        template<typename T>
+        T* addConstraint(T* constraint);
+
         void addIntegrator(SBIntegrator* integrator);
 
         virtual void update(Float timeStep);
@@ -45,4 +50,24 @@ namespace ee
 
         SBConstraintList m_constraints;
     };
+}
+
+// template definition
+
+template<typename T>
+T* ee::SBSimulation::addConstraint(T* constraint)
+{
+    T* ptr = new T(*constraint);
+    std::unique_ptr<SBConstraint> smartPtr(ptr);
+    m_constraints.push_back(std::move(smartPtr));
+    return ptr;
+}
+
+template<typename T>
+T* ee::SBSimulation::addLocalForceGen(T* force)
+{
+    T* ptr = new T(*force);
+    std::unique_ptr<SBLocalForceGen> smartPtr(ptr);
+    m_localForceGens.push_back(std::move(smartPtr));
+    return ptr;
 }

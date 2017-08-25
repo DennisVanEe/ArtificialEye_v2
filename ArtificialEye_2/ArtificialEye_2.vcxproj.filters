@@ -69,9 +69,6 @@
     <ClCompile Include="src\Rendering\RenderingUtilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Rendering\UniColorTextPack.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Rendering\shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -115,6 +112,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SoftBody\Simulation\SBClosedBody.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\TexturePacks\UniColorTextPack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\TexturePacks\LightUniColorTextPack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -173,13 +176,7 @@
     <ClInclude Include="src\Rendering\Camera.hpp">
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="src\Rendering\TexturePack.hpp">
-      <Filter>Header Files\Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="src\Rendering\Model.hpp">
-      <Filter>Header Files\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Rendering\UniColorTextPack.hpp">
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="src\Rendering\RenderingUtilities.hpp">
@@ -200,5 +197,20 @@
     <ClInclude Include="src\SoftBody\ForceGens\SBLocalForceGen.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Rendering\TexturePacks\UniColorTextPack.hpp">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\TexturePacks\TexturePack.hpp">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\TexturePacks\LightUniColorTextpack.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\modelUniColor_vert.glsl" />
+    <None Include="Shaders\modelUniColor_frag.glsl" />
+    <None Include="Shaders\modelLightUniColor_vert.glsl" />
+    <None Include="Shaders\modelLightUniColor_frag.glsl" />
   </ItemGroup>
 </Project>

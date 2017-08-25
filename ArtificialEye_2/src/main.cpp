@@ -1,5 +1,7 @@
+// #define USE_DOUBLE
 #include "Rendering/Renderer.hpp"
-#include "Rendering/UniColorTextPack.hpp"
+#include "Rendering/TexturePacks/UniColorTextPack.hpp"
+#include "Rendering/TexturePacks/LightUniColorTextpack.hpp"
 #include "Rendering/DynamicModel.hpp"
 #include "Rendering/RenderingUtilities.hpp"
 
@@ -13,6 +15,12 @@
 
 bool g_startSoftBody = false;
 bool g_enableWireFram = false;
+
+ee::SBPointConstraint* g_constraint = nullptr;
+
+const ee::Float DEFAULT_P = F(50);
+
+bool g_defaultP = true;
 
 void setSpaceCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -28,6 +36,32 @@ void setSpaceCallback(GLFWwindow* window, int key, int scancode, int action, int
         if (action == GLFW_PRESS)
         {
             g_enableWireFram = !g_enableWireFram;
+        }
+    }
+    else if (key == GLFW_KEY_R)
+    {
+        if (action == GLFW_PRESS)
+        {
+            g_defaultP = !g_defaultP;
+        }
+    }
+
+    if (action == GLFW_PRESS)
+    {
+        switch (key)
+        {
+        case GLFW_KEY_UP:
+            g_constraint->m_point += ee::Vector3(F(0), F(0.1), F(0));
+            break;
+        case GLFW_KEY_DOWN:
+            g_constraint->m_point += ee::Vector3(F(0), F(-0.1), F(0));
+            break;
+        case GLFW_KEY_LEFT:
+            g_constraint->m_point += ee::Vector3(F(-0.1), F(0), F(0));
+            break;
+        case GLFW_KEY_RIGHT:
+            g_constraint->m_point += ee::Vector3(F(0.1), F(0), F(0));
+            break;
         }
     }
 }
@@ -59,25 +93,36 @@ int main()
         ee::IndexBuffer indBuffer;
         ee::loadIndexedCube(&vertBuffer, &indBuffer);
 
-        //// now create a model:
+        // now create a model:
 
-        ee::UniColorTextPack textPack(ee::Color4(0.f, 1.f, 0.f, 1.f));
+        ee::UniColorTextPack uniColor(ee::Color4(0.f, 1.f, 0.f, 1.f));
+        ee::Renderer::addTexturePack("uniColor", &uniColor);
+
+        ee::LightUniColorTextPack lightUniColor;
+        lightUniColor.m_color = ee::Color3(0.2f, 1.f, 0.f);
+        lightUniColor.m_lightPosition = ee::Vector3(2.f, 2.f, 2.f);
+        lightUniColor.m_material.m_ambient = ee::Vector3(1.0f, 0.5f, 0.31f);
+        lightUniColor.m_material.m_diffuse = ee::Vector3(1.0f, 0.5f, 0.31f);
+        ee::Renderer::addTexturePack("lightUniColor", &lightUniColor);
 
         // load the dynModel
-        ee::DynamicModel dynModel(&textPack, std::move(vertBuffer), std::move(indBuffer));
+        ee::DynamicModel dynModel("lightUniColor", std::move(vertBuffer), std::move(indBuffer));
+        dynModel.recalcNormals();
 
         ee::Renderer::setClearColor(ee::Color3(105 / F(255), 105 / F(255), 105 / F(255)));
 
-        ee::SBClosedBody clothSim(F(10), &dynModel, F(3), F(2), F(0.02), F(0), F(0), F(0), F(0));
-        clothSim.m_constIterations = 10;
+        ee::SBClosedBody clothSim(DEFAULT_P, &dynModel, F(4), F(3), F(2));
+        clothSim.m_constIterations = 50;
 
         ee::SBGravity* gravity = new ee::SBGravity();
         clothSim.addGlobalForceGen(gravity);
 
-        ee::SBPointConstraint* constraint = new ee::SBPointConstraint(dynModel.getVertex(0).m_position, clothSim.getVertexObject(0));
-        clothSim.addConstraint(constraint);
+        clothSim.addConstraint(&ee::SBPointConstraint(dynModel.getVertex(0).m_position, clothSim.getVertexObject(0)));
+        // clothSim.addConstraint(&ee::SBPointConstraint(dynModel.getVertex(1).m_position, clothSim.getVertexObject(1)));
+        g_constraint = clothSim.addConstraint(&ee::SBPointConstraint(dynModel.getVertex(6).m_position, clothSim.getVertexObject(6)));
+        assert(g_constraint);
 
-        clothSim.addIntegrator(&ee::SBVerletIntegrator(F(0.01), F(1) / 60));
+        clothSim.addIntegrator(&ee::SBVerletIntegrator(F(1) / 60, F(0.01)));
 
         ee::Float v = dynModel.calcVolume();
 
@@ -90,6 +135,15 @@ int main()
             else
             {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            }
+
+            if (g_defaultP)
+            {
+                clothSim.setP(DEFAULT_P);
+            }
+            else
+            {
+                clothSim.setP(F(0));
             }
 
             ee::Renderer::clearBuffers();

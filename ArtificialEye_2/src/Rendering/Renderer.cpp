@@ -12,7 +12,8 @@ namespace ee
     namespace Renderer
     {
         std::string g_rootShaderDir;
-        std::unordered_map <std::string, std::unique_ptr<Shader>> g_shaders;
+        std::unordered_map<std::string, std::unique_ptr<Shader>> g_shaders;
+        std::unordered_map<std::string, std::unique_ptr<TexturePack>> g_textPacks;
         Camera g_camera = Camera(Vector3(), Vector3(), F(0), F(0)); // not the cleanest thing I have ever done,
                                                                       // but I need to initialize it to some dummy.
         glm::mat4 g_perspective;
@@ -94,8 +95,7 @@ void ee::Renderer::setClearColor(Color3 color)
 void ee::Renderer::clearBuffers()
 {
     glClearColor(g_clearColor.r, g_clearColor.g, g_clearColor.b, g_clearColor.a); // clear to the default color
-    glClear(GL_COLOR_BUFFER_BIT);
-    glClear(GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void ee::Renderer::setCustomMouseCallback(MouseCallbackFunc func)
@@ -193,7 +193,7 @@ ee::Renderer::ErrorCode ee::Renderer::initialize(const std::string rootShaderDir
     g_initialized = true;
 
     // glEnable(GL_CULL_FACE);
-    // glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
 
     return ErrorCode::SUCCESS;
 }
@@ -203,6 +203,27 @@ void ee::Renderer::deinitialize()
     glfwSetWindowShouldClose(g_window, true);
     glfwTerminate();
     g_initialized = false;
+}
+
+void ee::Renderer::insertTextPackIntoMap(std::string name, ee::TexturePack* pack)
+{
+    std::unique_ptr<ee::TexturePack> smartPtr(pack);
+    g_textPacks.insert(std::make_pair(name, std::move(smartPtr)));
+}
+
+bool ee::Renderer::checkTextPackMap(std::string name)
+{
+    return g_textPacks.find(name) == g_textPacks.end();
+}
+
+ee::TexturePack* ee::Renderer::getTexturePack(std::string name)
+{
+    auto it = g_textPacks.find(name);
+    if (it == g_textPacks.end())
+    {
+        return nullptr;
+    }
+    return it->second.get();
 }
 
 ee::Shader* ee::Renderer::loadShader(std::string vertName, std::string fragName)

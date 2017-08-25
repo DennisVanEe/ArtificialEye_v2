@@ -1,8 +1,8 @@
 #pragma once
 
 #include "TexturePack.hpp"
-#include "Shader.hpp"
-#include "../Types.hpp"
+#include "../Shader.hpp"
+#include "../../Types.hpp"
 
 namespace ee
 {

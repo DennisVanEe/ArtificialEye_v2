@@ -1,9 +1,21 @@
 #include "SBClosedBody.hpp"
 
-ee::SBClosedBody::SBClosedBody(Float P, DynamicModel* model, Float mass, Float structStiffness, Float structDampening, Float shearStiffness, Float shearDampening, Float bendStiffness, Float bendDampening) :
-    SBClothSim(model, mass, structStiffness, structDampening, shearStiffness, shearDampening, bendStiffness, bendDampening)
+ee::SBClosedBody::SBClosedBody(Float P, DynamicModel* model, Float mass, Float stiffness, Float dampening) :
+    SBClothSim(model, mass, stiffness, dampening),
+    m_pressure(SBSimulation::addLocalForceGen(&SBPressure(P, model, this)))
 {
-    SBSimulation::addLocalForceGen(&SBPressure(P,model, this));
+    SBSimulation::addLocalForceGen(&SBPressure(P, model, this));
+}
+
+void ee::SBClosedBody::setP(Float P)
+{
+    m_pressure->m_P = P;
+}
+
+void ee::SBClosedBody::update(Float timeStep)
+{
+    SBSimulation::update(timeStep);
+    m_model->recalcNormals();
 }
 
 ee::SBClosedBody::SBPressure::SBPressure(Float P, DynamicModel* model, SBClosedBody* simulation) :

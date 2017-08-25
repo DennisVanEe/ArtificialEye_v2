@@ -26,8 +26,8 @@ void ee::SBSpring::applySpringForce()
     {
         Float currLength = glm::length(direction);
         direction = glm::normalize(direction);
-        Vector3 force = -m_stiffness * ((currLength - m_restLength) * direction);
-        force += -m_dampening * glm::dot(m_objectA->m_currVelocity - m_objectB->m_currVelocity, direction) * direction;
+        Vector3 force = -m_stiffness * ((currLength - m_restLength) * direction); // -kx * dir
+        force += -m_dampening * glm::dot(m_objectA->m_currVelocity - m_objectB->m_currVelocity, direction) * direction; // -yv (v is projected onto the "spring")
 
         m_objectA->m_resultantForce = m_objectA->m_resultantForce + force;
         m_objectB->m_resultantForce = m_objectB->m_resultantForce - force;
