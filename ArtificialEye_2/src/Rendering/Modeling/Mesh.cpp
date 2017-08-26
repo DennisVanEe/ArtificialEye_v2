@@ -1,6 +1,6 @@
-#include "Model.hpp"
+#include "Mesh.hpp"
 
-ee::Model::Model(std::string textPack, const VertBuffer vertices, const IndexBuffer indices, GLenum type) :
+ee::Mesh::Mesh(const std::string textPack, const VertBuffer vertices, const IndexBuffer indices, GLenum type) :
     Drawable(textPack),
     m_type(type),
     m_vertices(vertices),
@@ -10,27 +10,27 @@ ee::Model::Model(std::string textPack, const VertBuffer vertices, const IndexBuf
     constructVAO();
 }
 
-const ee::Vertex& ee::Model::getVertex(std::size_t vertexID) const
+const ee::Vertex& ee::Mesh::getVertex(std::size_t vertexID) const
 {
     return m_vertices[vertexID];
 }
 
-std::size_t ee::Model::getNumVertices() const
+std::size_t ee::Mesh::getNumVertices() const
 {
     return m_vertices.size();
 }
 
-std::size_t ee::Model::getVertexID(std::size_t indexID) const
+std::size_t ee::Mesh::getVertexID(std::size_t indexID) const
 {
     return m_indices[indexID];
 }
 
-std::size_t ee::Model::getNumIndices() const
+std::size_t ee::Mesh::getNumIndices() const
 {
     return m_indices.size();
 }
 
-ee::Model::Model(const Model& model) :
+ee::Mesh::Mesh(const Mesh& model) :
     Drawable(model),
     m_type(model.m_type),
     m_vertices(model.m_vertices),
@@ -40,23 +40,24 @@ ee::Model::Model(const Model& model) :
     constructVAO();
 }
 
-ee::Model::Model(Model&& model) :
-    Drawable(model),
-    m_type(model.m_type),
-    m_vertices(std::move(model.m_vertices)),
-    m_indices(std::move(model.m_indices)),
-    m_VAO(model.m_VAO)
+ee::Mesh::Mesh(Mesh&& mesh) :
+    Drawable(mesh),
+    m_type(mesh.m_type),
+    m_vertices(std::move(mesh.m_vertices)),
+    m_indices(std::move(mesh.m_indices)),
+    m_VAO(mesh.m_VAO)
 {
+    mesh.m_VAO = 0;
 }
 
-ee::Model::~Model()
+ee::Mesh::~Mesh()
 {
     glDeleteVertexArrays(1, &m_VAO);
     glDeleteBuffers(1, &m_EBO);
     glDeleteBuffers(1, &m_VBO);
 }
 
-void ee::Model::draw()
+void ee::Mesh::draw()
 {
     Drawable::m_shader->use();
     m_texturePack->setTexture(Drawable::m_shader); // sets whatever values it may want to set
@@ -68,22 +69,22 @@ void ee::Model::draw()
     glm::mat4 trans = perspective * lookAt * m_modelTrans;
 
     Drawable::m_shader->assignMat4f("u_posTrans", trans);
-    Drawable::m_shader->assignMat4f("u_model", m_modelTrans);
+    Drawable::m_shader->assignMat4f("u_model", m_modelTrans); // in case this is needed
 
     glBindVertexArray(m_VAO);
     glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
 
-ee::Float ee::Model::calcVolume() const
+ee::Float ee::Mesh::calcVolume() const
 {
     Float total = F(0);
     for (std::size_t i = 0; i < m_indices.size();)
     {
         // get triangle indices:
-        std::size_t i0 = m_indices[i++];
-        std::size_t i1 = m_indices[i++];
-        std::size_t i2 = m_indices[i++];
+        GLuint i0 = m_indices[i++];
+        GLuint i1 = m_indices[i++];
+        GLuint i2 = m_indices[i++];
 
         Float stv = glm::dot(m_vertices[i0].m_position, 
             glm::cross(m_vertices[i1].m_position, m_vertices[i2].m_position)) / F(6);
@@ -93,7 +94,7 @@ ee::Float ee::Model::calcVolume() const
     return std::abs(total);
 }
 
-void ee::Model::constructVAO()
+void ee::Mesh::constructVAO()
 {
     if (m_VAO != 0)
     {
@@ -120,4 +121,37 @@ void ee::Model::constructVAO()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_textCoord));
 
     glBindVertexArray(0);
+}
+
+void ee::Mesh::calcNormals()
+{
+    m_tempNormals.clear();
+    m_tempNormals.resize(m_vertices.size());
+
+    for (std::size_t i = 0; i < m_indices.size();)
+    {
+        GLuint i0 = m_indices[i++];
+        GLuint i1 = m_indices[i++];
+        GLuint i2 = m_indices[i++];
+
+        Vector3 v0 = m_vertices[i0].m_position;
+        Vector3 v1 = m_vertices[i1].m_position;
+        Vector3 v2 = m_vertices[i2].m_position;
+
+        Vector3 e0 = v1 - v0;
+        Vector3 e1 = v2 - v0;
+        Vector3 tempNormal = glm::normalize(glm::cross(e0, e1));
+
+        m_tempNormals[i0] += tempNormal;
+        m_tempNormals[i1] += tempNormal;
+        m_tempNormals[i2] += tempNormal;
+    }
+
+    // normalize those results and update the model itself:
+    for (std::size_t i = 0; i < m_tempNormals.size(); i++)
+    {
+        Vertex vert = getVertex(i);
+        vert.m_normal = glm::normalize(m_tempNormals[i]);
+        setVertex(vert, i);
+    }
 }

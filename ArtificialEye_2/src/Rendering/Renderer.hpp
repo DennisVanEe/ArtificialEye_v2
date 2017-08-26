@@ -63,8 +63,8 @@ namespace ee
         template<typename T>
         T* addTexturePack(std::string name, T* pack);
 
-        void insertTextPackIntoMap(std::string name, ee::TexturePack* pack);
-        bool checkTextPackMap(std::string name);
+        static void insertTextPackIntoMap(std::string name, ee::TexturePack* pack);
+        static bool checkTextPackMap(std::string name);
 
         TexturePack* getTexturePack(std::string name);
         Shader* loadShader(std::string vertName, std::string fragName);

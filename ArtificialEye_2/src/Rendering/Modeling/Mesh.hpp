@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Drawable.hpp"
-#include "Renderer.hpp"
-#include "TexturePacks/TexturePack.hpp"
-#include "../Types.hpp"
+#include "../Drawable.hpp"
+#include "../Renderer.hpp"
+#include "../TexturePacks/TexturePack.hpp"
+#include "../../Types.hpp"
 
 #include <vector>
 #include <string>
@@ -28,14 +28,14 @@ namespace ee
     using VertBuffer = std::vector<Vertex>;
     using IndexBuffer = std::vector<GLuint>;
 
-    class Model : public Drawable
+    class Mesh : public Drawable
     {
     public:
-        explicit Model(std::string textPack, VertBuffer vertices, IndexBuffer indices, GLenum dataUsage);
-        explicit Model(const Model& model);
-        Model(Model&& model);
+        explicit Mesh(std::string textPack, VertBuffer vertices, IndexBuffer indices, GLenum dataUsage = GL_STATIC_DRAW);
+        explicit Mesh(const Mesh& model);
+        Mesh(Mesh&& model);
 
-        virtual ~Model();
+        virtual ~Mesh();
 
         virtual const Vertex& getVertex(std::size_t vertexID) const;
         virtual std::size_t getNumVertices() const;
@@ -49,8 +49,11 @@ namespace ee
         virtual void draw() override;
 
         virtual ee::Float calcVolume() const;
+        virtual void calcNormals();
 
     private:
+        std::vector<Vector3> m_tempNormals;
+
         void constructVAO();
         const GLenum m_type; // for when copying the object
 

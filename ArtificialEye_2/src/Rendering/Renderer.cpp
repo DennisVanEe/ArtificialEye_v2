@@ -205,13 +205,13 @@ void ee::Renderer::deinitialize()
     g_initialized = false;
 }
 
-void ee::Renderer::insertTextPackIntoMap(std::string name, ee::TexturePack* pack)
+static void ee::Renderer::insertTextPackIntoMap(std::string name, ee::TexturePack* pack)
 {
     std::unique_ptr<ee::TexturePack> smartPtr(pack);
     g_textPacks.insert(std::make_pair(name, std::move(smartPtr)));
 }
 
-bool ee::Renderer::checkTextPackMap(std::string name)
+static bool ee::Renderer::checkTextPackMap(std::string name)
 {
     return g_textPacks.find(name) == g_textPacks.end();
 }
