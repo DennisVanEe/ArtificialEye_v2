@@ -114,13 +114,13 @@
     <ClCompile Include="src\Rendering\TexturePacks\LightUniColorTextPack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Rendering\Modeling\Mesh.cpp">
-      <Filter>Source Files\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Modeling\DynamicMesh.cpp">
+    <ClCompile Include="src\Modeling\DynamicMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Rendering\Modeling\Model.cpp">
+    <ClCompile Include="src\Modeling\Mesh.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Modeling\Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -203,13 +203,16 @@
     <ClInclude Include="src\Rendering\TexturePacks\LightUniColorTextpack.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Rendering\Modeling\Mesh.hpp">
+    <ClInclude Include="src\Modeling\DynamicMesh.hpp">
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="src\Rendering\Modeling\DynamicMesh.hpp">
+    <ClInclude Include="src\Modeling\Mesh.hpp">
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="src\Rendering\Modeling\Model.hpp">
+    <ClInclude Include="src\Modeling\Model.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\TexturePacks\ShaderMaterial.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
