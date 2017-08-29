@@ -34,6 +34,8 @@ namespace ee
 		void processMInput(Float xOffset, Float yOffset, GLboolean constrainPitch = true);
 		void processSInput(Float scrOffset);
 
+        Vector3 getPosition() const;
+
 	private:
 
 		// Camera Attributes

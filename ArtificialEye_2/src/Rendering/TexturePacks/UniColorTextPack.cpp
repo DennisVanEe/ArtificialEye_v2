@@ -15,6 +15,11 @@ ee::TexturePack* ee::UniColorTextPack::getCopy() const
     return new UniColorTextPack(*this);
 }
 
+bool ee::UniColorTextPack::usesMaterial() const
+{
+    return false;
+}
+
 std::string ee::UniColorTextPack::getVShaderName() const
 {
     return "modelUniColor_vert";

@@ -29,9 +29,14 @@ namespace ee
         void assignBool(std::string name, bool value);
         void assignColor(std::string name, Color3 color);
         void assignColor(std::string name, Color4 color);
-        void assignVec3(std::string name, Vector3 vec);
+        void assignVec3f(std::string name, Vector3 vec);
+        void assignFloat(std::string name, float val);
+
+        void bindTexture(GLenum target, GLuint number, GLuint texture);
+        void unbindTexture(GLenum target);
 
     private:
+        bool m_bound2DText;
         GLuint m_programID;
     };
 }

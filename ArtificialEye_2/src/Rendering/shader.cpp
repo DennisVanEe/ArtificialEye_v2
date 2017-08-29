@@ -46,7 +46,24 @@ void ee::Shader::assignColor(const std::string name, const Color4 vec)
     glUniform4f(loc, vec.x, vec.y, vec.z, vec.w);
 }
 
-void ee::Shader::assignVec3(std::string name, Vector3 vec)
+void ee::Shader::assignFloat(std::string name, float val)
+{
+    GLint loc = glGetUniformLocation(m_programID, name.c_str());
+    glUniform1f(loc, val);
+}
+
+void ee::Shader::bindTexture(GLenum target, GLuint number, GLuint texture)
+{
+    glActiveTexture(GL_TEXTURE0 + target);
+    glBindTexture(target, texture);
+}
+
+void ee::Shader::unbindTexture(GLenum target)
+{
+    glBindTexture(target, 0);
+}
+
+void ee::Shader::assignVec3f(std::string name, Vector3 vec)
 {
     GLint loc = glGetUniformLocation(m_programID, name.c_str());
     glUniform3f(loc, vec.x, vec.y, vec.z);

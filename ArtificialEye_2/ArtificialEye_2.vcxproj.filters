@@ -114,13 +114,25 @@
     <ClCompile Include="src\Rendering\TexturePacks\LightUniColorTextPack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Rendering\Modeling\Mesh.cpp">
-      <Filter>Source Files\Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="src\Rendering\Modeling\DynamicMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Rendering\Modeling\Model.cpp">
+    <ClCompile Include="src\Rendering\TexturePacks\RefractTextPack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Modeling\Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dependencies\stbi\stb_image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Modeling\SkyBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\TexturePacks\SkyBoxTextPack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Textures\CubeMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -212,11 +224,30 @@
     <ClInclude Include="src\Rendering\Modeling\Model.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Rendering\TexturePacks\ShaderMaterial.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\TexturePacks\RefractTextPack.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\Modeling\SkyBox.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\TexturePacks\SkyBoxTextPack.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\Textures\CubeMap.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\modelUniColor_vert.glsl" />
     <None Include="Shaders\modelUniColor_frag.glsl" />
     <None Include="Shaders\modelLightUniColor_vert.glsl" />
     <None Include="Shaders\modelLightUniColor_frag.glsl" />
+    <None Include="Shaders\modelRefract_vert.glsl" />
+    <None Include="Shaders\modelRefract_frag.glsl" />
+    <None Include="Shaders\skyBox_vert.glsl" />
+    <None Include="Shaders\skyBox_frag.glsl" />
   </ItemGroup>
 </Project>

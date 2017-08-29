@@ -14,6 +14,8 @@ namespace ee
         void setTexture(Shader* shader) override;
         TexturePack* getCopy() const override;
 
+        bool usesMaterial() const override;
+
         std::string getVShaderName() const override;
         std::string getFShaderName() const override;
 

@@ -72,6 +72,11 @@ void ee::Camera::processSInput(Float scrOffset)
 		m_zoom = 45.0f;
 }
 
+ee::Vector3 ee::Camera::getPosition() const
+{
+    return m_pos;
+}
+
 void ee::Camera::updateCam()
 {
 	// Calculate the new Front vector

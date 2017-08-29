@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include "ShaderMaterial.hpp"
+#include "../Camera.hpp"
 
 namespace ee
 {
@@ -9,7 +11,7 @@ namespace ee
     class TexturePack
     {
     public:
-        virtual void setTexture(Shader* shader) = 0;
+        virtual void setTexture(Shader* shader, const ShaderMaterial* material, const Camera* camera) = 0;
         virtual TexturePack* getCopy() const = 0;
 
         virtual std::string getVShaderName() const = 0;

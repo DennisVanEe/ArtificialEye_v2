@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Model.hpp"
+#include <glad/glad.h>
+#include "Modeling/Mesh.hpp"
 
 namespace ee
 {

@@ -14,12 +14,12 @@ ee::LightUniColorTextPack::LightUniColorTextPack() :
 {
 }
 
-void ee::LightUniColorTextPack::setTexture(Shader* shader)
+void ee::LightUniColorTextPack::setTexture(Shader* shader, const ShaderMaterial* material, const Camera* camera)
 {
     shader->assignColor("u_modelColor", m_color);
-    shader->assignVec3("u_modelMaterial.m_ambient", m_material.m_ambient);
-    shader->assignVec3("u_modelMaterial.m_diffuse", m_material.m_diffuse);
-    shader->assignVec3("u_lightPosition", m_lightPosition);
+    shader->assignVec3f("u_modelMaterial.m_ambient", m_material.m_ambient);
+    shader->assignVec3f("u_modelMaterial.m_diffuse", m_material.m_diffuse);
+    shader->assignVec3f("u_lightPosition", m_lightPosition);
 }
 
 ee::TexturePack* ee::LightUniColorTextPack::getCopy() const

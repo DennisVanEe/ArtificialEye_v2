@@ -52,15 +52,15 @@ void ee::loadIndexedRectangle(VertBuffer* const vertList, IndexBuffer* const ind
      5,4,7,
  };
 
-void ee::loadIndexedCube(VertBuffer* const vertList, IndexBuffer* const indexList)
-{
-    vertList->clear();
-    indexList->clear();
+ void ee::loadIndexedCube(VertBuffer* const vertList, IndexBuffer* const indexList)
+ {
+     vertList->clear();
+     indexList->clear();
 
-    for (std::size_t i = 0; i < F(sizeof(g_cubeVertices)) / sizeof(Float);)
-    {
-        vertList->push_back(Vertex(Vector3(g_cubeVertices[i++], g_cubeVertices[i++], g_cubeVertices[i++])));
-    }
+     for (std::size_t i = 0; i < F(sizeof(g_cubeVertices)) / sizeof(Float);)
+     {
+         vertList->push_back(Vertex(Vector3(g_cubeVertices[i++], g_cubeVertices[i++], g_cubeVertices[i++])));
+     }
 
-    indexList->insert(indexList->end(), std::begin(g_cubeElements), std::end(g_cubeElements));
-}
+     indexList->insert(indexList->end(), std::begin(g_cubeElements), std::end(g_cubeElements));
+ }

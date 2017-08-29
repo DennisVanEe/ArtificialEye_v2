@@ -19,12 +19,4 @@ namespace ee
     using Color3 = glm::tvec3<float>;
     using Color4 = glm::tvec4<float>;
     using Vector3 = glm::tvec3<Float>;
-
-    struct ShaderMaterial
-    {
-        Vector3 m_ambient;
-        Vector3 m_diffuse;
-        Vector3 m_specular;
-        Float m_shininess;
-    };
 }

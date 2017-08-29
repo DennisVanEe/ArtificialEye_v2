@@ -59,15 +59,16 @@ ee::Mesh::~Mesh()
 
 void ee::Mesh::draw()
 {
-    Drawable::m_shader->use();
-    m_texturePack->setTexture(Drawable::m_shader); // sets whatever values it may want to set
-
     const Camera* camera = Renderer::getCamera();
+
+    Drawable::m_shader->use();
+    m_texturePack->setTexture(Drawable::m_shader, &m_shaderMaterial, camera); // sets whatever values it may want to set
+
     glm::mat4 lookAt = camera->viewMatrix();
     glm::mat4 perspective = Renderer::getPerspective();
-
     glm::mat4 trans = perspective * lookAt * m_modelTrans;
 
+    // all shaders need this:
     Drawable::m_shader->assignMat4f("u_posTrans", trans);
     Drawable::m_shader->assignMat4f("u_model", m_modelTrans); // in case this is needed
 
@@ -86,7 +87,7 @@ ee::Float ee::Mesh::calcVolume() const
         GLuint i1 = m_indices[i++];
         GLuint i2 = m_indices[i++];
 
-        Float stv = glm::dot(m_vertices[i0].m_position, 
+        Float stv = glm::dot(m_vertices[i0].m_position,
             glm::cross(m_vertices[i1].m_position, m_vertices[i2].m_position)) / F(6);
         total += stv;
     }
@@ -152,6 +153,6 @@ void ee::Mesh::calcNormals()
     {
         Vertex vert = getVertex(i);
         vert.m_normal = glm::normalize(m_tempNormals[i]);
-        setVertex(vert, i);
+        m_vertices[i] = vert;
     }
 }

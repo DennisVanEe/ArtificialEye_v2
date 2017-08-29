@@ -3,6 +3,7 @@
 #include "TexturePack.hpp"
 #include "../Shader.hpp"
 #include "../../Types.hpp"
+#include "ShaderMaterial.hpp"
 
 namespace ee
 {
@@ -12,7 +13,7 @@ namespace ee
         LightUniColorTextPack(Vector3 lightPosition, Vector3 color, ShaderMaterial material);
         LightUniColorTextPack();
 
-        void setTexture(Shader* shader) override;
+        void setTexture(Shader* shader, const ShaderMaterial* material, const Camera* camera) override;
         TexturePack* getCopy() const override;
 
         std::string getVShaderName() const override;
