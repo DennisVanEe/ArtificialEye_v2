@@ -1,0 +1,2 @@
+- Fix weird warping issue with refraction shader
+- Implement Spherical shape (not accurate to lense)

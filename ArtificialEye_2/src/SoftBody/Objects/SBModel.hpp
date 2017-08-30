@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SBObject.hpp"
-#include "../../Rendering/Model.hpp"
+#include "../../Rendering/Modeling/Mesh.hpp"
 #include "../../Types.hpp"
 
 namespace ee
@@ -9,11 +9,11 @@ namespace ee
     class SBModel : public SBObject
     {
     public:
-        SBModel(Model model, Float mass, SBObjectType type);
+        SBModel(Mesh model, Float mass, SBObjectType type);
 
         void update(Float time) override;
 
     public:
-        Model m_model;
+        Mesh m_model;
     };
 }

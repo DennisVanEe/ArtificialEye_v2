@@ -4,13 +4,15 @@
 #include <memory>
 #include <string>
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
-#include "../../Rendering/TexturePacks/ShaderMaterial.hpp"
-#include "../../Rendering/TexturePacks/Texture.hpp"
-#include "Mesh.hpp"
+//#include <assimp/Importer.hpp>
+//#include <assimp/scene.h>
+//#include <assimp/postprocess.h>
+//
+//#include "../../Rendering/TexturePacks/ShaderMaterial.hpp"
+//#include "../../Rendering/TexturePacks/Texture.hpp"
+//
+//#include "Mesh.hpp"
+//#include "../Rendering/TexturePacks/ShaderMaterial.hpp"
 
 namespace ee
 {
@@ -38,6 +40,8 @@ namespace ee
         };
 
         std::vector<MeshBucket> m_meshList;
+        std::vector<std::unique_ptr<Mesh>> m_meshList;
+        ShaderMaterial m_shaderMaterial;
     };
 }
 

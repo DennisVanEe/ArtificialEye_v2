@@ -1,6 +1,6 @@
 #include "SBClosedBody.hpp"
 
-ee::SBClosedBody::SBClosedBody(Float P, DynamicModel* model, Float mass, Float stiffness, Float dampening) :
+ee::SBClosedBody::SBClosedBody(Float P, DynamicMesh* model, Float mass, Float stiffness, Float dampening) :
     SBClothSim(model, mass, stiffness, dampening),
     m_pressure(SBSimulation::addLocalForceGen(&SBPressure(P, model, this)))
 {
@@ -18,7 +18,7 @@ void ee::SBClosedBody::update(Float timeStep)
     m_model->recalcNormals();
 }
 
-ee::SBClosedBody::SBPressure::SBPressure(Float P, DynamicModel* model, SBClosedBody* simulation) :
+ee::SBClosedBody::SBPressure::SBPressure(Float P, DynamicMesh* model, SBClosedBody* simulation) :
     m_model(model),
     m_simulation(simulation),
     m_P(P)

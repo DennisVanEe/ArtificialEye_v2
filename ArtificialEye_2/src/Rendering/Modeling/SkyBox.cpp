@@ -46,9 +46,8 @@ const float ee::SkyBox::m_vertices[] =
          1.0f, -1.0f,  1.0f
 };
 
-ee::SkyBox::SkyBox(std::string textPack, std::string rootDir, std::vector<std::string> cubeFaces) :
-    Drawable(textPack),
-    m_cubeMap(loadCubeMap(rootDir, cubeFaces))
+ee::SkyBox::SkyBox(std::string textPack) :
+    Drawable(textPack, RENDER_LAST)
 {
     GLuint VBO;
     glGenVertexArrays(1, &m_VAO);
@@ -71,10 +70,11 @@ void ee::SkyBox::draw()
 {
     glBindVertexArray(m_VAO);
 
+    // get the camera first (also, let's do a bind first, for that is best I think)
     const Camera* camera = Renderer::getCamera();
 
     Drawable::m_shader->use();
-    m_texturePack->setTexture(Drawable::m_shader, &m_shaderMaterial, camera); // sets whatever values it may want to set
+    m_texturePack->preDraw(Drawable::m_shader, &m_shaderMaterial, camera); // sets whatever values it may want to set
 
     glm::mat4 lookAt = glm::mat4(glm::mat3(camera->viewMatrix()));
     glm::mat4 perspective = Renderer::getPerspective();
@@ -85,5 +85,6 @@ void ee::SkyBox::draw()
     Drawable::m_shader->assignMat4f("u_model", glm::mat4()); // in case this is needed
 
     glDrawArrays(GL_TRIANGLES, 0, 36);
+    m_texturePack->postDraw();
     glBindVertexArray(0);
 }

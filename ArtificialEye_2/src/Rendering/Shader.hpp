@@ -14,7 +14,7 @@ namespace ee
     public:
         Shader();
 
-        bool initialize(const std::string &vtxPath, const std::string &frgPath);
+        bool initialize(const std::string &vtxPath, const std::string &frgPath, const std::string & geomPath = "");
         ~Shader();
 
         Shader(const Shader&) = delete;

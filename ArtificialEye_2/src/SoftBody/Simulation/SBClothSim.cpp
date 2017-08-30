@@ -2,7 +2,7 @@
 
 #include "../Constraints/SBLengthConstraint.hpp"
 
-ee::SBClothSim::SBClothSim(DynamicModel* model, Float mass, Float structStiffness, Float structDampening) :
+ee::SBClothSim::SBClothSim(DynamicMesh* model, Float mass, Float structStiffness, Float structDampening) :
     SBSimulation(),
     m_model(model)
 {

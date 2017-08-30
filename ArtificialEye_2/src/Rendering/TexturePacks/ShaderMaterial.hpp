@@ -1,8 +1,7 @@
 #pragma once
 
-#include "../TexturePacks/ShaderMaterial.hpp"
-
 #include <string>
+#include "../../Types.hpp"
 
 namespace ee
 {

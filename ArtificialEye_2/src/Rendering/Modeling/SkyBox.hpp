@@ -1,14 +1,14 @@
 #pragma once
 
 #include "../Drawable.hpp"
-#include "../TexturePacks/Textures/CubeMap.hpp"
+#include "../Textures/CubeMap.hpp"
 
 namespace ee
 {
     class SkyBox : public Drawable
     {
     public:
-        SkyBox(std::string textPack, std::string rootDir, std::vector<std::string> cubeFaces);
+        SkyBox(std::string textPack);
 
         void draw() override;
 
@@ -16,6 +16,5 @@ namespace ee
         static const float m_vertices[];
 
         GLuint m_VAO;
-        CubeMap m_cubeMap;
     };
 }

@@ -28,6 +28,8 @@ void ee::loadIndexedRectangle(VertBuffer* const vertList, IndexBuffer* const ind
     -1.0,  1.0, -1.0,
 };
 
+ const std::size_t NUM_VERT = F(sizeof(g_cubeVertices)) / sizeof(ee::Float);
+
  /* init_resources */
  const GLuint g_cubeElements[] = 
  {
@@ -57,7 +59,7 @@ void ee::loadIndexedRectangle(VertBuffer* const vertList, IndexBuffer* const ind
      vertList->clear();
      indexList->clear();
 
-     for (std::size_t i = 0; i < F(sizeof(g_cubeVertices)) / sizeof(Float);)
+     for (std::size_t i = 0; i < NUM_VERT;)
      {
          vertList->push_back(Vertex(Vector3(g_cubeVertices[i++], g_cubeVertices[i++], g_cubeVertices[i++])));
      }

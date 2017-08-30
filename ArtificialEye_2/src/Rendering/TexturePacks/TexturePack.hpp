@@ -11,10 +11,12 @@ namespace ee
     class TexturePack
     {
     public:
-        virtual void setTexture(Shader* shader, const ShaderMaterial* material, const Camera* camera) = 0;
+        virtual void preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera) = 0;
+        virtual void postDraw() = 0;
         virtual TexturePack* getCopy() const = 0;
 
         virtual std::string getVShaderName() const = 0;
         virtual std::string getFShaderName() const = 0;
+        virtual std::string getGShaderName() const { return ""; }
     };
 }

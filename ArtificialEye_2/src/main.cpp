@@ -2,8 +2,11 @@
 #include "Rendering/Renderer.hpp"
 #include "Rendering/TexturePacks/UniColorTextPack.hpp"
 #include "Rendering/TexturePacks/LightUniColorTextpack.hpp"
-#include "Rendering/DynamicModel.hpp"
+#include "Rendering/Modeling/DynamicMesh.hpp"
+#include "Rendering/Modeling/SkyBox.hpp"
 #include "Rendering/RenderingUtilities.hpp"
+#include "Rendering/TexturePacks/SkyBoxTextPack.hpp"
+#include "Rendering/TexturePacks/RefractTextPack.hpp"
 
 #include "SoftBody/Simulation/SBClosedBody.hpp"
 #include "SoftBody/ForceGens/SBGravity.hpp"
@@ -12,6 +15,7 @@
 
 #include <string>
 #include <iostream>
+#include <vector>
 
 bool g_startSoftBody = false;
 bool g_enableWireFram = false;
@@ -92,6 +96,7 @@ int main()
         ee::VertBuffer vertBuffer;
         ee::IndexBuffer indBuffer;
         ee::loadIndexedCube(&vertBuffer, &indBuffer);
+        // ee::loadIndexedRectangle(&vertBuffer, &indBuffer);
 
         // now create a model:
 
@@ -105,9 +110,29 @@ int main()
         lightUniColor.m_material.m_diffuse = ee::Vector3(1.0f, 0.5f, 0.31f);
         ee::Renderer::addTexturePack("lightUniColor", &lightUniColor);
 
+        std::vector<std::string> cubemapcomp
+        {
+            "right.jpg",
+            "left.jpg",
+            "top.jpg",
+            "bottom.jpg",
+            "back.jpg",
+            "front.jpg"
+        };
+
+        ee::RefractTextPack refractTextPack(ee::Color3(), "Textures/SkyBox", cubemapcomp, 1.33f);
+        ee::SkyBoxTextPack pack("Textures/SkyBox", cubemapcomp);
+        ee::Renderer::addTexturePack("SkyBoxTextPack", &pack);
+        ee::Renderer::addTexturePack("refractTextPack", &refractTextPack);
+
+        // load the skybox
+        ee::SkyBox skyBox("SkyBoxTextPack");
+        ee::Renderer::addDrawable(&skyBox);
+
         // load the dynModel
-        ee::DynamicModel dynModel("lightUniColor", std::move(vertBuffer), std::move(indBuffer));
+        ee::DynamicMesh dynModel("refractTextPack", std::move(vertBuffer), std::move(indBuffer));
         dynModel.recalcNormals();
+        ee::Renderer::addDrawable(&dynModel);
 
         ee::Renderer::setClearColor(ee::Color3(105 / F(255), 105 / F(255), 105 / F(255)));
 
@@ -123,8 +148,6 @@ int main()
         assert(g_constraint);
 
         clothSim.addIntegrator(&ee::SBVerletIntegrator(F(1) / 60, F(0.01)));
-
-        ee::Float v = dynModel.calcVolume();
 
         while (ee::Renderer::isInitialized())
         {
@@ -153,7 +176,8 @@ int main()
             {
                 clothSim.update(time);
             }
-            dynModel.draw();
+            
+            ee::Renderer::drawAll();
 
             ee::Renderer::update(time);
             ee::Renderer::swapBuffers();

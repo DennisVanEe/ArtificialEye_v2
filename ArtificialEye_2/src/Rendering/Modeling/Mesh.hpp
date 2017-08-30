@@ -15,14 +15,12 @@ namespace ee
     struct Vertex
     {
         Vector3 m_position;
-        Vector3 m_textCoord;
         Vector3 m_normal;
+        Vector3 m_textCoord;
 
         Vertex() {}
-        Vertex(Vector3 pos) :
-            m_position(pos) {}
-        Vertex(Vector3 pos, Vector3 textCoord, Vector3 normal) :
-            m_position(pos), m_textCoord(textCoord), m_normal(normal) {}
+        Vertex(Vector3 pos) : m_position(pos) {}
+        Vertex(Vector3 pos, Vector3 textCoord, Vector3 normal) : m_position(pos), m_textCoord(textCoord), m_normal(normal) {}
     };
 
     using VertBuffer = std::vector<Vertex>;
@@ -31,17 +29,17 @@ namespace ee
     class Mesh : public Drawable
     {
     public:
-        explicit Mesh(std::string textPack, VertBuffer vertices, IndexBuffer indices, GLenum dataUsage = GL_STATIC_DRAW);
+        explicit Mesh(std::string textPack, VertBuffer vertices, IndexBuffer indices, int priority = 0, GLenum dataUsage = GL_STATIC_DRAW);
         explicit Mesh(const Mesh& model);
         Mesh(Mesh&& model);
 
         virtual ~Mesh();
 
-        virtual const Vertex& getVertex(std::size_t vertexID) const;
-        virtual std::size_t getNumVertices() const;
+        virtual const Vertex& getVertex(std::size_t vertexID) const { return m_vertices[vertexID]; }
+        virtual std::size_t getNumVertices() const { return m_vertices.size(); }
 
-        virtual std::size_t getVertexID(std::size_t indexID) const;
-        virtual std::size_t getNumIndices() const;
+        virtual std::size_t getVertexID(std::size_t indexID) const { return m_indices[indexID]; }
+        virtual std::size_t getNumIndices() const { return m_indices.size(); }
 
         // used to position the model in the world
         glm::mat4 m_modelTrans;
@@ -52,12 +50,12 @@ namespace ee
         virtual void calcNormals();
 
     private:
-        std::vector<Vector3> m_tempNormals;
-
         void constructVAO();
         const GLenum m_type; // for when copying the object
 
     protected:
+        std::vector<Vector3> m_tempNormals;
+
         VertBuffer m_vertices;
         IndexBuffer m_indices;
 

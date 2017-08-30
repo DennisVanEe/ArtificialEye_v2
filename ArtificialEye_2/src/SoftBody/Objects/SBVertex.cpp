@@ -1,6 +1,6 @@
 #include "SBVertex.hpp"
 
-ee::SBVertex::SBVertex(const Float mass, const SBObjectType type, DynamicModel* const model, const std::size_t vertexID) :
+ee::SBVertex::SBVertex(const Float mass, const SBObjectType type, DynamicMesh* const model, const std::size_t vertexID) :
     SBObject(mass, type),
     m_model(model),
     m_vertexID(vertexID)

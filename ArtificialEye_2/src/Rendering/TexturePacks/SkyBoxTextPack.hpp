@@ -10,13 +10,14 @@ namespace ee
     class SkyBoxTextPack : public TexturePack
     {
     public:
-        SkyBoxTextPack(CubeMap skyBox);
+        SkyBoxTextPack(std::string rootDir, const std::vector<std::string>& faceNames) : m_skyBox(loadCubeMap(rootDir, faceNames)) {}
 
-        void setTexture(Shader* shader, const ShaderMaterial* material, const Camera* camera) override;
-        TexturePack* getCopy() const override;
+        void preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera) override { shader->bindTexture(GL_TEXTURE_CUBE_MAP, 0, m_skyBox.getTexture()); }
+        void postDraw() override {}
+        TexturePack* getCopy() const override { return new SkyBoxTextPack(*this); }
 
-        std::string getVShaderName() const override;
-        std::string getFShaderName() const override;
+        std::string getVShaderName() const override { return "skyBox_vert"; }
+        std::string getFShaderName() const override { return "skyBox_frag"; }
 
     public:
         CubeMap m_skyBox;

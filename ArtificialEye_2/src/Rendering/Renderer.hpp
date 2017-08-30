@@ -31,6 +31,9 @@ namespace ee
     using KeyboardCallbackFunc = std::function<void(GLFWwindow*, int, int, int, int)>;
     using ScrollCallbackFunc = std::function<void(GLFWwindow*, double, double)>;
 
+
+    class Drawable;
+
     namespace Renderer
     {
         enum class ErrorCode {SUCCESS, GLFW_ERROR, GLAD_ERROR };
@@ -60,15 +63,21 @@ namespace ee
         void pollEvents();
         void swapBuffers();
 
+        void addDrawable(Drawable* d);
+
+        // texture pack ownership goes towards the renderer itself
         template<typename T>
         T* addTexturePack(std::string name, T* pack);
 
-        static void insertTextPackIntoMap(std::string name, ee::TexturePack* pack);
-        static bool checkTextPackMap(std::string name);
+        void drawAll();
+
+        // figure out what to do here:
+        void insertTextPackIntoMap(std::string name, ee::TexturePack* pack);
+        bool checkTextPackMap(std::string name);
 
         TexturePack* getTexturePack(std::string name);
-        Shader* loadShader(std::string vertName, std::string fragName);
-    };
+        Shader* loadShader(const std::string& vertName, const std::string& fragName, const std::string& geomName = "");
+    }
 }
 
 // template definitions

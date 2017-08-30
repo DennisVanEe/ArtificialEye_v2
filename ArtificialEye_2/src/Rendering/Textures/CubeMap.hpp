@@ -20,7 +20,7 @@ namespace ee
         }
 
     private:
-        CubeMap(GLuint texture);
+        CubeMap(GLuint texture) : m_texture(texture) {}
         friend CubeMap loadCubeMap(std::string, std::vector<std::string>);
 
         GLuint m_texture;

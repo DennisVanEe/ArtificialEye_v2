@@ -1,18 +1,36 @@
 #include "DynamicMesh.hpp"
 
-ee::DynamicMesh::DynamicMesh(std::string textPack, VertBuffer vertices, IndexBuffer indices) :
-    Mesh(textPack, vertices, indices, GL_DYNAMIC_DRAW)
+void ee::DynamicMesh::recalcNormals()
 {
-}
+    m_tempNormals.clear();
+    m_tempNormals.resize(m_vertices.size());
 
-ee::DynamicMesh::DynamicMesh(const DynamicMesh& model) :
-    Mesh(model)
-{
-}
+    for (std::size_t i = 0; i < m_indices.size();)
+    {
+        GLuint i0 = m_indices[i++];
+        GLuint i1 = m_indices[i++];
+        GLuint i2 = m_indices[i++];
 
-ee::DynamicMesh::DynamicMesh(DynamicMesh&& mesh) :
-    Mesh(std::move(mesh))
-{
+        Vector3 v0 = m_vertices[i0].m_position;
+        Vector3 v1 = m_vertices[i1].m_position;
+        Vector3 v2 = m_vertices[i2].m_position;
+
+        Vector3 e0 = v1 - v0;
+        Vector3 e1 = v2 - v0;
+        Vector3 tempNormal = glm::normalize(glm::cross(e0, e1));
+
+        m_tempNormals[i0] += tempNormal;
+        m_tempNormals[i1] += tempNormal;
+        m_tempNormals[i2] += tempNormal;
+    }
+
+    // normalize those results and update the model itself:
+    for (std::size_t i = 0; i < m_tempNormals.size(); i++)
+    {
+        Vertex vert = getVertex(i);
+        vert.m_normal = glm::normalize(m_tempNormals[i]);
+        setVertex(vert, i);
+    }
 }
 
 void ee::DynamicMesh::setVertex(const Vertex& vertex, std::size_t vertexID)

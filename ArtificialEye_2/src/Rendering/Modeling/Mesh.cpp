@@ -1,33 +1,13 @@
 #include "Mesh.hpp"
 
-ee::Mesh::Mesh(const std::string textPack, const VertBuffer vertices, const IndexBuffer indices, GLenum type) :
-    Drawable(textPack),
+ee::Mesh::Mesh(const std::string textPack, const VertBuffer vertices, const IndexBuffer indices, int priority, GLenum type) :
+    Drawable(textPack, priority),
     m_type(type),
     m_vertices(vertices),
     m_indices(indices),
     m_VAO(0)
 {
     constructVAO();
-}
-
-const ee::Vertex& ee::Mesh::getVertex(std::size_t vertexID) const
-{
-    return m_vertices[vertexID];
-}
-
-std::size_t ee::Mesh::getNumVertices() const
-{
-    return m_vertices.size();
-}
-
-std::size_t ee::Mesh::getVertexID(std::size_t indexID) const
-{
-    return m_indices[indexID];
-}
-
-std::size_t ee::Mesh::getNumIndices() const
-{
-    return m_indices.size();
 }
 
 ee::Mesh::Mesh(const Mesh& model) :
@@ -59,10 +39,12 @@ ee::Mesh::~Mesh()
 
 void ee::Mesh::draw()
 {
+    glBindVertexArray(m_VAO);
+
     const Camera* camera = Renderer::getCamera();
 
     Drawable::m_shader->use();
-    m_texturePack->setTexture(Drawable::m_shader, &m_shaderMaterial, camera); // sets whatever values it may want to set
+    m_texturePack->preDraw(Drawable::m_shader, &m_shaderMaterial, camera); // sets whatever values it may want to set
 
     glm::mat4 lookAt = camera->viewMatrix();
     glm::mat4 perspective = Renderer::getPerspective();
@@ -72,9 +54,10 @@ void ee::Mesh::draw()
     Drawable::m_shader->assignMat4f("u_posTrans", trans);
     Drawable::m_shader->assignMat4f("u_model", m_modelTrans); // in case this is needed
 
-    glBindVertexArray(m_VAO);
     glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+
+    m_texturePack->postDraw();
 }
 
 ee::Float ee::Mesh::calcVolume() const

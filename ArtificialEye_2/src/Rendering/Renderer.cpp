@@ -1,7 +1,9 @@
 #include <unordered_map>
 #include <memory>
+#include <set>
 
 #include "Renderer.hpp"
+#include "Drawable.hpp"
 
 void dummyMouseCallback(GLFWwindow*, double, double) {}
 void dummyKeyboardCallBack(GLFWwindow*, int, int, int, int) {}
@@ -15,7 +17,7 @@ namespace ee
         std::unordered_map<std::string, std::unique_ptr<Shader>> g_shaders;
         std::unordered_map<std::string, std::unique_ptr<TexturePack>> g_textPacks;
         Camera g_camera = Camera(Vector3(), Vector3(), F(0), F(0)); // not the cleanest thing I have ever done,
-                                                                      // but I need to initialize it to some dummy.
+                                                                    // but I need to initialize it to some dummy.
         glm::mat4 g_perspective;
         GLFWwindow* g_window;
         bool g_initialized;
@@ -26,6 +28,11 @@ namespace ee
         Float g_deltaTime = F(0);
 
         Color4 g_clearColor;
+
+        // The actual render queue:
+        std::multiset <Drawable*, DrawableCompare> g_drawables;
+        bool g_renderFirstSet = false;
+        bool g_renderLastSet = false;
 
         /////////////////////////////
         // CALLBACK FUNCTIONS
@@ -190,11 +197,10 @@ ee::Renderer::ErrorCode ee::Renderer::initialize(const std::string rootShaderDir
     glfwSetKeyCallback(g_window, keyboardCallback);
     glfwSetScrollCallback(g_window, scrollCallback);
 
-    g_initialized = true;
-
-    // glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
 
+    g_initialized = true;
     return ErrorCode::SUCCESS;
 }
 
@@ -205,13 +211,50 @@ void ee::Renderer::deinitialize()
     g_initialized = false;
 }
 
-static void ee::Renderer::insertTextPackIntoMap(std::string name, ee::TexturePack* pack)
+void ee::Renderer::addDrawable(Drawable* d)
+{
+    int priority = d->getPriority();
+    if (priority == RENDER_FIRST)
+    {
+        if (g_renderFirstSet)
+        {
+            throw std::logic_error("Can't have two drawables set to RENDER_FIRST");
+        }
+        else
+        {
+            g_renderFirstSet = true;
+        }
+    }
+    else if (priority == RENDER_LAST)
+    {
+        if (g_renderLastSet)
+        {
+            throw std::logic_error("Can't have two drawables set to RENDER_FIRST");
+        }
+        else
+        {
+            g_renderLastSet = true;
+        }
+    }
+
+    g_drawables.insert(d);
+}
+
+void ee::Renderer::drawAll()
+{
+    for (auto& d : g_drawables)
+    {
+        d->draw();
+    }
+}
+
+void ee::Renderer::insertTextPackIntoMap(std::string name, ee::TexturePack* pack)
 {
     std::unique_ptr<ee::TexturePack> smartPtr(pack);
     g_textPacks.insert(std::make_pair(name, std::move(smartPtr)));
 }
 
-static bool ee::Renderer::checkTextPackMap(std::string name)
+bool ee::Renderer::checkTextPackMap(std::string name)
 {
     return g_textPacks.find(name) == g_textPacks.end();
 }
@@ -226,19 +269,20 @@ ee::TexturePack* ee::Renderer::getTexturePack(std::string name)
     return it->second.get();
 }
 
-ee::Shader* ee::Renderer::loadShader(std::string vertName, std::string fragName)
+ee::Shader* ee::Renderer::loadShader(const std::string& vertName, const std::string& fragName, const std::string& geomName)
 {
-    std::string key = vertName + "%" + fragName;
+    std::string key = vertName + "%" + fragName + "%" + geomName;
     auto loc = g_shaders.find(key);
 
     if (loc == g_shaders.end())
     {
         std::string vertDir = g_rootShaderDir + "/" + vertName + ".glsl";
         std::string fragDir = g_rootShaderDir + "/" + fragName + ".glsl";
+        std::string geomDir = geomName.empty() ? "" : g_rootShaderDir + "/" + geomName + ".glsl";
         
         std::unique_ptr<Shader> shader(new Shader());
         Shader* result = shader.get();
-        if (!shader->initialize(vertDir, fragDir))
+        if (!shader->initialize(vertDir, fragDir, geomDir))
         {
             return nullptr;
         }

@@ -7,9 +7,9 @@ ee::RefractTextPack::RefractTextPack(Vector3 color, std::string rootDir, std::ve
 {
 }
 
-void ee::RefractTextPack::setTexture(Shader* shader, const ShaderMaterial* material, const Camera* camera)
+void ee::RefractTextPack::preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera)
 {
-    shader->assignColor("u_modelColor", m_color); // assign the color
+    // shader->assignColor("u_modelColor", m_color); // assign the color
     Vector3 camPos = camera->getPosition();
     shader->assignVec3f("u_cameraPosition", camPos);
     shader->assignFloat("u_refractIndex", m_refractIndex);
@@ -28,5 +28,10 @@ std::string ee::RefractTextPack::getVShaderName() const
 
 std::string ee::RefractTextPack::getFShaderName() const
 {
-    return "modelRefract_frag.glsl";
+    return "modelRefract_frag";
+}
+
+std::string ee::RefractTextPack::getGShaderName() const
+{
+    return "modelRefract_geom";
 }

@@ -69,36 +69,65 @@ void ee::Shader::assignVec3f(std::string name, Vector3 vec)
     glUniform3f(loc, vec.x, vec.y, vec.z);
 }
 
-bool ee::Shader::initialize(const std::string& vtxPath, const std::string& frgPath)
+bool ee::Shader::initialize(const std::string& vtxPath, const std::string& frgPath, const std::string& geomPath)
 {
-	std::ifstream vtxStream, frgStream;
-	std::stringstream vtxCode, frgCode;
+    bool geomShader = !geomPath.empty();
+
+	std::ifstream vtxStream, frgStream, geomStream;
+	std::stringstream vtxCode, frgCode, geomCode;
 	vtxStream.exceptions(std::ios_base::badbit | std::ios_base::failbit);
 	frgStream.exceptions(std::ios_base::badbit | std::ios_base::failbit);
 
 	// open and load code into stream
+    try
+    {
+        vtxStream.open(vtxPath);
+        vtxCode << vtxStream.rdbuf();
+        vtxStream.close();
+    }
+    catch (std::ifstream::failure excp)
+    {
+        std::cout << "Failed to open vertex shader: " << vtxPath << std::endl;
+        return false;
+    }
+
 	try
 	{
-		vtxStream.open(vtxPath);
 		frgStream.open(frgPath);
-
-		vtxCode << vtxStream.rdbuf();
 		frgCode << frgStream.rdbuf();
-
-		vtxStream.close();
 		frgStream.close();
 	}
 	catch (std::ifstream::failure excp)
 	{
+        std::cout << "Failed to open fragment shader: " << frgPath << std::endl;
         return false;
 	}
 
-	GLuint vtxID, frgID;
+    if (geomShader)
+    {
+        try
+        {
+            geomStream.open(geomPath);
+            geomCode << geomStream.rdbuf();
+            geomStream.close();
+        }
+        catch (std::ifstream::failure excp)
+        {
+            std::cout << "Failed to open geometry shader: " << geomPath << std::endl;
+            return false;
+        }
+    }
+
+	GLuint vtxID, frgID, geomID;
 	GLint resultChk;
 	GLchar resultLog[512];
 
 	vtxID = glCreateShader(GL_VERTEX_SHADER);
 	frgID = glCreateShader(GL_FRAGMENT_SHADER);
+    if (geomShader)
+    {
+        geomID = glCreateShader(GL_GEOMETRY_SHADER);
+    }
 	
 	std::string strTmpCode = std::move(vtxCode.str());
 	const GLchar *ptrCode = strTmpCode.c_str();
@@ -126,9 +155,29 @@ bool ee::Shader::initialize(const std::string& vtxPath, const std::string& frgPa
         return false;
 	}
 
+    if (geomShader)
+    {
+        strTmpCode = std::move(geomCode.str());
+        ptrCode = strTmpCode.c_str();
+        glShaderSource(geomID, 1, &ptrCode, nullptr);
+        glCompileShader(geomID);
+
+        glGetShaderiv(geomID, GL_COMPILE_STATUS, &resultChk);
+        if (!resultChk)
+        {
+            glGetShaderInfoLog(geomID, 512, nullptr, resultLog);
+            std::cout << resultLog << endl;
+            return false;
+        }
+    }
+
 	m_programID = glCreateProgram();
 	glAttachShader(m_programID, vtxID);
 	glAttachShader(m_programID, frgID);
+    if (geomID)
+    {
+        glAttachShader(m_programID, geomID);
+    }
 
 	glLinkProgram(m_programID);
 	glGetProgramiv(m_programID, GL_LINK_STATUS, &resultChk);
@@ -141,6 +190,10 @@ bool ee::Shader::initialize(const std::string& vtxPath, const std::string& frgPa
 
 	glDeleteShader(vtxID);
 	glDeleteShader(frgID);
+    if (geomShader)
+    {
+        glDeleteShader(geomID);
+    }
 
     return true;
 }

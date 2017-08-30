@@ -71,25 +71,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <SourcePath>$(VC_SourcePath)src;</SourcePath>
-    <IncludePath>$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\assimp\include;$(SolutionDir)dependencies\stbi\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\stbi\include;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)output/$(Platform)/$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)interm/$(Platform)/$(Configuration)/</IntDir>
-    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(SolutionDir)dependencies\assimp\debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <SourcePath>$(VC_SourcePath)src;</SourcePath>
-    <IncludePath>$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\assimp\include;$(SolutionDir)dependencies\stbi\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\stbi\include;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)output/$(Platform)/$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)interm/$(Platform)/$(Configuration)/</IntDir>
-    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(SolutionDir)dependencies\assimp\lib\release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\assimp\include;$(SolutionDir)dependencies\stbi\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(SolutionDir)dependencies\assimp\debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\stbi\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\assimp\include;$(SolutionDir)dependencies\stbi\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(SolutionDir)dependencies\assimp\lib\release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\stbi\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -99,7 +99,7 @@
       <FloatingPointModel>Precise</FloatingPointModel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;assimp-vc120-mt.lib;zlibstaticd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -108,9 +108,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <FloatingPointModel>Precise</FloatingPointModel>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;assimp-vc120-mt.lib;zlibstaticd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -121,12 +123,11 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <FloatingPointModel>Precise</FloatingPointModel>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;assimp-vc120-mt.lib;zlibstatic.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -137,12 +138,11 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <FloatingPointModel>Precise</FloatingPointModel>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;assimp-vc120-mt.lib;zlibstatic.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -159,9 +159,7 @@
     <ClCompile Include="src\Rendering\shader.cpp" />
     <ClCompile Include="src\Rendering\TexturePacks\LightUniColorTextPack.cpp" />
     <ClCompile Include="src\Rendering\TexturePacks\RefractTextPack.cpp" />
-    <ClCompile Include="src\Rendering\TexturePacks\SkyBoxTextPack.cpp" />
     <ClCompile Include="src\Rendering\Textures\CubeMap.cpp" />
-    <ClCompile Include="src\Rendering\TexturePacks\UniColorTextPack.cpp" />
     <ClCompile Include="src\SoftBody\Constraints\SBLengthConstraint.cpp" />
     <ClCompile Include="src\SoftBody\Constraints\SBPointConstraint.cpp" />
     <ClCompile Include="src\SoftBody\ForceGens\SBGravity.cpp" />
@@ -192,8 +190,8 @@
     <ClInclude Include="src\Rendering\TexturePacks\ShaderMaterial.hpp" />
     <ClInclude Include="src\Rendering\TexturePacks\SkyBoxTextPack.hpp" />
     <ClInclude Include="src\Rendering\TexturePacks\TexturePack.hpp" />
-    <ClInclude Include="src\Rendering\Textures\CubeMap.hpp" />
     <ClInclude Include="src\Rendering\TexturePacks\UniColorTextPack.hpp" />
+    <ClInclude Include="src\Rendering\Textures\CubeMap.hpp" />
     <ClInclude Include="src\SoftBody\Constraints\SBConstraint.hpp" />
     <ClInclude Include="src\SoftBody\Constraints\SBLengthConstraint.hpp" />
     <ClInclude Include="src\SoftBody\Constraints\SBPointConstraint.hpp" />
@@ -217,6 +215,7 @@
     <None Include="Shaders\modelLightUniColor_frag.glsl" />
     <None Include="Shaders\modelLightUniColor_vert.glsl" />
     <None Include="Shaders\modelRefract_frag.glsl" />
+    <None Include="Shaders\modelRefract_geom.glsl" />
     <None Include="Shaders\modelRefract_vert.glsl" />
     <None Include="Shaders\modelUniColor_frag.glsl" />
     <None Include="Shaders\modelUniColor_vert.glsl" />
