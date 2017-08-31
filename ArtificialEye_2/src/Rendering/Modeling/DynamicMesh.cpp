@@ -5,23 +5,19 @@ void ee::DynamicMesh::recalcNormals()
     m_tempNormals.clear();
     m_tempNormals.resize(m_vertices.size());
 
-    for (std::size_t i = 0; i < m_indices.size();)
+    for (MeshFace& face : m_indices)
     {
-        GLuint i0 = m_indices[i++];
-        GLuint i1 = m_indices[i++];
-        GLuint i2 = m_indices[i++];
-
-        Vector3 v0 = m_vertices[i0].m_position;
-        Vector3 v1 = m_vertices[i1].m_position;
-        Vector3 v2 = m_vertices[i2].m_position;
+        Vector3 v0 = m_vertices[face.m_indices[0]].m_position;
+        Vector3 v1 = m_vertices[face.m_indices[1]].m_position;
+        Vector3 v2 = m_vertices[face.m_indices[2]].m_position;
 
         Vector3 e0 = v1 - v0;
         Vector3 e1 = v2 - v0;
         Vector3 tempNormal = glm::normalize(glm::cross(e0, e1));
 
-        m_tempNormals[i0] += tempNormal;
-        m_tempNormals[i1] += tempNormal;
-        m_tempNormals[i2] += tempNormal;
+        m_tempNormals[face.m_indices[0]] += tempNormal;
+        m_tempNormals[face.m_indices[1]] += tempNormal;
+        m_tempNormals[face.m_indices[2]] += tempNormal;
     }
 
     // normalize those results and update the model itself:

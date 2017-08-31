@@ -46,7 +46,7 @@ void ee::Shader::assignColor(const std::string name, const Color4 vec)
     glUniform4f(loc, vec.x, vec.y, vec.z, vec.w);
 }
 
-void ee::Shader::assignFloat(std::string name, float val)
+void ee::Shader::assignfloat(std::string name, float val)
 {
     GLint loc = glGetUniformLocation(m_programID, name.c_str());
     glUniform1f(loc, val);

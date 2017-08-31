@@ -9,9 +9,9 @@ namespace ee
     class SBModel : public SBObject
     {
     public:
-        SBModel(Mesh model, Float mass, SBObjectType type);
+        SBModel(Mesh model, float mass, SBObjectType type);
 
-        void update(Float time) override;
+        void update(float time) override;
 
     public:
         Mesh m_model;

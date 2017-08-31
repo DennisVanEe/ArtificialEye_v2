@@ -1,6 +1,6 @@
 #include "SBVertex.hpp"
 
-ee::SBVertex::SBVertex(const Float mass, const SBObjectType type, DynamicMesh* const model, const std::size_t vertexID) :
+ee::SBVertex::SBVertex(const float mass, const SBObjectType type, DynamicMesh* const model, const std::size_t vertexID) :
     SBObject(mass, type),
     m_model(model),
     m_vertexID(vertexID)
@@ -9,7 +9,7 @@ ee::SBVertex::SBVertex(const Float mass, const SBObjectType type, DynamicMesh* c
     m_prevPosition = m_currPosition;
 }
 
-void ee::SBVertex::update(Float timeStep)
+void ee::SBVertex::update(float timeStep)
 {
     m_model->setVertex(m_currPosition, m_vertexID);
 }

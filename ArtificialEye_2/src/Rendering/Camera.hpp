@@ -20,7 +20,7 @@ namespace ee
 	class Camera
 	{
 	public:
-		Camera(glm::vec3 pos, glm::vec3 up, Float yaw, Float pitch);
+		Camera(glm::vec3 pos, glm::vec3 up, float yaw, float pitch);
 
 		glm::mat4 viewMatrix() const
 		{
@@ -29,10 +29,10 @@ namespace ee
 			return glm::lookAt(m_pos, m_pos + m_front, m_up);
 		}
 
-		void processKBInput(WorldDirection direction, Float deltaTime);
+		void processKBInput(WorldDirection direction, float deltaTime);
 
-		void processMInput(Float xOffset, Float yOffset, GLboolean constrainPitch = true);
-		void processSInput(Float scrOffset);
+		void processMInput(float xOffset, float yOffset, GLboolean constrainPitch = true);
+		void processSInput(float scrOffset);
 
         Vector3 getPosition() const;
 
@@ -46,12 +46,12 @@ namespace ee
         Vector3 m_worldUp;
 
 		// Eular Angles
-        Float m_yaw;
-        Float m_pitch;
+        float m_yaw;
+        float m_pitch;
 		// Camera options
-        Float m_speed;
-        Float m_msensitivity;
-        Float m_zoom;
+        float m_speed;
+        float m_msensitivity;
+        float m_zoom;
 
 		void updateCam();
 	};

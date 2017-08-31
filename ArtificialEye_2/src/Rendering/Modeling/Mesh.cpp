@@ -54,24 +54,19 @@ void ee::Mesh::draw()
     Drawable::m_shader->assignMat4f("u_posTrans", trans);
     Drawable::m_shader->assignMat4f("u_model", m_modelTrans); // in case this is needed
 
-    glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, getNumIndices(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 
     m_texturePack->postDraw();
 }
 
-ee::Float ee::Mesh::calcVolume() const
+float ee::Mesh::calcVolume() const
 {
-    Float total = F(0);
-    for (std::size_t i = 0; i < m_indices.size();)
+    float total = 0.f;
+    for (const MeshFace& f : m_indices)
     {
-        // get triangle indices:
-        GLuint i0 = m_indices[i++];
-        GLuint i1 = m_indices[i++];
-        GLuint i2 = m_indices[i++];
-
-        Float stv = glm::dot(m_vertices[i0].m_position,
-            glm::cross(m_vertices[i1].m_position, m_vertices[i2].m_position)) / F(6);
+        float stv = glm::dot(m_vertices[f.m_indices[0]].m_position,
+            glm::cross(m_vertices[f.m_indices[1]].m_position, m_vertices[f.m_indices[2]].m_position)) / 6.f;
         total += stv;
     }
 
@@ -95,7 +90,7 @@ void ee::Mesh::constructVAO()
     glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * m_vertices.size(), m_vertices.data(), m_type);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * m_indices.size(), m_indices.data(), m_type);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(MeshFace) * m_indices.size(), m_indices.data(), m_type);
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_position));
@@ -112,23 +107,19 @@ void ee::Mesh::calcNormals()
     m_tempNormals.clear();
     m_tempNormals.resize(m_vertices.size());
 
-    for (std::size_t i = 0; i < m_indices.size();)
+    for (const MeshFace& f : m_indices)
     {
-        GLuint i0 = m_indices[i++];
-        GLuint i1 = m_indices[i++];
-        GLuint i2 = m_indices[i++];
-
-        Vector3 v0 = m_vertices[i0].m_position;
-        Vector3 v1 = m_vertices[i1].m_position;
-        Vector3 v2 = m_vertices[i2].m_position;
+        Vector3 v0 = m_vertices[f.m_indices[0]].m_position;
+        Vector3 v1 = m_vertices[f.m_indices[1]].m_position;
+        Vector3 v2 = m_vertices[f.m_indices[2]].m_position;
 
         Vector3 e0 = v1 - v0;
         Vector3 e1 = v2 - v0;
         Vector3 tempNormal = glm::normalize(glm::cross(e0, e1));
 
-        m_tempNormals[i0] += tempNormal;
-        m_tempNormals[i1] += tempNormal;
-        m_tempNormals[i2] += tempNormal;
+        m_tempNormals[f.m_indices[0]] += tempNormal;
+        m_tempNormals[f.m_indices[1]] += tempNormal;
+        m_tempNormals[f.m_indices[2]] += tempNormal;
     }
 
     // normalize those results and update the model itself:

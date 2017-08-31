@@ -2,13 +2,13 @@
 #pragma once
 
 // Default camera values
-const ee::Float YAW = -90.0f;
-const ee::Float PITCH = 0.0f;
-const ee::Float SPEED = 2.5f;
-const ee::Float SENSITIVTY = 0.1f;
-const ee::Float ZOOM = 45.0f;
+const float YAW = -90.0f;
+const float PITCH = 0.0f;
+const float SPEED = 2.5f;
+const float SENSITIVTY = 0.1f;
+const float ZOOM = 45.0f;
 
-ee::Camera::Camera(glm::vec3 pos, glm::vec3 up, Float yaw, Float pitch) :
+ee::Camera::Camera(glm::vec3 pos, glm::vec3 up, float yaw, float pitch) :
 	m_pos(pos),
 	m_worldUp(up),
 	m_yaw(yaw),
@@ -21,9 +21,9 @@ ee::Camera::Camera(glm::vec3 pos, glm::vec3 up, Float yaw, Float pitch) :
 	updateCam();
 }
 
-void ee::Camera::processKBInput(WorldDirection direction, Float deltaTime)
+void ee::Camera::processKBInput(WorldDirection direction, float deltaTime)
 {
-    Float deltaPos = m_speed * deltaTime;
+    float deltaPos = m_speed * deltaTime;
 	switch (direction)
 	{
 	case FORWARD:
@@ -41,7 +41,7 @@ void ee::Camera::processKBInput(WorldDirection direction, Float deltaTime)
 	}
 }
 
-void ee::Camera::processMInput(Float xOffset, Float yOffset, GLboolean constrainPitch)
+void ee::Camera::processMInput(float xOffset, float yOffset, GLboolean constrainPitch)
 {
 	xOffset *= m_msensitivity;
 	yOffset *= m_msensitivity;
@@ -62,7 +62,7 @@ void ee::Camera::processMInput(Float xOffset, Float yOffset, GLboolean constrain
 	updateCam();
 }
 
-void ee::Camera::processSInput(Float scrOffset)
+void ee::Camera::processSInput(float scrOffset)
 {
 	if (m_zoom >= 1.0f && m_zoom <= 45.0f)
 		m_zoom -= scrOffset;

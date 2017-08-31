@@ -11,15 +11,15 @@ namespace ee
     class SBSpring
     {
     public:
-        SBSpring(Float stiffness, Float dampening, SBObject* objA, SBObject* objB);
-        SBSpring(Float stiffness, Float dampening, Float length, SBObject* objA, SBObject* objB);
+        SBSpring(float stiffness, float dampening, SBObject* objA, SBObject* objB);
+        SBSpring(float stiffness, float dampening, float length, SBObject* objA, SBObject* objB);
 
         void applySpringForce();
 
     public:
-        Float m_stiffness;
-        Float m_dampening;
-        Float m_restLength;
+        float m_stiffness;
+        float m_dampening;
+        float m_restLength;
 
     private:
         SBObject* m_objectA;

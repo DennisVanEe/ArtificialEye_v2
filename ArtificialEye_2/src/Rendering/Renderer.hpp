@@ -55,9 +55,9 @@ namespace ee
         void setCustomKeyboardCallback(KeyboardCallbackFunc func);
         void setCustomScrollCallback(ScrollCallbackFunc func);
 
-        Float timeElapsed();
+        float timeElapsed();
 
-        void update(Float deltaTime);
+        void update(float deltaTime);
         void update();
 
         void pollEvents();

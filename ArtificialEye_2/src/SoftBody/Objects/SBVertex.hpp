@@ -8,9 +8,9 @@ namespace ee
     class SBVertex : public SBObject
     {
     public:
-        SBVertex(Float mass, SBObjectType type, DynamicMesh* model, std::size_t vertexID);
+        SBVertex(float mass, SBObjectType type, DynamicMesh* model, std::size_t vertexID);
 
-        void update(Float timeStep) override;
+        void update(float timeStep) override;
         SBObject* getCopy() const override;
 
     private:

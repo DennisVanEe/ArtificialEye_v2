@@ -1,24 +1,25 @@
 #include "SBClosedBody.hpp"
 
-ee::SBClosedBody::SBClosedBody(Float P, DynamicMesh* model, Float mass, Float stiffness, Float dampening) :
+ee::SBClosedBody::SBClosedBody(float P, DynamicMesh* model, float mass, float stiffness, float dampening) :
     SBClothSim(model, mass, stiffness, dampening),
     m_pressure(SBSimulation::addLocalForceGen(&SBPressure(P, model, this)))
 {
     SBSimulation::addLocalForceGen(&SBPressure(P, model, this));
 }
 
-void ee::SBClosedBody::setP(Float P)
+void ee::SBClosedBody::setP(float P)
 {
     m_pressure->m_P = P;
 }
 
-void ee::SBClosedBody::update(Float timeStep)
+void ee::SBClosedBody::update(float timeStep)
 {
     SBSimulation::update(timeStep);
-    m_model->recalcNormals();
+    // m_model->recalcNormals();
+    // The above should be done at the GPU level
 }
 
-ee::SBClosedBody::SBPressure::SBPressure(Float P, DynamicMesh* model, SBClosedBody* simulation) :
+ee::SBClosedBody::SBPressure::SBPressure(float P, DynamicMesh* model, SBClosedBody* simulation) :
     m_model(model),
     m_simulation(simulation),
     m_P(P)
@@ -28,8 +29,8 @@ ee::SBClosedBody::SBPressure::SBPressure(Float P, DynamicMesh* model, SBClosedBo
 void ee::SBClosedBody::SBPressure::applyForces()
 {
     // first we get the current volume of the mesh:
-    Float V = m_model->calcVolume();
-    Float invV = 1 / V;
+    float V = m_model->calcVolume();
+    float invV = 1 / V;
 
     // for each face:
     for (std::size_t i = 0; i < m_model->getNumIndices();)
@@ -46,7 +47,7 @@ void ee::SBClosedBody::SBPressure::applyForces()
         // get current face's area:
         Vector3 e0 = v1 - v0;
         Vector3 e1 = v2 - v0;
-        Float A = glm::length(glm::cross(e0, e1)) * F(0.5);
+        float A = glm::length(glm::cross(e0, e1)) * 0.5f;
 
         // get the normal:
         Vector3 norm = glm::normalize(glm::cross(e0, e1)); // counter-clockwise winding order

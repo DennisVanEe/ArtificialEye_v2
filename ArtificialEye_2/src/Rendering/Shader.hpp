@@ -30,7 +30,7 @@ namespace ee
         void assignColor(std::string name, Color3 color);
         void assignColor(std::string name, Color4 color);
         void assignVec3f(std::string name, Vector3 vec);
-        void assignFloat(std::string name, float val);
+        void assignfloat(std::string name, float val);
 
         void bindTexture(GLenum target, GLuint number, GLuint texture);
         void unbindTexture(GLenum target);

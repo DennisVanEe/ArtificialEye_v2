@@ -11,16 +11,16 @@ namespace ee
     class SBClothSim : public SBSimulation
     {
     public:
-        SBClothSim(DynamicMesh* model, Float mass, Float structStiffness, Float structDampening);
+        SBClothSim(DynamicMesh* model, float mass, float structStiffness, float structDampening);
 
-        virtual void update(Float timeStep) override;
+        virtual void update(float timeStep) override;
 
         SBObject* getVertexObject(std::size_t VertexID);
 
     protected:
         DynamicMesh* m_model;
 
-        void createSimVertices(Float mass);
-        void connectSprings(Float structStiffness, Float structDampening);
+        void createSimVertices(float mass);
+        void connectSprings(float structStiffness, float structDampening);
     };
 }

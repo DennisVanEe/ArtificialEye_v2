@@ -23,8 +23,8 @@ namespace ee
     class SBSimulation
     {
     public:
-        void addSpring(Float stiffness, Float dampening, SBObject* objA, SBObject* objB);
-        void addSpring(Float stiffness, Float dampening, Float length, SBObject* objA, SBObject* objB);
+        void addSpring(float stiffness, float dampening, SBObject* objA, SBObject* objB);
+        void addSpring(float stiffness, float dampening, float length, SBObject* objA, SBObject* objB);
         void addObject(SBObject* obj);
         void addGlobalForceGen(SBGlobalForceGen* force);
 
@@ -36,7 +36,7 @@ namespace ee
 
         void addIntegrator(SBIntegrator* integrator);
 
-        virtual void update(Float timeStep);
+        virtual void update(float timeStep);
 
     public:
         std::size_t m_constIterations;

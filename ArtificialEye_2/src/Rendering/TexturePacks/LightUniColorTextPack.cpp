@@ -10,7 +10,7 @@ ee::LightUniColorTextPack::LightUniColorTextPack(Vector3 lightPosition, Vector3 
 
 ee::LightUniColorTextPack::LightUniColorTextPack() :
     TexturePack(),
-    m_color(F(1), F(1), F(1))
+    m_color(1.f, 1.f, 1.f)
 {
 }
 

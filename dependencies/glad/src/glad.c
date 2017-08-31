@@ -573,7 +573,7 @@ PFNGLGETTEXPARAMETERIIVPROC glad_glGetTexParameterIiv;
 PFNGLTEXCOORDP1UIPROC glad_glTexCoordP1ui;
 PFNGLGETERRORPROC glad_glGetError;
 PFNGLVERTEXATTRIBP2UIPROC glad_glVertexAttribP2ui;
-PFNGLGETFLOATVPROC glad_glGetFloatv;
+PFNGLGETFLOATVPROC glad_glGetfloatv;
 PFNGLTEXSUBIMAGE1DPROC glad_glTexSubImage1D;
 PFNGLVERTEXATTRIB2FVPROC glad_glVertexAttrib2fv;
 PFNGLGETTEXLEVELPARAMETERFVPROC glad_glGetTexLevelParameterfv;
@@ -645,7 +645,7 @@ static void load_GL_VERSION_1_0(GLADloadproc load) {
 	glad_glGetBooleanv = (PFNGLGETBOOLEANVPROC)load("glGetBooleanv");
 	glad_glGetDoublev = (PFNGLGETDOUBLEVPROC)load("glGetDoublev");
 	glad_glGetError = (PFNGLGETERRORPROC)load("glGetError");
-	glad_glGetFloatv = (PFNGLGETFLOATVPROC)load("glGetFloatv");
+	glad_glGetfloatv = (PFNGLGETFLOATVPROC)load("glGetfloatv");
 	glad_glGetIntegerv = (PFNGLGETINTEGERVPROC)load("glGetIntegerv");
 	glad_glGetString = (PFNGLGETSTRINGPROC)load("glGetString");
 	glad_glGetTexImage = (PFNGLGETTEXIMAGEPROC)load("glGetTexImage");

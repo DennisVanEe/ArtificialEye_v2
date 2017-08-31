@@ -8,11 +8,11 @@ namespace ee
     class SBClosedBody : public SBClothSim
     {
     public:
-        SBClosedBody(Float P, DynamicMesh* model, Float mass, Float stiffness, Float dampening);
+        SBClosedBody(float P, DynamicMesh* model, float mass, float stiffness, float dampening);
 
-        void setP(Float P);
+        void setP(float P);
 
-        void update(Float timeStep) override;
+        void update(float timeStep) override;
 
     private:
         friend class SBPressure;
@@ -24,13 +24,13 @@ namespace ee
         {
         public:
             // some gaurantees
-            SBPressure(Float P, DynamicMesh* model, SBClosedBody* simulation);
+            SBPressure(float P, DynamicMesh* model, SBClosedBody* simulation);
 
             void applyForces() override;
             SBLocalForceGen* getCopy() const override;
 
         public:
-            Float m_P;
+            float m_P;
 
         private:
             DynamicMesh* const m_model;

@@ -2,7 +2,7 @@
 
 #include "../Constraints/SBLengthConstraint.hpp"
 
-ee::SBClothSim::SBClothSim(DynamicMesh* model, Float mass, Float structStiffness, Float structDampening) :
+ee::SBClothSim::SBClothSim(DynamicMesh* model, float mass, float structStiffness, float structDampening) :
     SBSimulation(),
     m_model(model)
 {
@@ -10,7 +10,7 @@ ee::SBClothSim::SBClothSim(DynamicMesh* model, Float mass, Float structStiffness
     connectSprings(structStiffness, structDampening);
 }
 
-void ee::SBClothSim::update(Float timeStep)
+void ee::SBClothSim::update(float timeStep)
 {
     SBSimulation::update(timeStep);
 
@@ -22,16 +22,16 @@ ee::SBObject* ee::SBClothSim::getVertexObject(std::size_t vertexID)
     return m_objects[vertexID].get();
 }
 
-void ee::SBClothSim::createSimVertices(Float mass)
+void ee::SBClothSim::createSimVertices(float mass)
 {
-    Float vertexMass = mass / m_model->getNumVertices();
+    float vertexMass = mass / m_model->getNumVertices();
     for (std::size_t i = 0; i < m_model->getNumVertices(); i++)
     {
         SBSimulation::addObject(&SBVertex(vertexMass, SBObjectType::ACTIVE, m_model, i));
     }
 }
 
-void ee::SBClothSim::connectSprings(Float structStiffness, Float structDampening)
+void ee::SBClothSim::connectSprings(float structStiffness, float structDampening)
 {
     for (std::size_t i = 0; i < m_model->getNumIndices() - 1; i++)
     {
@@ -44,9 +44,9 @@ void ee::SBClothSim::connectSprings(Float structStiffness, Float structDampening
         SBSimulation::addSpring(structStiffness, structDampening, m_objects[index1].get(), m_objects[index2].get());
 
         // this is for now, I guess:
-        Float length = glm::length(m_objects[index1]->m_currPosition - m_objects[index2]->m_currPosition);
+        float length = glm::length(m_objects[index1]->m_currPosition - m_objects[index2]->m_currPosition);
 
         // constraints aren't realistic enough....
-        //SBSimulation::addConstraint(new SBLengthConstraint(length, m_objects[index1].get(), m_objects[index2].get()));
+        SBSimulation::addConstraint(new SBLengthConstraint(length, m_objects[index1].get(), m_objects[index2].get()));
     }
 }

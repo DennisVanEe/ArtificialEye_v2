@@ -1,6 +1,6 @@
 #include "SBForwardEuler.hpp"
 
-ee::SBForwardEuler::SBForwardEuler(const Float constTimeStep) :
+ee::SBForwardEuler::SBForwardEuler(const float constTimeStep) :
     SBIntegrator(constTimeStep)
 {
 }

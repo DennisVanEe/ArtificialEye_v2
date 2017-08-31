@@ -16,7 +16,7 @@ namespace ee
         std::string g_rootShaderDir;
         std::unordered_map<std::string, std::unique_ptr<Shader>> g_shaders;
         std::unordered_map<std::string, std::unique_ptr<TexturePack>> g_textPacks;
-        Camera g_camera = Camera(Vector3(), Vector3(), F(0), F(0)); // not the cleanest thing I have ever done,
+        Camera g_camera = Camera(Vector3(), Vector3(), 0.f, 0.f); // not the cleanest thing I have ever done,
                                                                     // but I need to initialize it to some dummy.
         glm::mat4 g_perspective;
         GLFWwindow* g_window;
@@ -24,8 +24,8 @@ namespace ee
 
         // This information is for time managment
 
-        Float g_lastFrameTime = F(0);
-        Float g_deltaTime = F(0);
+        float g_lastFrameTime = 0.f;
+        float g_deltaTime = 0.f;
 
         Color4 g_clearColor;
 
@@ -120,9 +120,9 @@ void ee::Renderer::setCustomScrollCallback(ScrollCallbackFunc func)
     g_custScrollCallback = func;
 }
 
-ee::Float ee::Renderer::timeElapsed()
+float ee::Renderer::timeElapsed()
 {
-    Float currentFrame = glfwGetTime();
+    float currentFrame = glfwGetTime();
     g_deltaTime = currentFrame - g_lastFrameTime;
     g_lastFrameTime = currentFrame;
     return g_deltaTime;
@@ -143,7 +143,7 @@ void ee::Renderer::swapBuffers()
     glfwSwapBuffers(g_window);
 }
 
-void ee::Renderer::update(Float deltaTime)
+void ee::Renderer::update(float deltaTime)
 {
     if (glfwGetKey(g_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {

@@ -1,6 +1,6 @@
 #include "SBMedium.hpp"
 
-ee::SBMedium::SBMedium(Float dragCoef) :
+ee::SBMedium::SBMedium(float dragCoef) :
     m_dragCoef(dragCoef)
 {
 }

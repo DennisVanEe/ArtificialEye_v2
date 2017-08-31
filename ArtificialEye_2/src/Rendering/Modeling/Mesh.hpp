@@ -24,7 +24,7 @@ namespace ee
     };
 
     using VertBuffer = std::vector<Vertex>;
-    using IndexBuffer = std::vector<GLuint>;
+    using IndexBuffer = std::vector<MeshFace>;
 
     class Mesh : public Drawable
     {
@@ -38,15 +38,15 @@ namespace ee
         virtual const Vertex& getVertex(std::size_t vertexID) const { return m_vertices[vertexID]; }
         virtual std::size_t getNumVertices() const { return m_vertices.size(); }
 
-        virtual std::size_t getVertexID(std::size_t indexID) const { return m_indices[indexID]; }
-        virtual std::size_t getNumIndices() const { return m_indices.size(); }
+        virtual std::size_t getVertexID(std::size_t indexID) const { return reinterpret_cast<const GLuint*>(m_indices.data())[indexID]; }
+        virtual std::size_t getNumIndices() const { return m_indices.size() * (sizeof(MeshFace) / sizeof(GLuint)); }
 
         // used to position the model in the world
         glm::mat4 m_modelTrans;
 
         virtual void draw() override;
 
-        virtual ee::Float calcVolume() const;
+        virtual float calcVolume() const;
         virtual void calcNormals();
 
     private:

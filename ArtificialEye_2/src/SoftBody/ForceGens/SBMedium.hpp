@@ -8,12 +8,12 @@ namespace ee
     class SBMedium : public SBGlobalForceGen
     {
     public:
-        SBMedium(Float dragCoef);
+        SBMedium(float dragCoef);
 
         void applyForce(SBObject* object) override;
         SBGlobalForceGen* getCopy() const override;
 
     public:
-        Float m_dragCoef;
+        float m_dragCoef;
     };
 }

@@ -8,14 +8,14 @@ namespace ee
     class SBIntegrator
     {
     public:
-        SBIntegrator(Float constTimeStep);
-        Float getTimeStep() const;
+        SBIntegrator(float constTimeStep);
+        float getTimeStep() const;
 
         virtual void integrate(Vector3 acceleration, SBObject* object) = 0;
 
         virtual SBIntegrator* getCopy() const = 0;
 
     protected:
-        const Float m_constTimeStep;
+        const float m_constTimeStep;
     };
 }

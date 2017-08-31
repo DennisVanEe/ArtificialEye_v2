@@ -8,17 +8,17 @@ namespace ee
     class SBVerletIntegrator : public SBIntegrator
     {
     public:
-        SBVerletIntegrator(Float timeStep);
-        SBVerletIntegrator(Float timeStep, Float drag);
+        SBVerletIntegrator(float timeStep);
+        SBVerletIntegrator(float timeStep, float drag);
 
-        Float getDrag() const;
-        void setDrag(Float drag);
+        float getDrag() const;
+        void setDrag(float drag);
 
         void integrate(Vector3 acceleration, SBObject* obj) override;
 
         SBIntegrator* getCopy() const override;
 
     private:
-        Float m_drag;
+        float m_drag;
     };
 }

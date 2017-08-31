@@ -10,11 +10,11 @@ namespace ee
     class SBObject
     {
     public:
-        SBObject(Float mass, SBObjectType type);
+        SBObject(float mass, SBObjectType type);
 
         void resetForces();
 
-        virtual void update(Float time) = 0;
+        virtual void update(float time) = 0;
         virtual SBObject* getCopy() const = 0;
 
     public:
@@ -22,7 +22,7 @@ namespace ee
         Vector3 m_prevPosition;
         Vector3 m_currVelocity;
         Vector3 m_resultantForce;
-        Float m_mass;
+        float m_mass;
 
         SBObjectType m_type;
     };

@@ -1,12 +1,12 @@
 #include "SBSimulation.hpp"
 
-void ee::SBSimulation::addSpring(const Float stiffness, const Float dampening, SBObject* const objA, SBObject* const objB)
+void ee::SBSimulation::addSpring(const float stiffness, const float dampening, SBObject* const objA, SBObject* const objB)
 {
     m_springs.push_back(std::unique_ptr<SBSpring>(
         new SBSpring(stiffness, dampening, objA, objB)));
 }
 
-void ee::SBSimulation::addSpring(const Float stiffness, const Float dampening, const Float length, SBObject* const objA, SBObject* const objB)
+void ee::SBSimulation::addSpring(const float stiffness, const float dampening, const float length, SBObject* const objA, SBObject* const objB)
 {
     m_springs.push_back(std::unique_ptr<SBSpring>(
         new SBSpring(stiffness, dampening, length, objA, objB)));
@@ -27,7 +27,7 @@ void ee::SBSimulation::addIntegrator(SBIntegrator* integrator)
     m_integrator = std::unique_ptr<SBIntegrator>(integrator->getCopy());
 }
 
-void ee::SBSimulation::update(Float timeStep)
+void ee::SBSimulation::update(float timeStep)
 {
     // update the springs:
     for (auto& spring : m_springs)

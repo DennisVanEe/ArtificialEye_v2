@@ -7,7 +7,7 @@ namespace ee
     class SBForwardEuler : public SBIntegrator
     {
     public:
-        SBForwardEuler(Float constTimeStep);
+        SBForwardEuler(float constTimeStep);
 
         void integrate(Vector3 acceleration, SBObject* object) override;
     };

@@ -1,11 +1,11 @@
 #include "SBIntegrator.hpp"
 
-ee::SBIntegrator::SBIntegrator(const Float constTimeStep) :
+ee::SBIntegrator::SBIntegrator(const float constTimeStep) :
     m_constTimeStep(constTimeStep)
 {
 }
 
-ee::Float ee::SBIntegrator::getTimeStep() const
+float ee::SBIntegrator::getTimeStep() const
 {
     return m_constTimeStep;
 }

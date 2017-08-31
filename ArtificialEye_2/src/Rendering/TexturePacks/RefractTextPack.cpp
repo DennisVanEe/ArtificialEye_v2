@@ -12,7 +12,7 @@ void ee::RefractTextPack::preDraw(Shader* shader, const ShaderMaterial* material
     // shader->assignColor("u_modelColor", m_color); // assign the color
     Vector3 camPos = camera->getPosition();
     shader->assignVec3f("u_cameraPosition", camPos);
-    shader->assignFloat("u_refractIndex", m_refractIndex);
+    shader->assignfloat("u_refractIndex", m_refractIndex);
     shader->bindTexture(GL_TEXTURE_CUBE_MAP, 0, m_skyBox.getTexture());
 }
 

@@ -22,7 +22,7 @@ bool g_enableWireFram = false;
 
 ee::SBPointConstraint* g_constraint = nullptr;
 
-const ee::Float DEFAULT_P = F(50);
+const float DEFAULT_P = 50.f;
 
 bool g_defaultP = true;
 
@@ -55,16 +55,16 @@ void setSpaceCallback(GLFWwindow* window, int key, int scancode, int action, int
         switch (key)
         {
         case GLFW_KEY_UP:
-            g_constraint->m_point += ee::Vector3(F(0), F(0.1), F(0));
+            g_constraint->m_point += ee::Vector3(0.f, 0.1f, 0.f);
             break;
         case GLFW_KEY_DOWN:
-            g_constraint->m_point += ee::Vector3(F(0), F(-0.1), F(0));
+            g_constraint->m_point += ee::Vector3(0.f, -0.1f, 0.f);
             break;
         case GLFW_KEY_LEFT:
-            g_constraint->m_point += ee::Vector3(F(-0.1), F(0), F(0));
+            g_constraint->m_point += ee::Vector3(-0.1f, 0.f, 0.f);
             break;
         case GLFW_KEY_RIGHT:
-            g_constraint->m_point += ee::Vector3(F(0.1), F(0), F(0));
+            g_constraint->m_point += ee::Vector3(0.1f, 0.f, 0.f);
             break;
         }
     }
@@ -81,22 +81,21 @@ int main()
         rendererParams.m_aspect = 16.f / 9.f;
         rendererParams.m_screenWidth = 1920;
         rendererParams.m_screenHeight = 1080;
-        rendererParams.m_fov = F(45);
-        rendererParams.m_far = F(100);
-        rendererParams.m_near = F(0.1);
+        rendererParams.m_fov = 45.f;
+        rendererParams.m_far = 100.f;
+        rendererParams.m_near = 0.1f;
 
         cameraParams.m_position = ee::Vector3(10.f, 0.f, 0.f);
         cameraParams.m_up = ee::Vector3(0.f, 1.f, 0.f);
-        cameraParams.m_yaw = F(180);
-        cameraParams.m_pitch = F(0);
+        cameraParams.m_yaw = 180.f;
+        cameraParams.m_pitch = 0.f;
 
         ee::Renderer::ErrorCode res = ee::Renderer::initialize(sharedDir, rendererParams, cameraParams);
         ee::Renderer::setCustomKeyboardCallback(setSpaceCallback);
 
         ee::VertBuffer vertBuffer;
         ee::IndexBuffer indBuffer;
-        ee::loadIndexedCube(&vertBuffer, &indBuffer);
-        // ee::loadIndexedRectangle(&vertBuffer, &indBuffer);
+        ee::loadIcosphere(4, &vertBuffer, &indBuffer);
 
         // now create a model:
 
@@ -131,23 +130,22 @@ int main()
 
         // load the dynModel
         ee::DynamicMesh dynModel("refractTextPack", std::move(vertBuffer), std::move(indBuffer));
-        dynModel.recalcNormals();
         ee::Renderer::addDrawable(&dynModel);
 
-        ee::Renderer::setClearColor(ee::Color3(105 / F(255), 105 / F(255), 105 / F(255)));
+        ee::Renderer::setClearColor(ee::Color3(0.45f, 0.45f, 0.45f));
 
-        ee::SBClosedBody clothSim(DEFAULT_P, &dynModel, F(4), F(3), F(2));
-        clothSim.m_constIterations = 50;
+        ee::SBClosedBody clothSim(DEFAULT_P, &dynModel, 4.f, 3.f, 2.f);
+        clothSim.m_constIterations = 50.f;
 
         ee::SBGravity* gravity = new ee::SBGravity();
-        clothSim.addGlobalForceGen(gravity);
+       // clothSim.addGlobalForceGen(gravity);
 
         clothSim.addConstraint(&ee::SBPointConstraint(dynModel.getVertex(0).m_position, clothSim.getVertexObject(0)));
         // clothSim.addConstraint(&ee::SBPointConstraint(dynModel.getVertex(1).m_position, clothSim.getVertexObject(1)));
         g_constraint = clothSim.addConstraint(&ee::SBPointConstraint(dynModel.getVertex(6).m_position, clothSim.getVertexObject(6)));
         assert(g_constraint);
 
-        clothSim.addIntegrator(&ee::SBVerletIntegrator(F(1) / 60, F(0.01)));
+        clothSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 60.f, 0.01f));
 
         while (ee::Renderer::isInitialized())
         {
@@ -166,12 +164,12 @@ int main()
             }
             else
             {
-                clothSim.setP(F(0));
+                clothSim.setP(0.f);
             }
 
             ee::Renderer::clearBuffers();
 
-            ee::Float time = ee::Renderer::timeElapsed();
+            float time = ee::Renderer::timeElapsed();
             if (g_startSoftBody)
             {
                 clothSim.update(time);
