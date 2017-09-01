@@ -22,7 +22,7 @@ bool g_enableWireFram = false;
 
 ee::SBPointConstraint* g_constraint = nullptr;
 
-const float DEFAULT_P = 50.f;
+const float DEFAULT_P = 10.f;
 
 bool g_defaultP = true;
 
@@ -95,7 +95,8 @@ int main()
 
         ee::VertBuffer vertBuffer;
         ee::IndexBuffer indBuffer;
-        ee::loadIcosphere(4, &vertBuffer, &indBuffer);
+        //ee::loadIcosphere(6, &vertBuffer, &indBuffer);
+        ee::loadUVsphere(50, 50, &vertBuffer, &indBuffer);
 
         // now create a model:
 
@@ -134,18 +135,18 @@ int main()
 
         ee::Renderer::setClearColor(ee::Color3(0.45f, 0.45f, 0.45f));
 
-        ee::SBClosedBody clothSim(DEFAULT_P, &dynModel, 4.f, 3.f, 2.f);
-        clothSim.m_constIterations = 50.f;
+        ee::SBClosedBody clothSim(DEFAULT_P, &dynModel, 5.f, 6.5f, 0.1f);
+        clothSim.m_constIterations = 10.f;
 
         ee::SBGravity* gravity = new ee::SBGravity();
-       // clothSim.addGlobalForceGen(gravity);
+        // clothSim.addGlobalForceGen(gravity);
 
         clothSim.addConstraint(&ee::SBPointConstraint(dynModel.getVertex(0).m_position, clothSim.getVertexObject(0)));
         // clothSim.addConstraint(&ee::SBPointConstraint(dynModel.getVertex(1).m_position, clothSim.getVertexObject(1)));
-        g_constraint = clothSim.addConstraint(&ee::SBPointConstraint(dynModel.getVertex(6).m_position, clothSim.getVertexObject(6)));
+        g_constraint = clothSim.addConstraint(&ee::SBPointConstraint(dynModel.getVertex(dynModel.getNumVertices() - 1).m_position, clothSim.getVertexObject(dynModel.getNumVertices() - 1)));
         assert(g_constraint);
 
-        clothSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 60.f, 0.01f));
+        clothSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 30.f, 0.01f));
 
         while (ee::Renderer::isInitialized())
         {

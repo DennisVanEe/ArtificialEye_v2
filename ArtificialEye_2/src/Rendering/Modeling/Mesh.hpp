@@ -18,6 +18,11 @@ namespace ee
         Vector3 m_normal;
         Vector3 m_textCoord;
 
+        bool operator==(const Vertex& vert)
+        {
+            return m_position == vert.m_position && m_normal == vert.m_normal && m_textCoord == vert.m_textCoord;
+        }
+
         Vertex() {}
         Vertex(Vector3 pos) : m_position(pos) {}
         Vertex(Vector3 pos, Vector3 textCoord, Vector3 normal) : m_position(pos), m_textCoord(textCoord), m_normal(normal) {}

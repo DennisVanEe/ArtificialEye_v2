@@ -130,37 +130,100 @@ void ee::loadIndexedRectangle(VertBuffer* const vertList, IndexBuffer* const ind
     indexList->push_back({1, 2, 3});
 }
 
- void ee::loadIndexedCube(VertBuffer* vertList, IndexBuffer* indexList)
- {
-     *vertList = cube::VERTICES;
-     *indexList = cube::INDICES;
- }
+void ee::loadIndexedCube(VertBuffer* vertList, IndexBuffer* indexList)
+{
+    *vertList = cube::VERTICES;
+    *indexList = cube::INDICES;
+}
 
- void ee::loadIcosphere(unsigned recursionLevel, VertBuffer* vertList, IndexBuffer* indexList)
- {
-     icosphere::g_cachedMiddlePoints.clear();
-     *vertList = icosphere::VERTICES;
+void ee::loadIcosphere(unsigned recursionLevel, VertBuffer* vertList, IndexBuffer* indexList)
+{
+    icosphere::g_cachedMiddlePoints.clear();
+    *vertList = icosphere::VERTICES;
 
-     IndexBuffer tempIndList0 = icosphere::INDICES;
+    IndexBuffer tempIndList0 = icosphere::INDICES;
 
-     for (unsigned i = 0; i < recursionLevel; i++)
-     {
-         IndexBuffer tempIndList1;
-         for (const MeshFace& face : tempIndList0)
-         {
-             const GLuint* indices = face.m_indices;
+    for (unsigned i = 0; i < recursionLevel; i++)
+    {
+        IndexBuffer tempIndList1;
+        for (const MeshFace& face : tempIndList0)
+        {
+            const GLuint* indices = face.m_indices;
 
-             GLuint i0 = icosphere::getMiddlePoint(indices[0], indices[1], vertList);
-             GLuint i1 = icosphere::getMiddlePoint(indices[1], indices[2], vertList);
-             GLuint i2 = icosphere::getMiddlePoint(indices[2], indices[0], vertList);
+            GLuint i0 = icosphere::getMiddlePoint(indices[0], indices[1], vertList);
+            GLuint i1 = icosphere::getMiddlePoint(indices[1], indices[2], vertList);
+            GLuint i2 = icosphere::getMiddlePoint(indices[2], indices[0], vertList);
 
-             tempIndList1.push_back({indices[0], i0, i2});
-             tempIndList1.push_back({indices[1], i1, i0});
-             tempIndList1.push_back({indices[2], i2, i1});
-             tempIndList1.push_back({i0, i1, i2});
-         }
-         tempIndList0 = tempIndList1;
-     }
+            tempIndList1.push_back({indices[0], i0, i2});
+            tempIndList1.push_back({indices[1], i1, i0});
+            tempIndList1.push_back({indices[2], i2, i1});
+            tempIndList1.push_back({i0, i1, i2});
+        }
+        tempIndList0 = tempIndList1;
+    }
 
-     *indexList = tempIndList0;
- }
+    *indexList = tempIndList0;
+}
+
+void ee::loadUVsphere(unsigned nLon, unsigned nLat, VertBuffer* vertList, IndexBuffer* indexList)
+{
+    // Vertices:
+    vertList->resize((nLon) * nLat + 2); // plus 1 is for the extra bits in lon side
+    (*vertList)[0] = Vertex(Vector3(0.f, 1.f, 0.f));
+    for (unsigned lat = 0; lat < nLat; lat++)
+    {
+        float angleLat = glm::pi<float>() * (float)(lat + 1) / (nLat + 1);
+        float sinLat = std::sinf(angleLat);
+        float cosLat = std::cosf(angleLat);
+
+        for (unsigned lon = 0; lon < nLon; lon++)
+        {
+            float angleLon = 2 * glm::pi<float>() * (float)(lon) / nLon; // (float)(lon == nLon ? 0 : lon) / nLon;
+            float sinLon = std::sinf(angleLon);
+            float cosLon = std::cosf(angleLon);
+
+            unsigned index = lon + lat * (nLon) + 1;
+            (*vertList)[index] = Vertex(Vector3(sinLat * cosLon, cosLat, sinLat * sinLon));
+        }
+    }
+    (*vertList)[vertList->size() - 1] = Vertex(Vector3(0.f, -1.f, 0.f));
+
+    // Indices:
+    for (unsigned lon = 0; lon < nLon - 1; lon++)
+    {
+        indexList->push_back({lon + 2, lon + 1, 0});
+    }
+    indexList->push_back({1, nLon, 0}); // fix up that seam
+
+    unsigned size = vertList->size();
+    for (unsigned lat = 0; lat < nLat - 1; lat++)
+    {
+        for (unsigned lon = 0; lon < nLon - 1; lon++)
+        {
+            unsigned current = lon + lat * (nLon) + 1;
+            unsigned next = current + nLon;
+
+            indexList->push_back({current, current + 1, next + 1});
+            indexList->push_back({current, next + 1, next});
+        }
+    }
+
+    // fix up seam
+    for (unsigned lat = 0; lat < nLat - 1; lat++)
+    {
+        unsigned current = (nLon - 1) + lat * (nLon)+1;
+        unsigned next = current + nLon;
+
+        unsigned current1 = lat * (nLon) + 1;
+        unsigned next1 = current1 + nLon;
+
+        indexList->push_back({current, current1, next1});
+        indexList->push_back({current, next1, next});
+    }
+
+    for (unsigned lon = 0; lon < nLon - 1; lon++)
+    {
+        indexList->push_back({size - 1, size - (lon + 2) - 1, size - (lon + 1) - 1});
+    }
+    indexList->push_back({ size - 1, size - 2, size - (nLon)-1 }); // fix up that seam
+}

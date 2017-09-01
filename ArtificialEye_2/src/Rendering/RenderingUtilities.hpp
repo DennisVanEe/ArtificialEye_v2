@@ -9,4 +9,5 @@ namespace ee
     void loadIndexedRectangle(VertBuffer* vertList, IndexBuffer* indexList);
     void loadIndexedCube(VertBuffer* vertList, IndexBuffer* indexList);
     void loadIcosphere(unsigned recursionLevel, VertBuffer* vertList, IndexBuffer* indexList);
+    void loadUVsphere(unsigned nLong, unsigned nLat, VertBuffer* vertList, IndexBuffer* indexList);
 }
