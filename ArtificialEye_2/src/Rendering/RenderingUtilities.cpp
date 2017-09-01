@@ -182,7 +182,7 @@ void ee::loadUVsphere(unsigned nLon, unsigned nLat, VertBuffer* vertList, IndexB
             float sinLon = std::sinf(angleLon);
             float cosLon = std::cosf(angleLon);
 
-            unsigned index = lon + lat * (nLon) + 1;
+            std::size_t index = lon + lat * (nLon) + 1;
             (*vertList)[index] = Vertex(Vector3(sinLat * cosLon, cosLat, sinLat * sinLon));
         }
     }

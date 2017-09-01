@@ -20,9 +20,13 @@
 bool g_startSoftBody = false;
 bool g_enableWireFram = false;
 
-ee::SBPointConstraint* g_constraint = nullptr;
+std::vector<ee::SBPointConstraint*> g_constraints;
+const float g_constraintMoveSpeed = 0.1f;
 
 const float DEFAULT_P = 10.f;
+
+const unsigned g_sphereLat = 65;
+const unsigned g_sphereLon = 65;
 
 bool g_defaultP = true;
 
@@ -50,22 +54,22 @@ void setSpaceCallback(GLFWwindow* window, int key, int scancode, int action, int
         }
     }
 
-    if (action == GLFW_PRESS)
+    if (action == GLFW_PRESS && (key == GLFW_KEY_UP || key == GLFW_KEY_DOWN))
     {
+        float dir;
         switch (key)
         {
         case GLFW_KEY_UP:
-            g_constraint->m_point += ee::Vector3(0.f, 0.1f, 0.f);
+            dir = 1.f;
             break;
         case GLFW_KEY_DOWN:
-            g_constraint->m_point += ee::Vector3(0.f, -0.1f, 0.f);
+            dir = -1.f;
             break;
-        case GLFW_KEY_LEFT:
-            g_constraint->m_point += ee::Vector3(-0.1f, 0.f, 0.f);
-            break;
-        case GLFW_KEY_RIGHT:
-            g_constraint->m_point += ee::Vector3(0.1f, 0.f, 0.f);
-            break;
+        }
+
+        for (auto& constraint : g_constraints)
+        {
+            constraint->m_point += g_constraintMoveSpeed * dir * glm::normalize(constraint->m_point);
         }
     }
 }
@@ -96,7 +100,7 @@ int main()
         ee::VertBuffer vertBuffer;
         ee::IndexBuffer indBuffer;
         //ee::loadIcosphere(6, &vertBuffer, &indBuffer);
-        ee::loadUVsphere(50, 50, &vertBuffer, &indBuffer);
+        ee::loadUVsphere(g_sphereLon, g_sphereLat, &vertBuffer, &indBuffer);
 
         // now create a model:
 
@@ -133,18 +137,45 @@ int main()
         ee::DynamicMesh dynModel("refractTextPack", std::move(vertBuffer), std::move(indBuffer));
         ee::Renderer::addDrawable(&dynModel);
 
+        dynModel.m_modelTrans = glm::rotate(glm::mat4(), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
+        dynModel.m_modelTrans = glm::scale(dynModel.m_modelTrans, glm::vec3(1.f, 0.5, 1.f));
+
         ee::Renderer::setClearColor(ee::Color3(0.45f, 0.45f, 0.45f));
 
-        ee::SBClosedBody clothSim(DEFAULT_P, &dynModel, 5.f, 6.5f, 0.1f);
+        ee::SBClosedBody clothSim(DEFAULT_P, &dynModel, 5.f, 3.f, 1000.f);
         clothSim.m_constIterations = 10.f;
 
         ee::SBGravity* gravity = new ee::SBGravity();
         // clothSim.addGlobalForceGen(gravity);
 
-        clothSim.addConstraint(&ee::SBPointConstraint(dynModel.getVertex(0).m_position, clothSim.getVertexObject(0)));
-        // clothSim.addConstraint(&ee::SBPointConstraint(dynModel.getVertex(1).m_position, clothSim.getVertexObject(1)));
-        g_constraint = clothSim.addConstraint(&ee::SBPointConstraint(dynModel.getVertex(dynModel.getNumVertices() - 1).m_position, clothSim.getVertexObject(dynModel.getNumVertices() - 1)));
-        assert(g_constraint);
+        // find the middle point of the sphere to start the ring:
+        std::size_t index0 = (g_sphereLat / 2 - 2) * (g_sphereLon) + 1;
+        std::size_t end0 = index0 + g_sphereLon;
+
+        std::size_t index1 = (g_sphereLat / 2 - 1) * (g_sphereLon) + 1;
+        std::size_t end1 = index1 + g_sphereLon;
+
+        std::size_t index2 = (g_sphereLat / 2) * (g_sphereLon) + 1;
+        std::size_t end2 = index2 + g_sphereLon;
+
+        // add the constraints:
+        for (std::size_t i = index0; i < end0; i++)
+        {
+            auto ptr = clothSim.addConstraint(&ee::SBPointConstraint(dynModel.getVertex(i).m_position, clothSim.getVertexObject(i)));
+            g_constraints.push_back(ptr);
+        }
+
+        for (std::size_t i = index1; i < end1; i++)
+        {
+            auto ptr = clothSim.addConstraint(&ee::SBPointConstraint(dynModel.getVertex(i).m_position, clothSim.getVertexObject(i)));
+            g_constraints.push_back(ptr);
+        }
+
+        for (std::size_t i = index2; i < end2; i++)
+        {
+            auto ptr = clothSim.addConstraint(&ee::SBPointConstraint(dynModel.getVertex(i).m_position, clothSim.getVertexObject(i)));
+            g_constraints.push_back(ptr);
+        }
 
         clothSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 30.f, 0.01f));
 

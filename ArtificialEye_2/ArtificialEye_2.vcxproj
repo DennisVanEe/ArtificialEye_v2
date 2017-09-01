@@ -156,6 +156,7 @@
     <ClCompile Include="src\Rendering\Modeling\DynamicMesh.cpp" />
     <ClCompile Include="src\Rendering\Modeling\Mesh.cpp" />
     <ClCompile Include="src\Rendering\Modeling\SkyBox.cpp" />
+    <ClCompile Include="src\Rendering\RayTracing\Intersections.cpp" />
     <ClCompile Include="src\Rendering\Renderer.cpp" />
     <ClCompile Include="src\Rendering\RenderingUtilities.cpp" />
     <ClCompile Include="src\Rendering\shader.cpp" />
@@ -184,6 +185,8 @@
     <ClInclude Include="src\Rendering\Modeling\Mesh.hpp" />
     <ClInclude Include="src\Rendering\Modeling\Model.hpp" />
     <ClInclude Include="src\Rendering\Modeling\SkyBox.hpp" />
+    <ClInclude Include="src\Rendering\RayTracing\Intersections.hpp" />
+    <ClInclude Include="src\Rendering\RayTracing\Ray.hpp" />
     <ClInclude Include="src\Rendering\Renderer.hpp" />
     <ClInclude Include="src\Rendering\RenderingUtilities.hpp" />
     <ClInclude Include="src\Rendering\shader.hpp" />

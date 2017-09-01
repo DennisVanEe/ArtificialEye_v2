@@ -129,6 +129,9 @@
     <ClCompile Include="src\Rendering\Modeling\SkyBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Rendering\RayTracing\Intersections.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Types.hpp">
@@ -231,6 +234,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Rendering\Modeling\SkyBox.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\RayTracing\Ray.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\RayTracing\Intersections.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
