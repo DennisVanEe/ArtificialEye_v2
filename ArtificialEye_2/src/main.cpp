@@ -4,14 +4,18 @@
 #include "Rendering/TexturePacks/LightUniColorTextpack.hpp"
 #include "Rendering/Modeling/DynamicMesh.hpp"
 #include "Rendering/Modeling/SkyBox.hpp"
+#include "Rendering/Modeling/Line.hpp"
 #include "Rendering/RenderingUtilities.hpp"
 #include "Rendering/TexturePacks/SkyBoxTextPack.hpp"
 #include "Rendering/TexturePacks/RefractTextPack.hpp"
+#include "Rendering/TexturePacks/LineUniColorTextPack.hpp"
 
 #include "SoftBody/Simulation/SBClosedBody.hpp"
 #include "SoftBody/ForceGens/SBGravity.hpp"
 #include "SoftBody/Constraints/SBPointConstraint.hpp"
 #include "SoftBody/Integrators/SBVerletIntegrator.hpp"
+
+#include "Rendering/RayTracing/Intersections.hpp"
 
 #include <string>
 #include <iostream>
@@ -125,9 +129,11 @@ int main()
         };
 
         ee::RefractTextPack refractTextPack(ee::Color3(), "Textures/SkyBox", cubemapcomp, 1.33f);
-        ee::SkyBoxTextPack pack("Textures/SkyBox", cubemapcomp);
-        ee::Renderer::addTexturePack("SkyBoxTextPack", &pack);
+        ee::SkyBoxTextPack skyBoxTextPack("Textures/SkyBox", cubemapcomp);
+        ee::LineUniColorTextPack lineTextPack(ee::Color3(1.f, 0.f, 0.f));
+        ee::Renderer::addTexturePack("SkyBoxTextPack", &skyBoxTextPack);
         ee::Renderer::addTexturePack("refractTextPack", &refractTextPack);
+        ee::Renderer::addTexturePack("lineTextPack", &lineTextPack);
 
         // load the skybox
         ee::SkyBox skyBox("SkyBoxTextPack");
@@ -137,8 +143,18 @@ int main()
         ee::DynamicMesh dynModel("refractTextPack", std::move(vertBuffer), std::move(indBuffer));
         ee::Renderer::addDrawable(&dynModel);
 
-        dynModel.m_modelTrans = glm::rotate(glm::mat4(), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
-        dynModel.m_modelTrans = glm::scale(dynModel.m_modelTrans, glm::vec3(1.f, 0.5, 1.f));
+        // load the model
+        ee::Line startLine("lineTextPack", ee::Vector3(0.f, 0.f, -2.f), ee::Vector3(0.65f, 0.75f, 0.f));
+        ee::Line finalLine("lineTextPack", ee::Vector3(), ee::Vector3());
+        ee::Renderer::addDrawable(&startLine);
+        ee::Renderer::addDrawable(&finalLine);
+
+        // transform the sphere:
+        glm::mat4 modelTrans = glm::rotate(glm::mat4(), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
+        modelTrans = glm::scale(modelTrans, glm::vec3(1.f, 0.5, 1.f));
+
+        dynModel.applyTransformation(modelTrans);
+        dynModel.m_modelTrans = glm::mat4();
 
         ee::Renderer::setClearColor(ee::Color3(0.45f, 0.45f, 0.45f));
 
@@ -206,6 +222,9 @@ int main()
             {
                 clothSim.update(time);
             }
+
+            ee::Ray updatedDir = meshRefract(&dynModel, startLine.getRay());
+            finalLine.setRay(updatedDir, 10.f);
             
             ee::Renderer::drawAll();
 

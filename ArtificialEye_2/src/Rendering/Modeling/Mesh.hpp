@@ -40,11 +40,16 @@ namespace ee
 
         virtual ~Mesh();
 
+        void applyTransformation(glm::mat4 mat); // this actually changes the individual vertex information
+
         virtual const Vertex& getVertex(std::size_t vertexID) const { return m_vertices[vertexID]; }
         virtual std::size_t getNumVertices() const { return m_vertices.size(); }
 
         virtual std::size_t getVertexID(std::size_t indexID) const { return reinterpret_cast<const GLuint*>(m_indices.data())[indexID]; }
         virtual std::size_t getNumIndices() const { return m_indices.size() * (sizeof(MeshFace) / sizeof(GLuint)); }
+
+        virtual const MeshFace& getMeshFace(std::size_t meshFaceID) const { return m_indices[meshFaceID]; }
+        virtual std::size_t getNumMeshFaces() const { return m_indices.size(); }
 
         // used to position the model in the world
         glm::mat4 m_modelTrans;
@@ -66,7 +71,7 @@ namespace ee
 
         // if a subclass wants to take care of the models
         GLuint m_VAO;
-        GLuint m_EBO;
         GLuint m_VBO;
+        GLuint m_EBO;
     };
 }

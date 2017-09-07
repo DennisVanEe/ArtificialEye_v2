@@ -132,6 +132,9 @@
     <ClCompile Include="src\Rendering\RayTracing\Intersections.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Rendering\Modeling\Line.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Types.hpp">
@@ -242,6 +245,12 @@
     <ClInclude Include="src\Rendering\RayTracing\Intersections.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Rendering\Modeling\Line.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\TexturePacks\LineUniColorTextPack.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\modelUniColor_vert.glsl" />
@@ -253,5 +262,7 @@
     <None Include="Shaders\skyBox_frag.glsl" />
     <None Include="Shaders\skyBox_vert.glsl" />
     <None Include="Shaders\modelRefract_geom.glsl" />
+    <None Include="Shaders\lineUniColor_vert.glsl" />
+    <None Include="Shaders\lineUniColor_frag.glsl" />
   </ItemGroup>
 </Project>

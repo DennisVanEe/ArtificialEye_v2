@@ -138,6 +138,7 @@ bool ee::Shader::initialize(const std::string& vtxPath, const std::string& frgPa
 	if (!resultChk)
 	{
 		glGetShaderInfoLog(vtxID, 512, nullptr, resultLog);
+        std::cout << "Issue when compiling vertex shader: " << vtxPath << endl;
 		std::cout << resultLog << endl;
         return false;
 	}
@@ -151,6 +152,7 @@ bool ee::Shader::initialize(const std::string& vtxPath, const std::string& frgPa
 	if (!resultChk)
 	{
 		glGetShaderInfoLog(frgID, 512, nullptr, resultLog);
+        std::cout << "Issue when compiling fragment shader: " << frgPath << endl;
 		std::cout << resultLog << endl;
         return false;
 	}
@@ -166,6 +168,7 @@ bool ee::Shader::initialize(const std::string& vtxPath, const std::string& frgPa
         if (!resultChk)
         {
             glGetShaderInfoLog(geomID, 512, nullptr, resultLog);
+            std::cout << "Issue when compiling geometry shader: " << geomPath << endl;
             std::cout << resultLog << endl;
             return false;
         }
@@ -174,7 +177,7 @@ bool ee::Shader::initialize(const std::string& vtxPath, const std::string& frgPa
 	m_programID = glCreateProgram();
 	glAttachShader(m_programID, vtxID);
 	glAttachShader(m_programID, frgID);
-    if (geomID)
+    if (geomShader)
     {
         glAttachShader(m_programID, geomID);
     }
@@ -184,6 +187,7 @@ bool ee::Shader::initialize(const std::string& vtxPath, const std::string& frgPa
 	if (!resultChk)
 	{
 		glGetProgramInfoLog(m_programID, 512, nullptr, resultLog);
+        std::cout << "Issue when linking shaders: " << "vert: " << vtxPath << ", frag: " << frgPath << ", geom: " << geomPath << endl;
         std::cout << resultLog << endl;
         return false;
 	}

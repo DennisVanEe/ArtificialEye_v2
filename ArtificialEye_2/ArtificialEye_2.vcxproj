@@ -154,6 +154,7 @@
     <ClCompile Include="src\Rendering\Camera.cpp" />
     <ClCompile Include="src\Rendering\Drawable.cpp" />
     <ClCompile Include="src\Rendering\Modeling\DynamicMesh.cpp" />
+    <ClCompile Include="src\Rendering\Modeling\Line.cpp" />
     <ClCompile Include="src\Rendering\Modeling\Mesh.cpp" />
     <ClCompile Include="src\Rendering\Modeling\SkyBox.cpp" />
     <ClCompile Include="src\Rendering\RayTracing\Intersections.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="src\Rendering\Camera.hpp" />
     <ClInclude Include="src\Rendering\Drawable.hpp" />
     <ClInclude Include="src\Rendering\Modeling\DynamicMesh.hpp" />
+    <ClInclude Include="src\Rendering\Modeling\Line.hpp" />
     <ClInclude Include="src\Rendering\Modeling\Mesh.hpp" />
     <ClInclude Include="src\Rendering\Modeling\Model.hpp" />
     <ClInclude Include="src\Rendering\Modeling\SkyBox.hpp" />
@@ -191,6 +193,7 @@
     <ClInclude Include="src\Rendering\RenderingUtilities.hpp" />
     <ClInclude Include="src\Rendering\shader.hpp" />
     <ClInclude Include="src\Rendering\TexturePacks\LightUniColorTextpack.hpp" />
+    <ClInclude Include="src\Rendering\TexturePacks\LineUniColorTextPack.hpp" />
     <ClInclude Include="src\Rendering\TexturePacks\RefractTextPack.hpp" />
     <ClInclude Include="src\Rendering\TexturePacks\ShaderMaterial.hpp" />
     <ClInclude Include="src\Rendering\TexturePacks\SkyBoxTextPack.hpp" />
@@ -217,6 +220,8 @@
     <ClInclude Include="src\Types.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\lineUniColor_frag.glsl" />
+    <None Include="Shaders\lineUniColor_vert.glsl" />
     <None Include="Shaders\modelLightUniColor_frag.glsl" />
     <None Include="Shaders\modelLightUniColor_vert.glsl" />
     <None Include="Shaders\modelRefract_frag.glsl" />

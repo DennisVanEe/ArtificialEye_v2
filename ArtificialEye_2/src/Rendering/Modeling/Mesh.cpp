@@ -37,6 +37,19 @@ ee::Mesh::~Mesh()
     glDeleteBuffers(1, &m_VBO);
 }
 
+void ee::Mesh::applyTransformation(glm::mat4 mat)
+{
+    glm::mat4 normMat = glm::transpose(glm::inverse(mat));
+    for (auto& vec : m_vertices)
+    {
+        vec.m_position = Vector3(mat * glm::vec4(vec.m_position, 1.f));
+        vec.m_normal = Vector3(normMat * glm::vec4(vec.m_normal, 0.f));
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * m_vertices.size(), m_vertices.data());
+}
+
 void ee::Mesh::draw()
 {
     glBindVertexArray(m_VAO);
@@ -100,6 +113,8 @@ void ee::Mesh::constructVAO()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_textCoord));
 
     glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void ee::Mesh::calcNormals()

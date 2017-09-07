@@ -280,17 +280,18 @@ ee::Shader* ee::Renderer::loadShader(const std::string& vertName, const std::str
         std::string fragDir = g_rootShaderDir + "/" + fragName + ".glsl";
         std::string geomDir = geomName.empty() ? "" : g_rootShaderDir + "/" + geomName + ".glsl";
         
-        std::unique_ptr<Shader> shader(new Shader());
-        Shader* result = shader.get();
+        Shader* shader = new Shader();
         if (!shader->initialize(vertDir, fragDir, geomDir))
         {
             return nullptr;
         }
-        g_shaders[key] = std::move(shader);
-        return result;
+
+        g_shaders.insert(std::make_pair(key, std::unique_ptr<Shader>(shader)));
+        return shader;
     }
     else
     {
-        loc->second.get();
+        Shader* ptr = loc->second.get();
+        return ptr;
     }
 }

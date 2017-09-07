@@ -2,35 +2,148 @@
 
 #include <glm/glm.hpp>
 
-const float ZERO = 1e-8;
-
-float ee::intersectTriangle(Ray ray, Vector3 p0, Vector3 p1, Vector3 p2)
+std::pair<bool, ee::Vector3> ee::intersectTriangle(Ray ray, Vector3 p0, Vector3 p1, Vector3 p2)
 {
-    Vector3 e0 = p1 - p0;
-    Vector3 e1 = p2 - p0;
-    // Calculate planes normal vector
-    Vector3 normal = glm::cross(ray.m_dir, e1);
-    float det = glm::dot(e0, normal);
+    Vector3 u, v, n;              // triangle vectors
+    Vector3 dir, w0, w;           // ray vectors
+    float r, a, b;              // params to calc ray-plane intersect
 
-    // Ray is parallel to plane
-    if (det < ZERO && det > -ZERO)
-    {
-        return 0;
+                                    // get triangle edge vectors and plane normal
+    u = p1 - p0;
+    v = p2 - p0;
+    n = glm::cross(u, v);              // cross product
+    if (n == Vector3())             // triangle is degenerate
+        return std::make_pair(false, Vector3());                  // do not deal with this case
+
+    dir = ray.m_dir;              // ray direction vector
+    w0 = ray.m_origin - p0;
+    a = -glm::dot(n, w0);
+    b = glm::dot(n, dir);
+    if (fabs(b) < 1e-8) 
+    {     // ray is  parallel to triangle plane
+        return std::make_pair(false, Vector3());  // ray disjoint from plane
     }
 
-    float invDet = 1 / det;
-    Vector3 tVec = ray.m_origin - p0;
-    float u = glm::dot(tVec, normal) * invDet;
-    if (u < 0 || u > 1) 
+    // get intersect point of ray with triangle plane
+    r = a / b;
+    if (r < 0.f)                    // ray goes away from triangle
+        return std::make_pair(false, Vector3()); // => no intersect
+                                    // for a segment, also test if (r > 1.0) => no intersect
+
+    Vector3 point = ray.m_origin + r * dir;            // intersect point of ray and plane
+
+                                    // is I inside T?
+    float uu, uv, vv, wu, wv, D;
+    uu = glm::dot(u, u);
+    uv = glm::dot(u, v);
+    vv = glm::dot(v, v);
+    w = point - p0;
+    wu = glm::dot(w, u);
+    wv = glm::dot(w, v);
+    D = uv * uv - uu * vv;
+
+    // get and test parametric coords
+    float s, t;
+    s = (uv * wv - vv * wu) / D;
+    if (s < 0.0 || s > 1.0)         // I is outside T
+        return std::make_pair(false, Vector3());
+    t = (uv * wu - uu * wv) / D;
+    if (t < 0.0 || (s + t) > 1.0)  // I is outside T
+        return std::make_pair(false, Vector3());
+
+    return std::make_pair(true, point);
+}
+
+std::pair<std::size_t, ee::Vector3> ee::nearestIntersection(const Mesh* mesh, Ray ray, std::size_t ignore)
+{
+    std::size_t minFace = mesh->getNumMeshFaces();
+    Vector3 minPoint;
+    float minDist = std::numeric_limits<float>::max();
+    for (std::size_t i = 0; i < mesh->getNumMeshFaces(); i++)
     {
-        return 0;
+        if (i != ignore)
+        {
+            const MeshFace& face = mesh->getMeshFace(i);
+
+            Vector3 p0 = mesh->getVertex(face.m_indices[0]).m_position;
+            Vector3 p1 = mesh->getVertex(face.m_indices[1]).m_position;
+            Vector3 p2 = mesh->getVertex(face.m_indices[2]).m_position;
+
+            auto result = intersectTriangle(ray, p0, p1, p2);
+            if (result.first)
+            {
+                float len = glm::length(result.second - ray.m_origin);
+                if (len < minDist)
+                {
+                    minDist = len;
+                    minFace = i;
+                    minPoint = result.second;
+                }
+            }
+        }
     }
 
-    Vector3 qVec = glm::cross(tVec, e0);
-    float v = glm::dot(ray.m_dir, qVec) * invDet;
-    if (v < 0 || u + v > 1) 
+    return std::make_pair(minFace, minPoint);
+}
+
+ee::Ray ee::meshRefract(const Mesh* const mesh, const Ray ray)
+{
+    // Write it so that it loops until there are no more positive (forward) intersections
+    // TODO -^
+
+    Ray initialRay;
+    initialRay.m_dir = glm::normalize(ray.m_dir);
+    initialRay.m_origin = ray.m_origin;
+
+    // first one:
+    auto triangle0ID = nearestIntersection(mesh, initialRay);
+    if (triangle0ID.first == mesh->getNumMeshFaces())
     {
-        return 0;
+        return initialRay;
     }
-    return glm::dot(e1, qVec) * invDet;
+
+    const MeshFace& triangle0 = mesh->getMeshFace(triangle0ID.first);
+
+    // get the normal:
+    Vector3 v0 = mesh->getVertex(triangle0.m_indices[0]).m_position;
+    Vector3 v1 = mesh->getVertex(triangle0.m_indices[1]).m_position;
+    Vector3 v2 = mesh->getVertex(triangle0.m_indices[2]).m_position;
+    Vector3 e0 = v1 - v0;
+    Vector3 e1 = v2 - v0;
+    Vector3 initialNorm = glm::normalize(glm::cross(e0, e1));
+    Vector3 initialIntPoint = triangle0ID.second;
+
+    Vector3 initialRefract = glm::refract(initialRay.m_dir, initialNorm, 1.f / 1.66f);
+
+    Ray internalRay;
+    internalRay.m_dir = glm::normalize(initialRefract);
+    internalRay.m_origin = initialIntPoint;
+
+    // return internalRay;
+
+    auto triangle1ID = nearestIntersection(mesh, initialRay, triangle0ID.first);
+    if (triangle1ID.first == mesh->getNumMeshFaces())
+    {
+        return internalRay;
+    }
+
+    const MeshFace& triangle1 = mesh->getMeshFace(triangle1ID.first);
+
+    // get the normal:
+    v0 = mesh->getVertex(triangle0.m_indices[0]).m_position;
+    v1 = mesh->getVertex(triangle0.m_indices[1]).m_position;
+    v2 = mesh->getVertex(triangle0.m_indices[2]).m_position;
+
+    e0 = v1 - v0;
+    e1 = v2 - v0;
+    Vector3 internalNorm = glm::normalize(glm::cross(e1, e0));
+    Vector3 internalIntPoint = triangle1ID.second;
+
+    Vector3 internalRefract = glm::refract(initialRay.m_dir, initialNorm, - 1.f / 1.66f);
+
+    Ray finalRay;
+    finalRay.m_dir = glm::normalize(internalRefract);
+    finalRay.m_origin = internalIntPoint;
+
+    return finalRay;
 }
