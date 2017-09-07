@@ -77,7 +77,7 @@ template<class MeshType>
 MeshType ee::Model<MeshType>::processMesh(const aiMesh* mesh, const aiScene* scene, const ShaderMaterial* material, const bool loadMat, bool* check)
 {
     VertBuffer tempVert;
-    IndexBuffer tempInd;
+    MeshFaceBuffer tempInd;
     std::vector<Texture> tempTexts;
 
     MeshBucket result;

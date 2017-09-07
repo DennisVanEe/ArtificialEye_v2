@@ -27,7 +27,7 @@ bool g_enableWireFram = false;
 std::vector<ee::SBPointConstraint*> g_constraints;
 const float g_constraintMoveSpeed = 0.1f;
 
-const float DEFAULT_P = 10.f;
+const float DEFAULT_P = 0.2f; // 50.f;
 
 const unsigned g_sphereLat = 65;
 const unsigned g_sphereLon = 65;
@@ -102,8 +102,8 @@ int main()
         ee::Renderer::setCustomKeyboardCallback(setSpaceCallback);
 
         ee::VertBuffer vertBuffer;
-        ee::IndexBuffer indBuffer;
-        //ee::loadIcosphere(6, &vertBuffer, &indBuffer);
+        ee::MeshFaceBuffer indBuffer;
+        // ee::loadIcosphere(4, &vertBuffer, &indBuffer);
         ee::loadUVsphere(g_sphereLon, g_sphereLat, &vertBuffer, &indBuffer);
 
         // now create a model:
@@ -144,10 +144,13 @@ int main()
         ee::Renderer::addDrawable(&dynModel);
 
         // load the model
-        ee::Line startLine("lineTextPack", ee::Vector3(0.f, 0.f, -2.f), ee::Vector3(0.65f, 0.75f, 0.f));
-        ee::Line finalLine("lineTextPack", ee::Vector3(), ee::Vector3());
+        ee::Line startLine("lineTextPack", ee::Vector3(0.65f, 0.65f, -10.f), ee::Vector3(0.65f, 0.65f, 0.f));
+        std::vector<ee::Line> lines;
+        lines.push_back(ee::Line("lineTextPack", ee::Vector3(), ee::Vector3()));
+        lines.push_back(ee::Line("lineTextPack", ee::Vector3(), ee::Vector3()));
         ee::Renderer::addDrawable(&startLine);
-        ee::Renderer::addDrawable(&finalLine);
+        ee::Renderer::addDrawable(&lines[0]);
+        ee::Renderer::addDrawable(&lines[1]);
 
         // transform the sphere:
         glm::mat4 modelTrans = glm::rotate(glm::mat4(), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
@@ -158,7 +161,7 @@ int main()
 
         ee::Renderer::setClearColor(ee::Color3(0.45f, 0.45f, 0.45f));
 
-        ee::SBClosedBody clothSim(DEFAULT_P, &dynModel, 5.f, 3.f, 1000.f);
+        ee::SBClosedBody clothSim(DEFAULT_P, &dynModel, 3.f, 0.1f, 1000.f);
         clothSim.m_constIterations = 10.f;
 
         ee::SBGravity* gravity = new ee::SBGravity();
@@ -193,6 +196,9 @@ int main()
             g_constraints.push_back(ptr);
         }
 
+        float len = glm::length(dynModel.getVertex(0).m_position - dynModel.getVertex(dynModel.getNumVertices() - 1).m_position);
+        //clothSim.addCustomLengthConstraint(len, 0, dynModel.getNumVertices() - 1);
+
         clothSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 30.f, 0.01f));
 
         while (ee::Renderer::isInitialized())
@@ -223,8 +229,10 @@ int main()
                 clothSim.update(time);
             }
 
-            ee::Ray updatedDir = meshRefract(&dynModel, startLine.getRay());
-            finalLine.setRay(updatedDir, 10.f);
+            auto updatedDir = meshRefract(&dynModel, startLine.getRay(), 1.f / 1.66f);
+            for (int i = 0; i < updatedDir.size(); i++)
+                lines[i].setRay(updatedDir[i], 5);
+            //lines[1].setRay(updatedDir[1], 5);
             
             ee::Renderer::drawAll();
 

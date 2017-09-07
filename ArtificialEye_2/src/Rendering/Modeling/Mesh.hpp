@@ -12,6 +12,12 @@
 
 namespace ee
 {
+    struct MeshFace
+    {
+        GLuint m_indices[3];
+    };
+    static_assert(sizeof(MeshFace) == 3 * sizeof(GLuint), "MeshFace can't have anny padding (t0 maintain per vertex access");
+
     struct Vertex
     {
         Vector3 m_position;
@@ -29,12 +35,12 @@ namespace ee
     };
 
     using VertBuffer = std::vector<Vertex>;
-    using IndexBuffer = std::vector<MeshFace>;
+    using MeshFaceBuffer = std::vector<MeshFace>;
 
     class Mesh : public Drawable
     {
     public:
-        explicit Mesh(std::string textPack, VertBuffer vertices, IndexBuffer indices, int priority = 0, GLenum dataUsage = GL_STATIC_DRAW);
+        explicit Mesh(std::string textPack, VertBuffer vertices, MeshFaceBuffer faces, int priority = 0, GLenum dataUsage = GL_STATIC_DRAW);
         explicit Mesh(const Mesh& model);
         Mesh(Mesh&& model);
 
@@ -45,11 +51,24 @@ namespace ee
         virtual const Vertex& getVertex(std::size_t vertexID) const { return m_vertices[vertexID]; }
         virtual std::size_t getNumVertices() const { return m_vertices.size(); }
 
-        virtual std::size_t getVertexID(std::size_t indexID) const { return reinterpret_cast<const GLuint*>(m_indices.data())[indexID]; }
-        virtual std::size_t getNumIndices() const { return m_indices.size() * (sizeof(MeshFace) / sizeof(GLuint)); }
+        virtual std::size_t getVertexID(std::size_t indexID) const { return reinterpret_cast<const GLuint*>(m_faces.data())[indexID]; }
+        virtual std::size_t getNumIndices() const { return m_faces.size() * (sizeof(MeshFace) / sizeof(GLuint)); }
 
-        virtual const MeshFace& getMeshFace(std::size_t meshFaceID) const { return m_indices[meshFaceID]; }
-        virtual std::size_t getNumMeshFaces() const { return m_indices.size(); }
+        virtual const MeshFace& getMeshFace(std::size_t meshFaceID) const { return m_faces[meshFaceID]; }
+        virtual std::size_t getNumMeshFaces() const { return m_faces.size(); }
+
+        virtual const Vector3 getNormal(std::size_t meshFaceID) const
+        {
+            const auto& f = m_faces[meshFaceID];
+
+            Vector3 v0 = m_vertices[f.m_indices[0]].m_position;
+            Vector3 v1 = m_vertices[f.m_indices[1]].m_position;
+            Vector3 v2 = m_vertices[f.m_indices[2]].m_position;
+
+            Vector3 e0 = v1 - v0;
+            Vector3 e1 = v2 - v0;
+            return glm::normalize(glm::cross(e0, e1));
+        }
 
         // used to position the model in the world
         glm::mat4 m_modelTrans;
@@ -67,7 +86,7 @@ namespace ee
         std::vector<Vector3> m_tempNormals;
 
         VertBuffer m_vertices;
-        IndexBuffer m_indices;
+        MeshFaceBuffer m_faces;
 
         // if a subclass wants to take care of the models
         GLuint m_VAO;

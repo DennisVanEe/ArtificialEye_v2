@@ -40,11 +40,6 @@ ee::Drawable::Drawable(const std::string vertName, const std::string fragName) :
     }
 }
 
-ee::Drawable::Drawable(const Drawable& drawable) :
-    m_shader(drawable.m_shader)
-{
-}
-
 void ee::Drawable::setShaderMaterial(ShaderMaterial mat)
 {
     m_shaderMaterial = mat;

@@ -12,7 +12,7 @@ namespace ee
     class DynamicMesh : public Mesh
     {
     public:
-        DynamicMesh(std::string textPack, VertBuffer vertices, IndexBuffer indices, int priority = 0) : Mesh(textPack, vertices, indices, priority, GL_DYNAMIC_DRAW) {}
+        DynamicMesh(std::string textPack, VertBuffer vertices, MeshFaceBuffer indices, int priority = 0) : Mesh(textPack, vertices, indices, priority, GL_DYNAMIC_DRAW) {}
         DynamicMesh(const DynamicMesh& mesh) : Mesh(mesh) {}
         DynamicMesh(DynamicMesh&& mesh) : Mesh(std::move(mesh)) {}
 

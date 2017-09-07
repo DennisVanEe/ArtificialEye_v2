@@ -6,8 +6,8 @@
 namespace ee
 {
     // loads a basic triangle into the situation
-    void loadIndexedRectangle(VertBuffer* vertList, IndexBuffer* indexList);
-    void loadIndexedCube(VertBuffer* vertList, IndexBuffer* indexList);
-    void loadIcosphere(unsigned recursionLevel, VertBuffer* vertList, IndexBuffer* indexList);
-    void loadUVsphere(unsigned nLong, unsigned nLat, VertBuffer* vertList, IndexBuffer* indexList);
+    void loadIndexedRectangle(VertBuffer* vertList, MeshFaceBuffer* indexList);
+    void loadIndexedCube(VertBuffer* vertList, MeshFaceBuffer* indexList);
+    void loadIcosphere(unsigned recursionLevel, VertBuffer* vertList, MeshFaceBuffer* indexList);
+    void loadUVsphere(unsigned nLong, unsigned nLat, VertBuffer* vertList, MeshFaceBuffer* indexList);
 }

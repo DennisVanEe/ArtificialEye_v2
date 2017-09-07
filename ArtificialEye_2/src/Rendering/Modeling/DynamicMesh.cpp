@@ -5,7 +5,7 @@ void ee::DynamicMesh::recalcNormals()
     m_tempNormals.clear();
     m_tempNormals.resize(m_vertices.size());
 
-    for (MeshFace& face : m_indices)
+    for (MeshFace& face : m_faces)
     {
         Vector3 v0 = m_vertices[face.m_indices[0]].m_position;
         Vector3 v1 = m_vertices[face.m_indices[1]].m_position;

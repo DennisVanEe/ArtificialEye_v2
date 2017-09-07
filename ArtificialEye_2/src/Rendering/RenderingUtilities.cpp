@@ -20,7 +20,7 @@ namespace cube
         ee::Vertex(ee::Vector3(-1.0,  1.0, -1.0)),
     };
 
-    const ee::IndexBuffer INDICES =
+    const ee::MeshFaceBuffer INDICES =
     {
         // -- winding is counter-clockwise (facing camera)
         {0, 1, 2},                // pos z
@@ -116,7 +116,7 @@ namespace icosphere
     }
 }
 
-void ee::loadIndexedRectangle(VertBuffer* const vertList, IndexBuffer* const indexList)
+void ee::loadIndexedRectangle(VertBuffer* const vertList, MeshFaceBuffer* const indexList)
 {
     vertList->clear();
     indexList->clear();
@@ -130,22 +130,22 @@ void ee::loadIndexedRectangle(VertBuffer* const vertList, IndexBuffer* const ind
     indexList->push_back({1, 2, 3});
 }
 
-void ee::loadIndexedCube(VertBuffer* vertList, IndexBuffer* indexList)
+void ee::loadIndexedCube(VertBuffer* vertList, MeshFaceBuffer* indexList)
 {
     *vertList = cube::VERTICES;
     *indexList = cube::INDICES;
 }
 
-void ee::loadIcosphere(unsigned recursionLevel, VertBuffer* vertList, IndexBuffer* indexList)
+void ee::loadIcosphere(unsigned recursionLevel, VertBuffer* vertList, MeshFaceBuffer* indexList)
 {
     icosphere::g_cachedMiddlePoints.clear();
     *vertList = icosphere::VERTICES;
 
-    IndexBuffer tempIndList0 = icosphere::INDICES;
+    MeshFaceBuffer tempIndList0 = icosphere::INDICES;
 
     for (unsigned i = 0; i < recursionLevel; i++)
     {
-        IndexBuffer tempIndList1;
+        MeshFaceBuffer tempIndList1;
         for (const MeshFace& face : tempIndList0)
         {
             const GLuint* indices = face.m_indices;
@@ -165,7 +165,7 @@ void ee::loadIcosphere(unsigned recursionLevel, VertBuffer* vertList, IndexBuffe
     *indexList = tempIndList0;
 }
 
-void ee::loadUVsphere(unsigned nLon, unsigned nLat, VertBuffer* vertList, IndexBuffer* indexList)
+void ee::loadUVsphere(unsigned nLon, unsigned nLat, VertBuffer* vertList, MeshFaceBuffer* indexList)
 {
     // Vertices:
     vertList->resize((nLon) * nLat + 2); // plus 1 is for the extra bits in lon side

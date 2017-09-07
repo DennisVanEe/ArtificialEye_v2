@@ -22,6 +22,11 @@ ee::SBObject* ee::SBClothSim::getVertexObject(std::size_t vertexID)
     return m_objects[vertexID].get();
 }
 
+void ee::SBClothSim::addCustomLengthConstraint(float length, std::size_t vertexID0, std::size_t vertexID1)
+{
+    SBSimulation::addConstraint(new SBLengthConstraint(length, m_objects[vertexID0].get(), m_objects[vertexID1].get()));
+}
+
 void ee::SBClothSim::createSimVertices(float mass)
 {
     float vertexMass = mass / m_model->getNumVertices();
@@ -45,8 +50,6 @@ void ee::SBClothSim::connectSprings(float structStiffness, float structDampening
 
         // this is for now, I guess:
         float length = glm::length(m_objects[index1]->m_currPosition - m_objects[index2]->m_currPosition);
-
-        // constraints aren't realistic enough....
         SBSimulation::addConstraint(new SBLengthConstraint(length, m_objects[index1].get(), m_objects[index2].get()));
     }
 }

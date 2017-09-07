@@ -17,6 +17,8 @@ namespace ee
 
         SBObject* getVertexObject(std::size_t VertexID);
 
+        void addCustomLengthConstraint(float length, std::size_t vertexID0, std::size_t vertexID1);
+
     protected:
         DynamicMesh* m_model;
 

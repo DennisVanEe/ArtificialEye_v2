@@ -1,10 +1,10 @@
 #include "Mesh.hpp"
 
-ee::Mesh::Mesh(const std::string textPack, const VertBuffer vertices, const IndexBuffer indices, int priority, GLenum type) :
+ee::Mesh::Mesh(const std::string textPack, const VertBuffer vertices, const MeshFaceBuffer faces, int priority, GLenum type) :
     Drawable(textPack, priority),
     m_type(type),
     m_vertices(vertices),
-    m_indices(indices),
+    m_faces(faces),
     m_VAO(0)
 {
     constructVAO();
@@ -14,7 +14,7 @@ ee::Mesh::Mesh(const Mesh& model) :
     Drawable(model),
     m_type(model.m_type),
     m_vertices(model.m_vertices),
-    m_indices(model.m_indices),
+    m_faces(model.m_faces),
     m_VAO(0)
 {
     constructVAO();
@@ -24,7 +24,7 @@ ee::Mesh::Mesh(Mesh&& mesh) :
     Drawable(mesh),
     m_type(mesh.m_type),
     m_vertices(std::move(mesh.m_vertices)),
-    m_indices(std::move(mesh.m_indices)),
+    m_faces(std::move(mesh.m_faces)),
     m_VAO(mesh.m_VAO)
 {
     mesh.m_VAO = 0;
@@ -76,7 +76,7 @@ void ee::Mesh::draw()
 float ee::Mesh::calcVolume() const
 {
     float total = 0.f;
-    for (const MeshFace& f : m_indices)
+    for (const auto& f : m_faces)
     {
         float stv = glm::dot(m_vertices[f.m_indices[0]].m_position,
             glm::cross(m_vertices[f.m_indices[1]].m_position, m_vertices[f.m_indices[2]].m_position)) / 6.f;
@@ -103,7 +103,7 @@ void ee::Mesh::constructVAO()
     glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * m_vertices.size(), m_vertices.data(), m_type);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(MeshFace) * m_indices.size(), m_indices.data(), m_type);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(MeshFace) * m_faces.size(), m_faces.data(), m_type);
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_position));
@@ -122,7 +122,7 @@ void ee::Mesh::calcNormals()
     m_tempNormals.clear();
     m_tempNormals.resize(m_vertices.size());
 
-    for (const MeshFace& f : m_indices)
+    for (const auto& f : m_faces)
     {
         Vector3 v0 = m_vertices[f.m_indices[0]].m_position;
         Vector3 v1 = m_vertices[f.m_indices[1]].m_position;

@@ -17,7 +17,6 @@ namespace ee
     public:
         Drawable(std::string textPack, int priority);
         Drawable(std::string vertName, std::string fragName);
-        Drawable(const Drawable& drawable);
 
         void setShaderMaterial(ShaderMaterial mat);
 
@@ -34,7 +33,7 @@ namespace ee
 
     struct DrawableCompare
     {
-        bool operator()(Drawable* a, Drawable* b) const
+        bool operator()(const Drawable* a, const Drawable* b) const
         {
             return a->getPriority() < b->getPriority();
         }
