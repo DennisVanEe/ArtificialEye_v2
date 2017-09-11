@@ -36,13 +36,16 @@ void ee::SBSimulation::update(float timeStep)
     }
 
     // apply the global forces:
-    for (auto& object : m_objects)
+    if (m_globalForceGens.size() > 0)
     {
-        if (object->m_type == SBObjectType::ACTIVE)
+        for (auto& object : m_objects)
         {
-            for (auto& force : m_globalForceGens)
+            if (object->m_type == SBObjectType::ACTIVE)
             {
-                force->applyForce(object.get());
+                for (auto& force : m_globalForceGens)
+                {
+                    force->applyForce(object.get());
+                }
             }
         }
     }
@@ -87,4 +90,14 @@ void ee::SBSimulation::update(float timeStep)
             object->resetForces();
         }
     }
+}
+
+ee::SBObject* ee::SBSimulation::getVertexObject(const std::size_t vertexID)
+{
+    return m_objects[vertexID].get();
+}
+
+const ee::SBObject* ee::SBSimulation::getVertexObject(const std::size_t vertexID) const
+{
+    return getVertexObject(vertexID);
 }

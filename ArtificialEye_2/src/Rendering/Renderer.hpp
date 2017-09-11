@@ -1,43 +1,52 @@
+//
+//  Renderer.hpp
+//  Author(s): Dennis van Ee
+//
+
 #pragma once
+
+#include <functional>
+#include <unordered_map>
+#include <memory>
+#include <glm/mat4x4.hpp>
+#include <glad/glad.h>
+#include <glfw/glfw3.h>
 
 #include "Shader.hpp"
 #include "Camera.hpp"
 #include "TexturePacks/TexturePack.hpp"
-#include <functional>
-#include <unordered_map>
-#include <memory>
-
-#include <glm/mat4x4.hpp>
-#include <glfw/glfw3.h>
 
 namespace ee
 {
     struct RendererParam
     {
-        int m_screenWidth, m_screenHeight;
-        float m_fov;
-        float m_aspect;
-        float m_near, m_far;
+        int     m_screenWidth;
+        int     m_screenHeight;
+        float   m_fov;
+        float   m_aspect;
+        float   m_near;
+        float   m_far;
     };
 
     struct CameraParam
     {
-        glm::vec3 m_position;
-        glm::vec3 m_up;
-        float m_yaw, m_pitch;
+        glm::vec3   m_position;
+        glm::vec3   m_up;
+        float       m_yaw;
+        float       m_pitch;
     };
 
-    using MouseCallbackFunc = std::function<void(GLFWwindow*, double, double)>;
-    using KeyboardCallbackFunc = std::function<void(GLFWwindow*, int, int, int, int)>;
-    using ScrollCallbackFunc = std::function<void(GLFWwindow*, double, double)>;
-
+    using MouseCallbackFunc     =  std::function<void(GLFWwindow*, double, double)>;
+    using KeyboardCallbackFunc  =  std::function<void(GLFWwindow*, int, int, int, int)>;
+    using ScrollCallbackFunc    =  std::function<void(GLFWwindow*, double, double)>;
 
     class Drawable;
 
     namespace Renderer
     {
-        enum class ErrorCode {SUCCESS, GLFW_ERROR, GLAD_ERROR };
+        enum class ErrorCode {SUCCESS, GLFW_ERROR, GLAD_ERROR};
 
+        // Initialize a renderer with the given parameters:
         ErrorCode initialize(std::string rootShaderDir, const RendererParam& rendererParam, const CameraParam& cameraParam);
         void deinitialize();
 
@@ -48,7 +57,7 @@ namespace ee
         // used to check if a renderer was initialized (and only can be)
         bool isInitialized();
 
-        void setClearColor(Color3 color);
+        void setClearColor(glm::vec3 color);
         void clearBuffers();
 
         void setCustomMouseCallback(MouseCallbackFunc func);
@@ -80,17 +89,4 @@ namespace ee
     }
 }
 
-// template definitions
-
-template<typename T>
-T* ee::Renderer::addTexturePack(std::string name, T* pack)
-{
-    if (checkTextPackMap(name))
-    {
-        T* ptr = new T(*pack);
-        insertTextPackIntoMap(name, ptr);
-        return ptr;
-    }
-
-    return nullptr;
-}
+#include "Renderer.inl"

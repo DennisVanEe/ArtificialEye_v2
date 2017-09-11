@@ -8,14 +8,12 @@
 
 namespace ee
 {
-    class SBClothSim : public SBSimulation
+    class SBMeshBasedSim : public SBSimulation
     {
     public:
-        SBClothSim(DynamicMesh* model, float mass, float structStiffness, float structDampening);
+        SBMeshBasedSim(DynamicMesh* model, float mass, float structStiffness, float structDampening);
 
         virtual void update(float timeStep) override;
-
-        SBObject* getVertexObject(std::size_t VertexID);
 
         void addCustomLengthConstraint(float length, std::size_t vertexID0, std::size_t vertexID1);
 

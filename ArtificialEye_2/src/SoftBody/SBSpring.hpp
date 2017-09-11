@@ -4,6 +4,7 @@
 #include "../Types.hpp"
 
 #include <glm/gtx/norm.hpp>
+#include <glm/gtc/epsilon.hpp>
 
 namespace ee
 {

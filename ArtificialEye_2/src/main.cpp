@@ -10,10 +10,11 @@
 #include "Rendering/TexturePacks/RefractTextPack.hpp"
 #include "Rendering/TexturePacks/LineUniColorTextPack.hpp"
 
-#include "SoftBody/Simulation/SBClosedBody.hpp"
+#include "SoftBody/Simulation/SBClosedBodySim.hpp"
 #include "SoftBody/ForceGens/SBGravity.hpp"
 #include "SoftBody/Constraints/SBPointConstraint.hpp"
 #include "SoftBody/Integrators/SBVerletIntegrator.hpp"
+#include "SoftBody/SBUtilities.hpp"
 
 #include "Rendering/RayTracing/Intersections.hpp"
 
@@ -27,10 +28,10 @@ bool g_enableWireFram = false;
 std::vector<ee::SBPointConstraint*> g_constraints;
 const float g_constraintMoveSpeed = 0.1f;
 
-const float DEFAULT_P = 0.2f; // 50.f;
+const float DEFAULT_P = 0.f; // 10.f;
 
-const unsigned g_sphereLat = 65;
-const unsigned g_sphereLon = 65;
+const unsigned g_sphereLat = 64U;
+const unsigned g_sphereLon = 64U;
 
 bool g_defaultP = true;
 
@@ -161,7 +162,7 @@ int main()
 
         ee::Renderer::setClearColor(ee::Color3(0.45f, 0.45f, 0.45f));
 
-        ee::SBClosedBody clothSim(DEFAULT_P, &dynModel, 3.f, 0.1f, 1000.f);
+        ee::SBClosedBodySim clothSim(DEFAULT_P, &dynModel, 5.f, 3.f, 0.0f);
         clothSim.m_constIterations = 10.f;
 
         ee::SBGravity* gravity = new ee::SBGravity();
@@ -201,6 +202,8 @@ int main()
 
         clothSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 30.f, 0.01f));
 
+        ee::addBendSpringsForUVSphere(&clothSim, g_sphereLat, g_sphereLon, 100.f, 1.f);
+
         while (ee::Renderer::isInitialized())
         {
             if (g_enableWireFram)
@@ -232,7 +235,6 @@ int main()
             auto updatedDir = meshRefract(&dynModel, startLine.getRay(), 1.f / 1.66f);
             for (int i = 0; i < updatedDir.size(); i++)
                 lines[i].setRay(updatedDir[i], 5);
-            //lines[1].setRay(updatedDir[1], 5);
             
             ee::Renderer::drawAll();
 

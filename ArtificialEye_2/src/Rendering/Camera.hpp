@@ -9,7 +9,7 @@
 
 namespace ee
 {
-	enum WorldDirection
+	enum class CameraDir
 	{
 		FORWARD,
 		BACKWARD,
@@ -22,28 +22,23 @@ namespace ee
 	public:
 		Camera(glm::vec3 pos, glm::vec3 up, float yaw, float pitch);
 
-		glm::mat4 viewMatrix() const
-		{
-			// use yaw and pitch for direction instead of a target position 
-			// this is easier for mouse controlls then.
-			return glm::lookAt(m_pos, m_pos + m_front, m_up);
-		}
+        glm::mat4 viewMatrix() const;
 
-		void processKBInput(WorldDirection direction, float deltaTime);
+		void processKBInput(CameraDir direction, float deltaTime);
 
 		void processMInput(float xOffset, float yOffset, GLboolean constrainPitch = true);
 		void processSInput(float scrOffset);
 
-        Vector3 getPosition() const;
+        glm::vec3 getPosition() const;
 
 	private:
 
 		// Camera Attributes
-		Vector3 m_pos;
-        Vector3 m_front;
-        Vector3 m_up;
-        Vector3 m_right;
-        Vector3 m_worldUp;
+        glm::vec3 m_pos;
+        glm::vec3 m_front;
+        glm::vec3 m_up;
+        glm::vec3 m_right;
+        glm::vec3 m_worldUp;
 
 		// Eular Angles
         float m_yaw;

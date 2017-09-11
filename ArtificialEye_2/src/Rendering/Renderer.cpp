@@ -14,38 +14,38 @@ namespace ee
     namespace Renderer
     {
         std::string g_rootShaderDir;
-        std::unordered_map<std::string, std::unique_ptr<Shader>> g_shaders;
-        std::unordered_map<std::string, std::unique_ptr<TexturePack>> g_textPacks;
-        Camera g_camera = Camera(Vector3(), Vector3(), 0.f, 0.f); // not the cleanest thing I have ever done,
-                                                                    // but I need to initialize it to some dummy.
-        glm::mat4 g_perspective;
-        GLFWwindow* g_window;
-        bool g_initialized;
+        std::unordered_map<std::string, std::unique_ptr<Shader>>        g_shaders;
+        std::unordered_map<std::string, std::unique_ptr<TexturePack>>   g_textPacks;
+        Camera                                                          g_camera        = Camera(Vector3(), Vector3(), 0.f, 0.f); // not the cleanest thing I have ever done,
+                                                                                                                           // but I need to initialize it to some dummy value for now.
+        // Window and renderer properties:
+        glm::mat4                                                       g_perspective;
+        GLFWwindow*                                                     g_window;
+        glm::vec4                                                       g_clearColor;
+        bool                                                            g_initialized;
 
-        // This information is for time managment
+        // Time management information:
+        float                                                           g_lastFrameTime = 0.f;
+        float                                                           g_deltaTime     = 0.f;
 
-        float g_lastFrameTime = 0.f;
-        float g_deltaTime = 0.f;
-
-        Color4 g_clearColor;
-
-        // The actual render queue:
-        std::multiset <Drawable*, DrawableCompare> g_drawables;
-        bool g_renderFirstSet = false;
-        bool g_renderLastSet = false;
+        // The render queue:
+        std::multiset <Drawable*, DrawableCompare>                      g_drawables;
+        bool                                                            g_renderFirstSet = false;
+        bool                                                            g_renderLastSet  = false;
 
         /////////////////////////////
         // CALLBACK FUNCTIONS
         /////////////////////////////
 
         // these are for custom defintions that someone might want to add
-        MouseCallbackFunc g_custMouseCallback;
-        KeyboardCallbackFunc g_custKeyboardCallback;
-        ScrollCallbackFunc g_custScrollCallback;
+        MouseCallbackFunc                                               g_custMouseCallback;
+        KeyboardCallbackFunc                                            g_custKeyboardCallback;
+        ScrollCallbackFunc                                              g_custScrollCallback;
 
         // these are to be used by the callback function
-        bool g_firstMouse = true;
-        double g_lastX = 0., g_lastY = 0.;
+        bool                                                            g_firstMouse    = true;
+        double                                                          g_lastX         = 0.;
+        double                                                          g_lastY         = 0.;
 
         void mouseCallback(GLFWwindow* window, double xpos, double ypos)
         {
@@ -94,9 +94,9 @@ bool ee::Renderer::isInitialized()
     return g_initialized;
 }
 
-void ee::Renderer::setClearColor(Color3 color)
+void ee::Renderer::setClearColor(glm::vec3 color)
 {
-    g_clearColor = Color4(color, 1.f);
+    g_clearColor = glm::vec4(color, 1.f);
 }
 
 void ee::Renderer::clearBuffers()
@@ -105,17 +105,17 @@ void ee::Renderer::clearBuffers()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void ee::Renderer::setCustomMouseCallback(MouseCallbackFunc func)
+void ee::Renderer::setCustomMouseCallback(const MouseCallbackFunc func)
 {
     g_custMouseCallback = func;
 }
 
-void ee::Renderer::setCustomKeyboardCallback(KeyboardCallbackFunc func)
+void ee::Renderer::setCustomKeyboardCallback(const KeyboardCallbackFunc func)
 {
     g_custKeyboardCallback = func;
 }
 
-void ee::Renderer::setCustomScrollCallback(ScrollCallbackFunc func)
+void ee::Renderer::setCustomScrollCallback(const ScrollCallbackFunc func)
 {
     g_custScrollCallback = func;
 }
@@ -143,7 +143,7 @@ void ee::Renderer::swapBuffers()
     glfwSwapBuffers(g_window);
 }
 
-void ee::Renderer::update(float deltaTime)
+void ee::Renderer::update(const float deltaTime)
 {
     if (glfwGetKey(g_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
@@ -152,13 +152,21 @@ void ee::Renderer::update(float deltaTime)
 
     // position:
     if (glfwGetKey(g_window, GLFW_KEY_W) == GLFW_PRESS)
-        g_camera.processKBInput(FORWARD, deltaTime);
+    {
+        g_camera.processKBInput(CameraDir::FORWARD, deltaTime);
+    }
     if (glfwGetKey(g_window, GLFW_KEY_S) == GLFW_PRESS)
-        g_camera.processKBInput(BACKWARD, deltaTime);
+    {
+        g_camera.processKBInput(CameraDir::BACKWARD, deltaTime);
+    }
     if (glfwGetKey(g_window, GLFW_KEY_A) == GLFW_PRESS)
-        g_camera.processKBInput(LEFT, deltaTime);
+    {
+        g_camera.processKBInput(CameraDir::LEFT, deltaTime);
+    }
     if (glfwGetKey(g_window, GLFW_KEY_D) == GLFW_PRESS)
-        g_camera.processKBInput(RIGHT, deltaTime);
+    {
+        g_camera.processKBInput(CameraDir::RIGHT, deltaTime);
+    }
 }
 
 ee::Renderer::ErrorCode ee::Renderer::initialize(const std::string rootShaderDir, const RendererParam& rendererParam, const CameraParam& cameraParam)
@@ -198,7 +206,7 @@ ee::Renderer::ErrorCode ee::Renderer::initialize(const std::string rootShaderDir
     glfwSetScrollCallback(g_window, scrollCallback);
 
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
+    glDepthFunc(GL_LEQUAL); // for the cube map
 
     g_initialized = true;
     return ErrorCode::SUCCESS;
@@ -289,9 +297,6 @@ ee::Shader* ee::Renderer::loadShader(const std::string& vertName, const std::str
         g_shaders.insert(std::make_pair(key, std::unique_ptr<Shader>(shader)));
         return shader;
     }
-    else
-    {
-        Shader* ptr = loc->second.get();
-        return ptr;
-    }
+
+    return loc->second.get();
 }

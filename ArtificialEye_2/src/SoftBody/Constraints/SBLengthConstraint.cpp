@@ -17,7 +17,7 @@ void ee::SBLengthConstraint::satisfyConstraint()
 
     if (direction != Vector3(0.f, 0.f, 0.f))
     {
-        const Vector3 moveVec = 0.5f * (currLength - m_length) * direction;
+        const Vector3 moveVec = 0.1f * (currLength - m_length) * direction;
         m_objA->m_currPosition += moveVec;
         m_objB->m_currPosition -= moveVec;
     }

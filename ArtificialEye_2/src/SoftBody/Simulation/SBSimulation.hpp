@@ -14,11 +14,11 @@ namespace ee
 {
     // This is to help make it easier to describe the objects
 
-    using SBObjectList = std::vector<std::unique_ptr<SBObject>>;
-    using SBGlobalForceGenList = std::vector<std::unique_ptr<SBGlobalForceGen>>;
-    using SBLocalForceGenList = std::vector<std::unique_ptr<SBLocalForceGen>>;
-    using SBSpringList = std::vector<std::unique_ptr<SBSpring>>;
-    using SBConstraintList = std::vector<std::unique_ptr<SBConstraint>>;
+    using SBObjectList          = std::vector<std::unique_ptr<SBObject>>;
+    using SBGlobalForceGenList  = std::vector<std::unique_ptr<SBGlobalForceGen>>;
+    using SBLocalForceGenList   = std::vector<std::unique_ptr<SBLocalForceGen>>;
+    using SBSpringList          = std::vector<std::unique_ptr<SBSpring>>;
+    using SBConstraintList      = std::vector<std::unique_ptr<SBConstraint>>;
 
     class SBSimulation
     {
@@ -38,36 +38,21 @@ namespace ee
 
         virtual void update(float timeStep);
 
+        SBObject* getVertexObject(std::size_t VertexID);
+        const SBObject* getVertexObject(std::size_t VertexID) const;
+
     public:
-        std::size_t m_constIterations;
+        std::size_t                     m_constIterations;
 
     protected:
-        SBObjectList m_objects;
-        SBGlobalForceGenList m_globalForceGens;
-        SBLocalForceGenList m_localForceGens;
-        SBSpringList m_springs; // so that we have the same interface
-        std::unique_ptr<SBIntegrator> m_integrator;
+        SBObjectList                    m_objects;
+        SBGlobalForceGenList            m_globalForceGens;
+        SBLocalForceGenList             m_localForceGens;
+        SBSpringList                    m_springs; // so that we have the same interface
+        std::unique_ptr<SBIntegrator>   m_integrator;
 
-        SBConstraintList m_constraints;
+        SBConstraintList                m_constraints;
     };
 }
 
-// template definition
-
-template<typename T>
-T* ee::SBSimulation::addConstraint(T* constraint)
-{
-    T* ptr = new T(*constraint);
-    std::unique_ptr<SBConstraint> smartPtr(ptr);
-    m_constraints.push_back(std::move(smartPtr));
-    return ptr;
-}
-
-template<typename T>
-T* ee::SBSimulation::addLocalForceGen(T* force)
-{
-    T* ptr = new T(*force);
-    std::unique_ptr<SBLocalForceGen> smartPtr(ptr);
-    m_localForceGens.push_back(std::move(smartPtr));
-    return ptr;
-}
+#include "SBSimulation.inl"

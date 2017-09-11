@@ -1,18 +1,16 @@
 #pragma once
 
-#include "SBClothSim.hpp"
+#include "SBMeshBasedSim.hpp"
 #include "../../SoftBody/ForceGens/SBLocalForceGen.hpp"
 
 namespace ee
 {
-    class SBClosedBody : public SBClothSim
+    class SBClosedBodySim : public SBMeshBasedSim
     {
     public:
-        SBClosedBody(float P, DynamicMesh* model, float mass, float stiffness, float dampening);
+        SBClosedBodySim(float P, DynamicMesh* model, float mass, float stiffness, float dampening);
 
         void setP(float P);
-
-        void update(float timeStep) override;
 
     private:
         friend class SBPressure;
@@ -24,7 +22,7 @@ namespace ee
         {
         public:
             // some gaurantees
-            SBPressure(float P, DynamicMesh* model, SBClosedBody* simulation);
+            SBPressure(float P, DynamicMesh* model, SBMeshBasedSim* simulation);
 
             void applyForces() override;
             SBLocalForceGen* getCopy() const override;
@@ -33,8 +31,8 @@ namespace ee
             float m_P;
 
         private:
-            DynamicMesh* const m_model;
-            SBClosedBody* const m_simulation;
+            DynamicMesh*    const m_model;
+            SBMeshBasedSim* const m_simulation;
         }* m_pressure;
     };
 }

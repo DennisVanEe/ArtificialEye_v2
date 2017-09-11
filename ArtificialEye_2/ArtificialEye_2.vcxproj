@@ -175,9 +175,11 @@
     <ClCompile Include="src\SoftBody\Objects\SBModel.cpp" />
     <ClCompile Include="src\SoftBody\Objects\SBObject.cpp" />
     <ClCompile Include="src\SoftBody\Objects\SBVertex.cpp" />
-    <ClCompile Include="src\SoftBody\Simulation\SBClosedBody.cpp" />
-    <ClCompile Include="src\SoftBody\Simulation\SBClothSim.cpp" />
+    <ClCompile Include="src\SoftBody\SBUtilities.cpp" />
+    <ClCompile Include="src\SoftBody\Simulation\SBClosedBodySim.cpp" />
+    <ClCompile Include="src\SoftBody\Simulation\SBMeshBasedSim.cpp" />
     <ClCompile Include="src\SoftBody\Simulation\SBSimulation.cpp" />
+    <ClCompile Include="src\Types.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Rendering\Camera.hpp" />
@@ -214,8 +216,9 @@
     <ClInclude Include="src\SoftBody\Objects\SBObject.hpp" />
     <ClInclude Include="src\SoftBody\SBSpring.hpp" />
     <ClInclude Include="src\SoftBody\Objects\SBVertex.hpp" />
-    <ClInclude Include="src\SoftBody\Simulation\SBClosedBody.hpp" />
-    <ClInclude Include="src\SoftBody\Simulation\SBClothSim.hpp" />
+    <ClInclude Include="src\SoftBody\SBUtilities.hpp" />
+    <ClInclude Include="src\SoftBody\Simulation\SBClosedBodySim.hpp" />
+    <ClInclude Include="src\SoftBody\Simulation\SBMeshBasedSim.hpp" />
     <ClInclude Include="src\SoftBody\Simulation\SBSimulation.hpp" />
     <ClInclude Include="src\Types.hpp" />
   </ItemGroup>
@@ -231,6 +234,8 @@
     <None Include="Shaders\modelUniColor_vert.glsl" />
     <None Include="Shaders\skyBox_frag.glsl" />
     <None Include="Shaders\skyBox_vert.glsl" />
+    <None Include="src\Rendering\Renderer.inl" />
+    <None Include="src\SoftBody\Simulation\SBSimulation.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -66,9 +66,6 @@
     <ClCompile Include="src\Rendering\shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SoftBody\Simulation\SBClothSim.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\SoftBody\Simulation\SBSimulation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -105,9 +102,6 @@
     <ClCompile Include="src\SoftBody\SBSpring.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SoftBody\Simulation\SBClosedBody.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Rendering\TexturePacks\LightUniColorTextPack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -133,6 +127,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Rendering\Modeling\Line.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Types.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoftBody\Simulation\SBMeshBasedSim.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoftBody\Simulation\SBClosedBodySim.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoftBody\SBUtilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -176,9 +182,6 @@
     <ClInclude Include="src\SoftBody\Simulation\SBSimulation.hpp">
       <Filter>Header Files\SoftBody\Simulation</Filter>
     </ClInclude>
-    <ClInclude Include="src\SoftBody\Simulation\SBClothSim.hpp">
-      <Filter>Header Files\SoftBody\Simulation</Filter>
-    </ClInclude>
     <ClInclude Include="src\Rendering\Drawable.hpp">
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
@@ -196,9 +199,6 @@
     </ClInclude>
     <ClInclude Include="src\SoftBody\SBSpring.hpp">
       <Filter>Header Files\SoftBody\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SoftBody\Simulation\SBClosedBody.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\SoftBody\ForceGens\SBGlobalForceGen.hpp">
       <Filter>Header Files\SoftBody\ForceGens</Filter>
@@ -251,6 +251,15 @@
     <ClInclude Include="src\Rendering\TexturePacks\LineUniColorTextPack.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\SoftBody\Simulation\SBMeshBasedSim.hpp">
+      <Filter>Header Files\SoftBody\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\Simulation\SBClosedBodySim.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoftBody\SBUtilities.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\modelUniColor_vert.glsl" />
@@ -264,5 +273,11 @@
     <None Include="Shaders\modelRefract_geom.glsl" />
     <None Include="Shaders\lineUniColor_vert.glsl" />
     <None Include="Shaders\lineUniColor_frag.glsl" />
+    <None Include="src\Rendering\Renderer.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="src\SoftBody\Simulation\SBSimulation.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

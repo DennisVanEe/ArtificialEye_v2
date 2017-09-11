@@ -1,5 +1,7 @@
 #include "SBVerletIntegrator.hpp"
 
+#include <glm/GTX/norm.hpp>
+
 ee::SBVerletIntegrator::SBVerletIntegrator(float timeStep) :
     SBIntegrator(timeStep)
 {
@@ -23,8 +25,11 @@ void ee::SBVerletIntegrator::setDrag(const float drag)
 
 void ee::SBVerletIntegrator::integrate(const Vector3 acceleration, SBObject* const obj)
 {
-    const Vector3 newPosition = (2.f - m_drag) * obj->m_currPosition -
+    glm::vec3 newPosition = (2.f - m_drag) * obj->m_currPosition -
         (1.f - m_drag) * obj->m_prevPosition + acceleration * m_constTimeStep * m_constTimeStep;
+
+    newPosition = glm::length2(newPosition - obj->m_currPosition) < std::numeric_limits<float>::epsilon() ? obj->m_currPosition :
+        newPosition;
 
     obj->m_prevPosition = obj->m_currPosition;
     obj->m_currPosition = newPosition;
