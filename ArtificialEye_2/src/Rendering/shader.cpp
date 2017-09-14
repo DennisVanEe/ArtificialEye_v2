@@ -35,12 +35,12 @@ void ee::Shader::assignBool(const std::string name, const bool value)
     glUniform1i(glGetUniformLocation(m_programID, name.c_str()), value);
 }
 
-void ee::Shader::assignColor(const std::string name, const Color3 vec)
+void ee::Shader::assignColor(const std::string name, const glm::vec3 vec)
 {
     glUniform3f(glGetUniformLocation(m_programID, name.c_str()), vec.x, vec.y, vec.z);
 }
 
-void ee::Shader::assignColor(const std::string name, const Color4 vec)
+void ee::Shader::assignColor(const std::string name, const glm::vec4 vec)
 {
     GLint loc = glGetUniformLocation(m_programID, name.c_str());
     glUniform4f(loc, vec.x, vec.y, vec.z, vec.w);
@@ -63,7 +63,7 @@ void ee::Shader::unbindTexture(GLenum target)
     glBindTexture(target, 0);
 }
 
-void ee::Shader::assignVec3f(std::string name, Vector3 vec)
+void ee::Shader::assignVec3f(std::string name, glm::vec3 vec)
 {
     GLint loc = glGetUniformLocation(m_programID, name.c_str());
     glUniform3f(loc, vec.x, vec.y, vec.z);

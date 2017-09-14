@@ -16,7 +16,7 @@ namespace ee
         std::string g_rootShaderDir;
         std::unordered_map<std::string, std::unique_ptr<Shader>>        g_shaders;
         std::unordered_map<std::string, std::unique_ptr<TexturePack>>   g_textPacks;
-        Camera                                                          g_camera        = Camera(Vector3(), Vector3(), 0.f, 0.f); // not the cleanest thing I have ever done,
+        Camera                                                          g_camera        = Camera(glm::vec3(), glm::vec3(), 0.f, 0.f); // not the cleanest thing I have ever done,
                                                                                                                            // but I need to initialize it to some dummy value for now.
         // Window and renderer properties:
         glm::mat4                                                       g_perspective;

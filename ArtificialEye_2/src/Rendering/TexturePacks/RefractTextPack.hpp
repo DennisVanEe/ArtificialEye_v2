@@ -10,7 +10,7 @@ namespace ee
     class RefractTextPack : public TexturePack
     {
     public:
-        RefractTextPack(Vector3 color, std::string rootDir, std::vector<std::string> cubeFaces, float refractIndex);
+        RefractTextPack(glm::vec3 color, std::string rootDir, std::vector<std::string> cubeFaces, float refractIndex);
 
         void preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera) override;
         void postDraw() override {}
@@ -21,7 +21,7 @@ namespace ee
         std::string getGShaderName() const override;
         
     public:
-        Color3 m_color;
+        glm::vec3 m_color;
         CubeMap m_skyBox;
         float m_refractIndex;
     };

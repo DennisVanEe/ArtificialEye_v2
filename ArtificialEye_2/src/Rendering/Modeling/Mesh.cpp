@@ -42,8 +42,8 @@ void ee::Mesh::applyTransformation(glm::mat4 mat)
     glm::mat4 normMat = glm::transpose(glm::inverse(mat));
     for (auto& vec : m_vertices)
     {
-        vec.m_position = Vector3(mat * glm::vec4(vec.m_position, 1.f));
-        vec.m_normal = Vector3(normMat * glm::vec4(vec.m_normal, 0.f));
+        vec.m_position = glm::vec3(mat * glm::vec4(vec.m_position, 1.f));
+        vec.m_normal = glm::vec3(normMat * glm::vec4(vec.m_normal, 0.f));
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
@@ -124,13 +124,13 @@ void ee::Mesh::calcNormals()
 
     for (const auto& f : m_faces)
     {
-        Vector3 v0 = m_vertices[f.m_indices[0]].m_position;
-        Vector3 v1 = m_vertices[f.m_indices[1]].m_position;
-        Vector3 v2 = m_vertices[f.m_indices[2]].m_position;
+        glm::vec3 v0 = m_vertices[f.m_indices[0]].m_position;
+        glm::vec3 v1 = m_vertices[f.m_indices[1]].m_position;
+        glm::vec3 v2 = m_vertices[f.m_indices[2]].m_position;
 
-        Vector3 e0 = v1 - v0;
-        Vector3 e1 = v2 - v0;
-        Vector3 tempNormal = glm::normalize(glm::cross(e0, e1));
+        glm::vec3 e0 = v1 - v0;
+        glm::vec3 e1 = v2 - v0;
+        glm::vec3 tempNormal = glm::normalize(glm::cross(e0, e1));
 
         m_tempNormals[f.m_indices[0]] += tempNormal;
         m_tempNormals[f.m_indices[1]] += tempNormal;
@@ -144,4 +144,20 @@ void ee::Mesh::calcNormals()
         vert.m_normal = glm::normalize(m_tempNormals[i]);
         m_vertices[i] = vert;
     }
+}
+
+void ee::Mesh::setModelTrans(glm::mat4 modelTrans)
+{
+    m_modelTrans = modelTrans;
+    m_normalModelTrans = glm::transpose(glm::inverse(m_modelTrans));
+}
+
+glm::mat4 ee::Mesh::getModelTrans() const
+{
+    return m_modelTrans;
+}
+
+glm::mat4 ee::Mesh::getNormalModelTrans() const
+{
+    return m_normalModelTrans;
 }

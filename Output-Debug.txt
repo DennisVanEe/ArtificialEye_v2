@@ -1,0 +1,90 @@
+﻿'ArtificialEye_2.exe' (Win32): Loaded 'D:\Development\ArtificialEye_2\output\x64\Debug\ArtificialEye_2.exe'. Symbols loaded.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\ntdll.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\kernel32.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\KernelBase.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\user32.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\win32u.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\gdi32.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\gdi32full.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\msvcp_win.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\ucrtbase.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\shell32.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\msvcrt.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\cfgmgr32.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\SHCore.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\rpcrt4.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\combase.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\bcryptprimitives.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\windows.storage.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\advapi32.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\sechost.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\shlwapi.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\kernel.appcore.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\powrprof.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\profapi.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\msvcr120d.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\msvcp120d.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\imm32.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\uxtheme.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\winmm.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\winmmbase.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\winmmbase.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Unloaded 'C:\Windows\System32\winmmbase.dll'
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\winmmbase.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Unloaded 'C:\Windows\System32\winmmbase.dll'
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\dinput8.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\XInput1_4.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\devobj.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\dwmapi.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Program Files\Common Files\microsoft shared\ink\tiptsf.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\oleaut32.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\hid.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\setupapi.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\wintrust.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\msasn1.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\crypt32.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\ntmarta.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\msctf.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\opengl32.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\glu32.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\DriverStore\FileRepository\igdlh64.inf_amd64_a1e6b2203b58b65a\ig9icd64.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\wtsapi32.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\version.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Unloaded 'C:\Windows\System32\version.dll'
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\DriverStore\FileRepository\igdlh64.inf_amd64_a1e6b2203b58b65a\igc64.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\TextInputFramework.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\CoreUIComponents.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\CoreMessaging.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\WinTypes.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\usermgrcli.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\WinTypes.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Unloaded 'C:\Windows\System32\WinTypes.dll'
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\clbcatq.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\UIAutomationCore.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\sxs.dll'. Cannot find or open the PDB file.
+mincore\com\oleaut32\dispatch\ups.cpp(2128)\OLEAUT32.dll!00007FF94AF316A1: (caller: 00007FF94AF244B9) ReturnHr(1) tid(6b24) 8002801D Library not registered.
+mincore\com\oleaut32\dispatch\ups.cpp(2128)\OLEAUT32.dll!00007FF94AF316A1: (caller: 00007FF94AF244B9) ReturnHr(2) tid(6b24) 8002801D Library not registered.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\oleacc.dll'. Cannot find or open the PDB file.
+'ArtificialEye_2.exe' (Win32): Loaded 'C:\Windows\System32\ole32.dll'. Cannot find or open the PDB file.
+The thread 0x7d14 has exited with code 0 (0x0).
+'ArtificialEye_2.exe' (Win32): Unloaded 'C:\Windows\System32\XInput1_4.dll'
+'ArtificialEye_2.exe' (Win32): Unloaded 'C:\Windows\System32\devobj.dll'
+'ArtificialEye_2.exe' (Win32): Unloaded 'C:\Windows\System32\msasn1.dll'
+'ArtificialEye_2.exe' (Win32): Unloaded 'C:\Windows\System32\crypt32.dll'
+'ArtificialEye_2.exe' (Win32): Unloaded 'C:\Windows\System32\wintrust.dll'
+'ArtificialEye_2.exe' (Win32): Unloaded 'C:\Windows\System32\setupapi.dll'
+'ArtificialEye_2.exe' (Win32): Unloaded 'C:\Windows\System32\hid.dll'
+'ArtificialEye_2.exe' (Win32): Unloaded 'C:\Windows\System32\dinput8.dll'
+'ArtificialEye_2.exe' (Win32): Unloaded 'C:\Windows\System32\winmmbase.dll'
+'ArtificialEye_2.exe' (Win32): Unloaded 'C:\Windows\System32\winmm.dll'
+The thread 0x8f24 has exited with code 0 (0x0).
+The thread 0x887c has exited with code 0 (0x0).
+The thread 0x86b8 has exited with code 0 (0x0).
+The thread 0x7c74 has exited with code 0 (0x0).
+The thread 0x75bc has exited with code 0 (0x0).
+The thread 0x8f0c has exited with code 0 (0x0).
+The thread 0x8f94 has exited with code 0 (0x0).
+The thread 0x82f8 has exited with code 0 (0x0).
+The thread 0x8c88 has exited with code 0 (0x0).
+The thread 0x8314 has exited with code 0 (0x0).
+The program '[30584] ArtificialEye_2.exe' has exited with code 0 (0x0).

@@ -69,9 +69,6 @@
     <ClCompile Include="src\SoftBody\Simulation\SBSimulation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SoftBody\Objects\SBModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\SoftBody\Objects\SBVertex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -141,6 +138,15 @@
     <ClCompile Include="src\SoftBody\SBUtilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\SoftBody\Objects\SBFixedPoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Initialization.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\RayTracing\RayTracer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Types.hpp">
@@ -153,9 +159,6 @@
       <Filter>Header Files\SoftBody\Integrators</Filter>
     </ClInclude>
     <ClInclude Include="src\SoftBody\Objects\SBObject.hpp">
-      <Filter>Header Files\SoftBody\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SoftBody\Objects\SBModel.hpp">
       <Filter>Header Files\SoftBody\Objects</Filter>
     </ClInclude>
     <ClInclude Include="src\SoftBody\ForceGens\SBGravity.hpp">
@@ -260,6 +263,15 @@
     <ClInclude Include="src\SoftBody\SBUtilities.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\SoftBody\Objects\SBFixedPoint.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Initialization.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\RayTracing\RayTracer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\modelUniColor_vert.glsl" />
@@ -279,5 +291,6 @@
     <None Include="src\SoftBody\Simulation\SBSimulation.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="ArtificialEye_Properties.ini" />
   </ItemGroup>
 </Project>

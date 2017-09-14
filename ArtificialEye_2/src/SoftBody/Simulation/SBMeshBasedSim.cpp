@@ -42,7 +42,12 @@ void ee::SBMeshBasedSim::connectSprings(float structStiffness, float structDampe
             continue; // if we have two that are the same, this could lead to some major issues
         }
 
-        SBSimulation::addSpring(structStiffness, structDampening, m_objects[index0].get(), m_objects[index1].get());
+        float zValue = (m_objects[index0]->m_currPosition.y + m_objects[index1]->m_currPosition.y) * 0.5f;
+        float mult = 1 - std::abs(zValue);
+        
+        const float stiffness = mult * structStiffness; // so this number decreases as the area of the face increases
+
+        SBSimulation::addSpring(stiffness, structDampening, m_objects[index0].get(), m_objects[index1].get());
         float length = glm::length(m_objects[index0]->m_currPosition - m_objects[index1]->m_currPosition);
         SBSimulation::addConstraint(new SBLengthConstraint(length, m_objects[index0].get(), m_objects[index1].get()));
     }

@@ -1,6 +1,6 @@
 #include "SBPointConstraint.hpp"
 
-ee::SBPointConstraint::SBPointConstraint(const Vector3 point, SBObject* const obj) :
+ee::SBPointConstraint::SBPointConstraint(const glm::vec3 point, SBObject* const obj) :
     m_point(point),
     m_obj(obj)
 {

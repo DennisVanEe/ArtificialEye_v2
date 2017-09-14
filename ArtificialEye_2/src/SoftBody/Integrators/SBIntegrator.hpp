@@ -11,7 +11,7 @@ namespace ee
         SBIntegrator(float constTimeStep);
         float getTimeStep() const;
 
-        virtual void integrate(Vector3 acceleration, SBObject* object) = 0;
+        virtual void integrate(glm::vec3 acceleration, SBObject* object) = 0;
 
         virtual SBIntegrator* getCopy() const = 0;
 

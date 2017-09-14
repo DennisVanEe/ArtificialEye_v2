@@ -25,7 +25,7 @@ namespace ee
     public:
         void addSpring(float stiffness, float dampening, SBObject* objA, SBObject* objB);
         void addSpring(float stiffness, float dampening, float length, SBObject* objA, SBObject* objB);
-        void addObject(SBObject* obj);
+        SBObject* addObject(SBObject* obj);
         void addGlobalForceGen(SBGlobalForceGen* force);
 
         template<typename T>
@@ -40,6 +40,8 @@ namespace ee
 
         SBObject* getVertexObject(std::size_t VertexID);
         const SBObject* getVertexObject(std::size_t VertexID) const;
+
+        std::size_t getNumVertexObjects() const;
 
     public:
         std::size_t                     m_constIterations;

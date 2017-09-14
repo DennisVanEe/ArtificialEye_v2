@@ -1,4 +1,5 @@
-// #define USE_DOUBLE
+#include "Initialization.hpp"
+
 #include "Rendering/Renderer.hpp"
 #include "Rendering/TexturePacks/UniColorTextPack.hpp"
 #include "Rendering/TexturePacks/LightUniColorTextpack.hpp"
@@ -9,14 +10,15 @@
 #include "Rendering/TexturePacks/SkyBoxTextPack.hpp"
 #include "Rendering/TexturePacks/RefractTextPack.hpp"
 #include "Rendering/TexturePacks/LineUniColorTextPack.hpp"
+#include "Rendering/RayTracing/Intersections.hpp"
+#include "Rendering/RayTracing/RayTracer.hpp"
 
 #include "SoftBody/Simulation/SBClosedBodySim.hpp"
 #include "SoftBody/ForceGens/SBGravity.hpp"
 #include "SoftBody/Constraints/SBPointConstraint.hpp"
 #include "SoftBody/Integrators/SBVerletIntegrator.hpp"
+#include "SoftBody/Objects/SBFixedPoint.hpp"
 #include "SoftBody/SBUtilities.hpp"
-
-#include "Rendering/RayTracing/Intersections.hpp"
 
 #include <string>
 #include <iostream>
@@ -28,12 +30,29 @@ bool g_enableWireFram = false;
 std::vector<ee::SBPointConstraint*> g_constraints;
 const float g_constraintMoveSpeed = 0.1f;
 
-const float DEFAULT_P = 0.f; // 10.f;
+const float DEFAULT_P = 5.f;
 
-const unsigned g_sphereLat = 64U;
-const unsigned g_sphereLon = 64U;
+const unsigned g_sphereLat = 49U;
+const unsigned g_sphereLon = 49U;
+
+ee::RayTracer* g_tracer;
 
 bool g_defaultP = true;
+
+void addConstraints(const std::size_t thickness, ee::SBSimulation* sim, const ee::Mesh* mesh)
+{
+    for (std::size_t i = 0, sub = (thickness / 2 + 1); i < thickness; i++, sub--)
+    {
+        std::size_t index = (g_sphereLat / 2 - sub) * (g_sphereLon)+1;
+        std::size_t end = index + g_sphereLon;
+
+        for (std::size_t j = index; j < end; j++)
+        {
+            auto ptr = sim->addConstraint(&ee::SBPointConstraint(mesh->getVertex(j).m_position, sim->getVertexObject(j)));
+            g_constraints.push_back(ptr);
+        }
+    }
+}
 
 void setSpaceCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -74,7 +93,7 @@ void setSpaceCallback(GLFWwindow* window, int key, int scancode, int action, int
 
         for (auto& constraint : g_constraints)
         {
-            constraint->m_point += g_constraintMoveSpeed * dir * glm::normalize(constraint->m_point);
+            constraint->m_point += g_constraintMoveSpeed * dir * glm::normalize(glm::vec3(constraint->m_point.x, 0.f, constraint->m_point.z));
         }
     }
 }
@@ -94,8 +113,8 @@ int main()
         rendererParams.m_far = 100.f;
         rendererParams.m_near = 0.1f;
 
-        cameraParams.m_position = ee::Vector3(10.f, 0.f, 0.f);
-        cameraParams.m_up = ee::Vector3(0.f, 1.f, 0.f);
+        cameraParams.m_position = glm::vec3(10.f, 0.f, 0.f);
+        cameraParams.m_up = glm::vec3(0.f, 1.f, 0.f);
         cameraParams.m_yaw = 180.f;
         cameraParams.m_pitch = 0.f;
 
@@ -109,14 +128,14 @@ int main()
 
         // now create a model:
 
-        ee::UniColorTextPack uniColor(ee::Color4(0.f, 1.f, 0.f, 1.f));
+        ee::UniColorTextPack uniColor(glm::vec4(0.f, 1.f, 0.f, 1.f));
         ee::Renderer::addTexturePack("uniColor", &uniColor);
 
         ee::LightUniColorTextPack lightUniColor;
-        lightUniColor.m_color = ee::Color3(0.2f, 1.f, 0.f);
-        lightUniColor.m_lightPosition = ee::Vector3(2.f, 2.f, 2.f);
-        lightUniColor.m_material.m_ambient = ee::Vector3(1.0f, 0.5f, 0.31f);
-        lightUniColor.m_material.m_diffuse = ee::Vector3(1.0f, 0.5f, 0.31f);
+        lightUniColor.m_color = glm::vec3(0.2f, 1.f, 0.f);
+        lightUniColor.m_lightPosition = glm::vec3(2.f, 2.f, 2.f);
+        lightUniColor.m_material.m_ambient = glm::vec3(1.0f, 0.5f, 0.31f);
+        lightUniColor.m_material.m_diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
         ee::Renderer::addTexturePack("lightUniColor", &lightUniColor);
 
         std::vector<std::string> cubemapcomp
@@ -129,9 +148,9 @@ int main()
             "front.jpg"
         };
 
-        ee::RefractTextPack refractTextPack(ee::Color3(), "Textures/SkyBox", cubemapcomp, 1.33f);
+        ee::RefractTextPack refractTextPack(glm::vec3(), "Textures/SkyBox", cubemapcomp, 1.33f);
         ee::SkyBoxTextPack skyBoxTextPack("Textures/SkyBox", cubemapcomp);
-        ee::LineUniColorTextPack lineTextPack(ee::Color3(1.f, 0.f, 0.f));
+        ee::LineUniColorTextPack lineTextPack(glm::vec3(1.f, 0.f, 0.f));
         ee::Renderer::addTexturePack("SkyBoxTextPack", &skyBoxTextPack);
         ee::Renderer::addTexturePack("refractTextPack", &refractTextPack);
         ee::Renderer::addTexturePack("lineTextPack", &lineTextPack);
@@ -144,65 +163,32 @@ int main()
         ee::DynamicMesh dynModel("refractTextPack", std::move(vertBuffer), std::move(indBuffer));
         ee::Renderer::addDrawable(&dynModel);
 
-        // load the model
-        ee::Line startLine("lineTextPack", ee::Vector3(0.65f, 0.65f, -10.f), ee::Vector3(0.65f, 0.65f, 0.f));
-        std::vector<ee::Line> lines;
-        lines.push_back(ee::Line("lineTextPack", ee::Vector3(), ee::Vector3()));
-        lines.push_back(ee::Line("lineTextPack", ee::Vector3(), ee::Vector3()));
-        ee::Renderer::addDrawable(&startLine);
-        ee::Renderer::addDrawable(&lines[0]);
-        ee::Renderer::addDrawable(&lines[1]);
-
         // transform the sphere:
         glm::mat4 modelTrans = glm::rotate(glm::mat4(), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
-        modelTrans = glm::scale(modelTrans, glm::vec3(1.f, 0.5, 1.f));
+        modelTrans = glm::scale(modelTrans, glm::vec3(1.f, 0.75f, 1.f));
 
-        dynModel.applyTransformation(modelTrans);
-        dynModel.m_modelTrans = glm::mat4();
+        // dynModel.applyTransformation(modelTrans);
+        dynModel.setModelTrans(modelTrans); // glm::mat4();
 
-        ee::Renderer::setClearColor(ee::Color3(0.45f, 0.45f, 0.45f));
+        ee::Renderer::setClearColor(glm::vec3(0.45f, 0.45f, 0.45f));
 
-        ee::SBClosedBodySim clothSim(DEFAULT_P, &dynModel, 5.f, 3.f, 0.0f);
-        clothSim.m_constIterations = 10.f;
+        ///////////////////////////////////////////////////////
+        // SIMULATION PARAM
+        ///////////////////////////////////////////////////////
+        ee::SBClosedBodySim clothSim(DEFAULT_P, &dynModel, 5.f, 3.f, 1.f);
+        clothSim.m_constIterations = 5.f; // 10.f;
 
-        ee::SBGravity* gravity = new ee::SBGravity();
-        // clothSim.addGlobalForceGen(gravity);
+        ee::addInteriorSpringsUVSphere(&clothSim, g_sphereLat, g_sphereLon, 20.f, 1.f);
 
-        // find the middle point of the sphere to start the ring:
-        std::size_t index0 = (g_sphereLat / 2 - 2) * (g_sphereLon) + 1;
-        std::size_t end0 = index0 + g_sphereLon;
+        addConstraints(5, &clothSim, &dynModel);
 
-        std::size_t index1 = (g_sphereLat / 2 - 1) * (g_sphereLon) + 1;
-        std::size_t end1 = index1 + g_sphereLon;
+        clothSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 20.f, 0.01f));
 
-        std::size_t index2 = (g_sphereLat / 2) * (g_sphereLon) + 1;
-        std::size_t end2 = index2 + g_sphereLon;
-
-        // add the constraints:
-        for (std::size_t i = index0; i < end0; i++)
-        {
-            auto ptr = clothSim.addConstraint(&ee::SBPointConstraint(dynModel.getVertex(i).m_position, clothSim.getVertexObject(i)));
-            g_constraints.push_back(ptr);
-        }
-
-        for (std::size_t i = index1; i < end1; i++)
-        {
-            auto ptr = clothSim.addConstraint(&ee::SBPointConstraint(dynModel.getVertex(i).m_position, clothSim.getVertexObject(i)));
-            g_constraints.push_back(ptr);
-        }
-
-        for (std::size_t i = index2; i < end2; i++)
-        {
-            auto ptr = clothSim.addConstraint(&ee::SBPointConstraint(dynModel.getVertex(i).m_position, clothSim.getVertexObject(i)));
-            g_constraints.push_back(ptr);
-        }
-
-        float len = glm::length(dynModel.getVertex(0).m_position - dynModel.getVertex(dynModel.getNumVertices() - 1).m_position);
-        //clothSim.addCustomLengthConstraint(len, 0, dynModel.getNumVertices() - 1);
-
-        clothSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 30.f, 0.01f));
-
-        ee::addBendSpringsForUVSphere(&clothSim, g_sphereLat, g_sphereLon, 100.f, 1.f);
+        const std::vector<glm::vec3> pos = { glm::vec3(0.f, 0.f, -2.f) };
+        ee::RayTracerParam param;
+        param.m_widthResolution = 5.f;
+        param.m_heightResolution = 5.f;
+        g_tracer = &ee::RayTracer::initialize(pos, &dynModel, 1.56f, param, glm::vec3(1.f, 0.f, 0.f));
 
         while (ee::Renderer::isInitialized())
         {
@@ -232,12 +218,9 @@ int main()
                 clothSim.update(time);
             }
 
-            auto updatedDir = meshRefract(&dynModel, startLine.getRay(), 1.f / 1.66f);
-            for (int i = 0; i < updatedDir.size(); i++)
-                lines[i].setRay(updatedDir[i], 5);
-            
-            ee::Renderer::drawAll();
+            g_tracer->raytrace();
 
+            ee::Renderer::drawAll();
             ee::Renderer::update(time);
             ee::Renderer::swapBuffers();
             ee::Renderer::pollEvents();

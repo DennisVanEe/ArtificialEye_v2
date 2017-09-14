@@ -12,9 +12,11 @@ void ee::SBSimulation::addSpring(const float stiffness, const float dampening, c
         new SBSpring(stiffness, dampening, length, objA, objB)));
 }
 
-void ee::SBSimulation::addObject(SBObject* const obj)
+ee::SBObject* ee::SBSimulation::addObject(SBObject* const obj)
 {
-    m_objects.push_back(std::unique_ptr<SBObject>(obj->getCopy()));
+    SBObject* result = obj->getCopy();
+    m_objects.push_back(std::unique_ptr<SBObject>(result));
+    return result;
 }
 
 void ee::SBSimulation::addGlobalForceGen(SBGlobalForceGen* force)
@@ -56,13 +58,14 @@ void ee::SBSimulation::update(float timeStep)
         force->applyForces();
     }
 
+    // TODO: efficient pressure thing by calculating volume once per iteration
+
     // integrate:
-    Vector3 acceleration;
     for (auto& object : m_objects)
     {
         if (object->m_type == SBObjectType::ACTIVE)
         {
-            acceleration = object->m_resultantForce / object->m_mass;
+            glm::vec3 acceleration = object->m_resultantForce / object->m_mass;
             m_integrator->integrate(acceleration, object.get());
         }
     }
@@ -100,4 +103,9 @@ ee::SBObject* ee::SBSimulation::getVertexObject(const std::size_t vertexID)
 const ee::SBObject* ee::SBSimulation::getVertexObject(const std::size_t vertexID) const
 {
     return getVertexObject(vertexID);
+}
+
+std::size_t ee::SBSimulation::getNumVertexObjects() const
+{
+    return m_objects.size();
 }

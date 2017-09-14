@@ -5,7 +5,7 @@ ee::SBForwardEuler::SBForwardEuler(const float constTimeStep) :
 {
 }
 
-void ee::SBForwardEuler::integrate(const Vector3 acceleration, SBObject* object)
+void ee::SBForwardEuler::integrate(const glm::vec3 acceleration, SBObject* object)
 {
     // x(t + dt) = x(t) + v(t)dt
     object->m_currPosition += object->m_currVelocity * m_constTimeStep;

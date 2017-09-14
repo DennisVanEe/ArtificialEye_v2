@@ -18,10 +18,10 @@ namespace ee
         virtual SBObject* getCopy() const = 0;
 
     public:
-        Vector3 m_currPosition;
-        Vector3 m_prevPosition;
-        Vector3 m_currVelocity;
-        Vector3 m_resultantForce;
+        glm::vec3 m_currPosition;
+        glm::vec3 m_prevPosition;
+        glm::vec3 m_currVelocity;
+        glm::vec3 m_resultantForce;
         float m_mass;
 
         SBObjectType m_type;

@@ -10,9 +10,8 @@ namespace ee
 {
     const char PROJ_NAME[] = "ArtificalEye";
 
-    using Color4 = glm::vec4;
-    using Color3 = glm::vec3;
-    using Vector3 = glm::vec3;
+    const float PI  = glm::pi<float>();
+    const float PI2 = 2 * PI;
 
     glm::vec3 removeZeroError(glm::vec3 vec);
 }

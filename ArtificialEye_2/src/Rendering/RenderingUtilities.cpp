@@ -9,15 +9,15 @@ namespace cube
     const ee::VertBuffer VERTICES =
     {
         // front
-        ee::Vertex(ee::Vector3(-1.f, -1.f,  1.f)),
-        ee::Vertex(ee::Vector3( 1.f, -1.f,  1.f)),
-        ee::Vertex(ee::Vector3( 1.0,  1.0,  1.0)),
-        ee::Vertex(ee::Vector3(-1.0,  1.0,  1.0)),
+        ee::Vertex(glm::vec3(-1.f, -1.f,  1.f)),
+        ee::Vertex(glm::vec3( 1.f, -1.f,  1.f)),
+        ee::Vertex(glm::vec3( 1.0,  1.0,  1.0)),
+        ee::Vertex(glm::vec3(-1.0,  1.0,  1.0)),
         // back
-        ee::Vertex(ee::Vector3(-1.0, -1.0, -1.0)),
-        ee::Vertex(ee::Vector3( 1.0, -1.0, -1.0)),
-        ee::Vertex(ee::Vector3( 1.0,  1.0, -1.0)),
-        ee::Vertex(ee::Vector3(-1.0,  1.0, -1.0)),
+        ee::Vertex(glm::vec3(-1.0, -1.0, -1.0)),
+        ee::Vertex(glm::vec3( 1.0, -1.0, -1.0)),
+        ee::Vertex(glm::vec3( 1.0,  1.0, -1.0)),
+        ee::Vertex(glm::vec3(-1.0,  1.0, -1.0)),
     };
 
     const ee::MeshFaceBuffer INDICES =
@@ -46,20 +46,20 @@ namespace icosphere
 
     const ee::VertBuffer VERTICES =
     {
-        ee::Vertex(glm::normalize(ee::Vector3(-1.f,    t,  0.f))),
-        ee::Vertex(glm::normalize(ee::Vector3( 1.f,    t,  0.f))),
-        ee::Vertex(glm::normalize(ee::Vector3(-1.f,   -t,  0.f))),
-        ee::Vertex(glm::normalize(ee::Vector3( 1.f,   -t,  0.f))),
+        ee::Vertex(glm::normalize(glm::vec3(-1.f,    t,  0.f))),
+        ee::Vertex(glm::normalize(glm::vec3( 1.f,    t,  0.f))),
+        ee::Vertex(glm::normalize(glm::vec3(-1.f,   -t,  0.f))),
+        ee::Vertex(glm::normalize(glm::vec3( 1.f,   -t,  0.f))),
 
-        ee::Vertex(glm::normalize(ee::Vector3( 0.f, -1.f,    t))),
-        ee::Vertex(glm::normalize(ee::Vector3( 0.f,  1.f,    t))),
-        ee::Vertex(glm::normalize(ee::Vector3( 0.f, -1.f,   -t))),
-        ee::Vertex(glm::normalize(ee::Vector3( 0.f,  1.f,   -t))),
+        ee::Vertex(glm::normalize(glm::vec3( 0.f, -1.f,    t))),
+        ee::Vertex(glm::normalize(glm::vec3( 0.f,  1.f,    t))),
+        ee::Vertex(glm::normalize(glm::vec3( 0.f, -1.f,   -t))),
+        ee::Vertex(glm::normalize(glm::vec3( 0.f,  1.f,   -t))),
 
-        ee::Vertex(glm::normalize(ee::Vector3(   t,  0.f, -1.f))),
-        ee::Vertex(glm::normalize(ee::Vector3(   t,  0.f,  1.f))),
-        ee::Vertex(glm::normalize(ee::Vector3(  -t,  0.f, -1.f))),
-        ee::Vertex(glm::normalize(ee::Vector3(  -t,  0.f,  1.f))),
+        ee::Vertex(glm::normalize(glm::vec3(   t,  0.f, -1.f))),
+        ee::Vertex(glm::normalize(glm::vec3(   t,  0.f,  1.f))),
+        ee::Vertex(glm::normalize(glm::vec3(  -t,  0.f, -1.f))),
+        ee::Vertex(glm::normalize(glm::vec3(  -t,  0.f,  1.f))),
     };
 
     const std::vector<ee::MeshFace> INDICES =
@@ -106,9 +106,9 @@ namespace icosphere
             return it->second;
         }
 
-        ee::Vector3 p0 = (*list)[i0].m_position;
-        ee::Vector3 p1 = (*list)[i1].m_position;
-        ee::Vector3 m = glm::normalize((p0 + p1) * 0.5f);
+        glm::vec3 p0 = (*list)[i0].m_position;
+        glm::vec3 p1 = (*list)[i1].m_position;
+        glm::vec3 m = glm::normalize((p0 + p1) * 0.5f);
 
         list->push_back(m);
         g_cachedMiddlePoints.insert(std::make_pair(key, list->size() - 1));
@@ -121,10 +121,10 @@ void ee::loadIndexedRectangle(VertBuffer* const vertList, MeshFaceBuffer* const 
     vertList->clear();
     indexList->clear();
 
-    vertList->push_back(Vertex(Vector3(0.5f, 0.5f, 0.f)));
-    vertList->push_back(Vertex(Vector3(0.5f, -0.5f, 0.f)));
-    vertList->push_back(Vertex(Vector3(-0.5f, -0.5f, 0.f)));
-    vertList->push_back(Vertex(Vector3(-0.5f, 0.5f, 0.0f)));
+    vertList->push_back(Vertex(glm::vec3(0.5f, 0.5f, 0.f)));
+    vertList->push_back(Vertex(glm::vec3(0.5f, -0.5f, 0.f)));
+    vertList->push_back(Vertex(glm::vec3(-0.5f, -0.5f, 0.f)));
+    vertList->push_back(Vertex(glm::vec3(-0.5f, 0.5f, 0.0f)));
 
     indexList->push_back({0, 1, 3});
     indexList->push_back({1, 2, 3});
@@ -169,7 +169,7 @@ void ee::loadUVsphere(unsigned nLon, unsigned nLat, VertBuffer* vertList, MeshFa
 {
     // Vertices:
     vertList->resize((nLon) * nLat + 2); // plus 1 is for the extra bits in lon side
-    (*vertList)[0] = Vertex(Vector3(0.f, 1.f, 0.f));
+    (*vertList)[0] = Vertex(glm::vec3(0.f, 1.f, 0.f));
     for (unsigned lat = 0; lat < nLat; lat++)
     {
         float angleLat = glm::pi<float>() * (float)(lat + 1) / (nLat + 1);
@@ -183,10 +183,10 @@ void ee::loadUVsphere(unsigned nLon, unsigned nLat, VertBuffer* vertList, MeshFa
             float cosLon = std::cosf(angleLon);
 
             std::size_t index = lon + lat * (nLon) + 1;
-            (*vertList)[index] = Vertex(Vector3(sinLat * cosLon, cosLat, sinLat * sinLon));
+            (*vertList)[index] = Vertex(glm::vec3(sinLat * cosLon, cosLat, sinLat * sinLon));
         }
     }
-    (*vertList)[vertList->size() - 1] = Vertex(Vector3(0.f, -1.f, 0.f));
+    (*vertList)[vertList->size() - 1] = Vertex(glm::vec3(0.f, -1.f, 0.f));
 
     // Indices:
     for (unsigned lon = 0; lon < nLon - 1; lon++)

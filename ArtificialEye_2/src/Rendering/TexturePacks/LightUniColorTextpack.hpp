@@ -10,7 +10,7 @@ namespace ee
     class LightUniColorTextPack : public TexturePack
     {
     public:
-        LightUniColorTextPack(Vector3 lightPosition, Vector3 color, ShaderMaterial material);
+        LightUniColorTextPack(glm::vec3 lightPosition, glm::vec3 color, ShaderMaterial material);
         LightUniColorTextPack();
 
         void preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera) override;
@@ -21,8 +21,8 @@ namespace ee
         std::string getFShaderName() const override;
 
     public:
-        Vector3 m_lightPosition;
-        Color3 m_color;
+        glm::vec3 m_lightPosition;
+        glm::vec3 m_color;
         ShaderMaterial m_material;
     };
 }

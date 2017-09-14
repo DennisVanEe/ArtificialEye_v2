@@ -9,13 +9,13 @@ namespace ee
     class SBPointConstraint : public SBConstraint
     {
     public:
-        SBPointConstraint(Vector3 point, SBObject* obj);
+        SBPointConstraint(glm::vec3 point, SBObject* obj);
 
         void satisfyConstraint() override;
         SBConstraint* getCopy() const override;
 
     public:
-        Vector3 m_point;
+        glm::vec3 m_point;
 
     private:
         SBObject* m_obj;

@@ -1,6 +1,6 @@
 #include "Line.hpp"
 
-ee::Line::Line(std::string textPack, Vector3 p0, Vector3 p1, int priority, GLenum dataUsage) :
+ee::Line::Line(std::string textPack, glm::vec3 p0, glm::vec3 p1, int priority, GLenum dataUsage) :
     Drawable(textPack, priority),
     m_VAO(0)
 {
@@ -13,29 +13,42 @@ ee::Line::Line(std::string textPack, Vector3 p0, Vector3 p1, int priority, GLenu
     glBindVertexArray(m_VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vector3) * 2, m_points, dataUsage);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * 2, m_points, dataUsage);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void ee::Line::setPoint0(Vector3 p0)
+void ee::Line::setPoint0(glm::vec3 p0)
 {
     m_points[0] = p0;
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vector3), glm::value_ptr(p0));
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3), glm::value_ptr(p0));
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void ee::Line::setPoint1(Vector3 p1)
+void ee::Line::setPoint1(glm::vec3 p1)
 {
     m_points[1] = p1;
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-    glBufferSubData(GL_ARRAY_BUFFER, sizeof(Vector3), sizeof(Vector3), glm::value_ptr(p1));
+    glBufferSubData(GL_ARRAY_BUFFER, sizeof(glm::vec3), sizeof(glm::vec3), glm::value_ptr(p1));
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void ee::Line::setRay(Ray ray, float length)
+{
+    setPoint0(ray.m_origin);
+    glm::vec3 p1 = ray.m_dir * length + ray.m_origin;
+    setPoint1(p1);
+}
+
+void ee::Line::setLine(LineSegment line)
+{
+    setPoint0(line.m_start);
+    setPoint1(line.m_end);
 }
 
 void ee::Line::draw()

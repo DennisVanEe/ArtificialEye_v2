@@ -9,12 +9,12 @@ namespace ee
     {
     public:
         SBGravity();
-        SBGravity(Vector3 acceleration);
+        SBGravity(glm::vec3 acceleration);
 
         void applyForce(SBObject* io_object) override;
         SBGlobalForceGen* getCopy() const override;
 
     public:
-        Vector3 m_acceleration;
+        glm::vec3 m_acceleration;
     };
 }

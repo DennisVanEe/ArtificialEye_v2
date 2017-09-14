@@ -1,6 +1,6 @@
 #include "RefractTextPack.hpp"
 
-ee::RefractTextPack::RefractTextPack(Vector3 color, std::string rootDir, std::vector<std::string> cubeFaces, float refractIndex) :
+ee::RefractTextPack::RefractTextPack(glm::vec3 color, std::string rootDir, std::vector<std::string> cubeFaces, float refractIndex) :
     m_color(color),
     m_skyBox(loadCubeMap(rootDir, cubeFaces)),
     m_refractIndex(refractIndex)
@@ -10,7 +10,7 @@ ee::RefractTextPack::RefractTextPack(Vector3 color, std::string rootDir, std::ve
 void ee::RefractTextPack::preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera)
 {
     // shader->assignColor("u_modelColor", m_color); // assign the color
-    Vector3 camPos = camera->getPosition();
+    glm::vec3 camPos = camera->getPosition();
     shader->assignVec3f("u_cameraPosition", camPos);
     shader->assignfloat("u_refractIndex", m_refractIndex);
     shader->bindTexture(GL_TEXTURE_CUBE_MAP, 0, m_skyBox.getTexture());

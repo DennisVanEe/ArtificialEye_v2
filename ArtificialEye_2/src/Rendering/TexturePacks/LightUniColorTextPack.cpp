@@ -1,6 +1,6 @@
 #include "LightUniColorTextPack.hpp"
 
-ee::LightUniColorTextPack::LightUniColorTextPack(Vector3 lightPosition, Vector3 color, ShaderMaterial material) :
+ee::LightUniColorTextPack::LightUniColorTextPack(glm::vec3 lightPosition, glm::vec3 color, ShaderMaterial material) :
     TexturePack(),
     m_lightPosition(lightPosition),
     m_color(color),

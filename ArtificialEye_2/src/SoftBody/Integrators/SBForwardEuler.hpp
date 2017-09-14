@@ -9,6 +9,6 @@ namespace ee
     public:
         SBForwardEuler(float constTimeStep);
 
-        void integrate(Vector3 acceleration, SBObject* object) override;
+        void integrate(glm::vec3 acceleration, SBObject* object) override;
     };
 }

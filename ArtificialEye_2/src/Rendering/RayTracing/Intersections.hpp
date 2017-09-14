@@ -1,14 +1,15 @@
 #pragma once
 
 #include <numeric>
+#include <utility>
 
 #include "Ray.hpp"
 #include "../Modeling/Mesh.hpp"
 
 namespace ee
 {
-    std::pair<bool, Vector3> intersectTriangle(Ray ray, Vector3 p0, Vector3 p1, Vector3 p2);
-    std::pair<std::size_t, Vector3> nearestIntersection(const Mesh* mesh, Ray ray, std::size_t ignore = std::numeric_limits<std::size_t>::max());
+    std::pair<bool, glm::vec3> intersectTriangle(Ray ray, glm::vec3 p0, glm::vec3 p1, glm::vec3 p2);
+    std::pair<std::size_t, glm::vec3> nearestIntersection(const Mesh* mesh, Ray ray, std::size_t ignore = ULONG_MAX);
 
-    std::vector<Ray> meshRefract(const Mesh* mesh, Ray ray, float eta);
+    glm::vec3 refract(const glm::vec3& I, const glm::vec3& N, float eta);
 }

@@ -16,20 +16,16 @@ namespace ee
     class Line : public Drawable
     {
     public:
-        explicit Line(std::string textPack, Vector3 p0, Vector3 p1, int priority = 0, GLenum dataUsage = GL_STATIC_DRAW);
+        explicit Line(std::string textPack, glm::vec3 p0, glm::vec3 p1, int priority = 0, GLenum dataUsage = GL_STATIC_DRAW);
 
-        void setPoint0(Vector3 p0);
-        void setPoint1(Vector3 p1);
+        void setPoint0(glm::vec3 p0);
+        void setPoint1(glm::vec3 p1);
 
-        void setRay(Ray ray, float length)
-        {
-            setPoint0(ray.m_origin);
-            Vector3 p1 = ray.m_dir * length + ray.m_origin;
-            setPoint1(p1);
-        }
+        void setRay(Ray ray, float length);
+        void setLine(LineSegment line);
 
-        Vector3 getPoint0() const { return m_points[0]; }
-        Vector3 getPoint1() const { return m_points[1]; }
+        glm::vec3 getPoint0() const { return m_points[0]; }
+        glm::vec3 getPoint1() const { return m_points[1]; }
 
         Ray getRay() const
         {
@@ -42,7 +38,7 @@ namespace ee
         virtual void draw() override;
 
     private:
-        Vector3 m_points[2];
+        glm::vec3 m_points[2];
 
         GLuint m_VAO;
         GLuint m_VBO;

@@ -23,19 +23,17 @@ void ee::SBClosedBodySim::SBPressure::applyForces()
 {
     // first we get the current volume of the mesh:
     float V = m_model->calcVolume();
-    float invV = 1 / V;
+    float invV = 1.0 / V;
 
     // for each face:
-    for (std::size_t i = 0; i < m_model->getNumIndices();)
+    for (std::size_t i = 0; i < m_model->getNumMeshFaces(); i++)
     {
         // get triangle indices:
-        std::size_t i0 = m_model->getVertexID(i++);
-        std::size_t i1 = m_model->getVertexID(i++);
-        std::size_t i2 = m_model->getVertexID(i++);
+        MeshFace f = m_model->getMeshFace(i);
 
-        Vector3 v0 = m_model->getVertex(i0).m_position;
-        Vector3 v1 = m_model->getVertex(i1).m_position;
-        Vector3 v2 = m_model->getVertex(i2).m_position;
+        glm::vec3 v0 = m_model->getVertex(f.m_indices[0]).m_position;
+        glm::vec3 v1 = m_model->getVertex(f.m_indices[1]).m_position;
+        glm::vec3 v2 = m_model->getVertex(f.m_indices[2]).m_position;
 
         // get current face's area:
         glm::vec3 e0 = v1 - v0;
@@ -43,22 +41,22 @@ void ee::SBClosedBodySim::SBPressure::applyForces()
         float A = glm::length(glm::cross(e0, e1)) * 0.5f;
 
         // get the normal:
-        glm::vec3 norm = glm::normalize(glm::cross(e0, e1)); // counter-clockwise winding order
+        glm::vec3 norm = m_model->getNormal(i);
 
         glm::vec3 pForce = invV * A * m_P * norm;
 
         // apply the forces thusly:
-        if (m_simulation->getVertexObject(i0)->m_type == SBObjectType::ACTIVE)
+        if (m_simulation->getVertexObject(f.m_indices[0])->m_type == SBObjectType::ACTIVE)
         {
-            m_simulation->getVertexObject(i0)->m_resultantForce += pForce;
+            m_simulation->getVertexObject(f.m_indices[0])->m_resultantForce += pForce;
         }
-        if (m_simulation->getVertexObject(i1)->m_type == SBObjectType::ACTIVE)
+        if (m_simulation->getVertexObject(f.m_indices[1])->m_type == SBObjectType::ACTIVE)
         {
-            m_simulation->getVertexObject(i1)->m_resultantForce += pForce;
+            m_simulation->getVertexObject(f.m_indices[1])->m_resultantForce += pForce;
         }
-        if (m_simulation->getVertexObject(i2)->m_type == SBObjectType::ACTIVE)
+        if (m_simulation->getVertexObject(f.m_indices[2])->m_type == SBObjectType::ACTIVE)
         {
-            m_simulation->getVertexObject(i2)->m_resultantForce += pForce;
+            m_simulation->getVertexObject(f.m_indices[2])->m_resultantForce += pForce;
         }
     }
 }

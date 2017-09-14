@@ -20,9 +20,9 @@ namespace ee
 
     struct Vertex
     {
-        Vector3 m_position;
-        Vector3 m_normal;
-        Vector3 m_textCoord;
+        glm::vec3 m_position;
+        glm::vec3 m_normal;
+        glm::vec3 m_textCoord;
 
         bool operator==(const Vertex& vert)
         {
@@ -30,8 +30,8 @@ namespace ee
         }
 
         Vertex() {}
-        Vertex(Vector3 pos) : m_position(pos) {}
-        Vertex(Vector3 pos, Vector3 textCoord, Vector3 normal) : m_position(pos), m_textCoord(textCoord), m_normal(normal) {}
+        Vertex(glm::vec3 pos) : m_position(pos) {}
+        Vertex(glm::vec3 pos, glm::vec3 textCoord, glm::vec3 normal) : m_position(pos), m_textCoord(textCoord), m_normal(normal) {}
     };
 
     using VertBuffer = std::vector<Vertex>;
@@ -57,33 +57,39 @@ namespace ee
         virtual const MeshFace& getMeshFace(std::size_t meshFaceID) const { return m_faces[meshFaceID]; }
         virtual std::size_t getNumMeshFaces() const { return m_faces.size(); }
 
-        virtual const Vector3 getNormal(std::size_t meshFaceID) const
+        virtual const glm::vec3 getNormal(std::size_t meshFaceID) const
         {
             const auto& f = m_faces[meshFaceID];
 
-            Vector3 v0 = m_vertices[f.m_indices[0]].m_position;
-            Vector3 v1 = m_vertices[f.m_indices[1]].m_position;
-            Vector3 v2 = m_vertices[f.m_indices[2]].m_position;
+            glm::vec3 v0 = m_vertices[f.m_indices[0]].m_position;
+            glm::vec3 v1 = m_vertices[f.m_indices[1]].m_position;
+            glm::vec3 v2 = m_vertices[f.m_indices[2]].m_position;
 
-            Vector3 e0 = v1 - v0;
-            Vector3 e1 = v2 - v0;
+            glm::vec3 e0 = v1 - v0;
+            glm::vec3 e1 = v2 - v0;
             return glm::normalize(glm::cross(e0, e1));
         }
 
         // used to position the model in the world
-        glm::mat4 m_modelTrans;
 
         virtual void draw() override;
 
         virtual float calcVolume() const;
         virtual void calcNormals();
 
+        void setModelTrans(glm::mat4 modelTrans);
+        glm::mat4 getModelTrans() const;
+        glm::mat4 getNormalModelTrans() const;
+
     private:
         void constructVAO();
         const GLenum m_type; // for when copying the object
 
+        glm::mat4 m_modelTrans;
+        glm::mat4 m_normalModelTrans;
+
     protected:
-        std::vector<Vector3> m_tempNormals;
+        std::vector<glm::vec3> m_tempNormals;
 
         VertBuffer m_vertices;
         MeshFaceBuffer m_faces;

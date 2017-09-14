@@ -1,11 +1,11 @@
 #include "SBGravity.hpp"
 
 ee::SBGravity::SBGravity() :
-    m_acceleration(Vector3(0.f, -9.80665f, 0.f))
+    m_acceleration(glm::vec3(0.f, -9.80665f, 0.f))
 {
 }
 
-ee::SBGravity::SBGravity(Vector3 acceleration) :
+ee::SBGravity::SBGravity(glm::vec3 acceleration) :
     m_acceleration(acceleration)
 {
 }

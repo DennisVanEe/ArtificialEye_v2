@@ -27,9 +27,9 @@ namespace ee
         void assignTexture(std::string name, int textureUnit);
         void assignMat4f(std::string name, const glm::mat4& mat);
         void assignBool(std::string name, bool value);
-        void assignColor(std::string name, Color3 color);
-        void assignColor(std::string name, Color4 color);
-        void assignVec3f(std::string name, Vector3 vec);
+        void assignColor(std::string name, glm::vec3 color);
+        void assignColor(std::string name, glm::vec4 color);
+        void assignVec3f(std::string name, glm::vec3 vec);
         void assignfloat(std::string name, float val);
 
         void bindTexture(GLenum target, GLuint number, GLuint texture);

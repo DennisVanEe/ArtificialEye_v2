@@ -7,9 +7,9 @@ namespace ee
 {
     struct ShaderMaterial
     {
-        Vector3 m_ambient;
-        Vector3 m_diffuse;
-        Vector3 m_specular;
+        glm::vec3 m_ambient;
+        glm::vec3 m_diffuse;
+        glm::vec3 m_specular;
         float m_shininess;
 
         std::string m_textPack;
