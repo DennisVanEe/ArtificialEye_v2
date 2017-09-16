@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Simulation/SBClosedBodySim.hpp"
+#include "../Rendering/RenderingUtilities.hpp"
 #include "Constraints/SBLengthConstraint.hpp"
 
 namespace ee

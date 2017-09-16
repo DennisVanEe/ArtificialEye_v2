@@ -1,5 +1,20 @@
 #include "DynamicMesh.hpp"
 
+ee::DynamicMesh::DynamicMesh(std::string textPack, VertBuffer vertices, MeshFaceBuffer indices, int priority) : 
+    Mesh(textPack, vertices, indices, priority, GL_DYNAMIC_DRAW) 
+{
+}
+
+ee::DynamicMesh::DynamicMesh(const DynamicMesh & mesh) : 
+    Mesh(mesh) 
+{
+}
+
+ee::DynamicMesh::DynamicMesh(DynamicMesh && mesh) : 
+    Mesh(std::move(mesh)) 
+{
+}
+
 void ee::DynamicMesh::recalcNormals()
 {
     m_tempNormals.clear();

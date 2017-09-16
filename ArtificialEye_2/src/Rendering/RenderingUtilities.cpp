@@ -165,8 +165,13 @@ void ee::loadIcosphere(unsigned recursionLevel, VertBuffer* vertList, MeshFaceBu
     *indexList = tempIndList0;
 }
 
-void ee::loadUVsphere(unsigned nLon, unsigned nLat, VertBuffer* vertList, MeshFaceBuffer* indexList)
+void ee::loadUVsphere(int nLon, int nLat, VertBuffer* vertList, MeshFaceBuffer* indexList)
 {
+    if (nLon <= 0 || nLat <= 0)
+    {
+        return;
+    }
+
     // Vertices:
     vertList->resize((nLon) * nLat + 2); // plus 1 is for the extra bits in lon side
     (*vertList)[0] = Vertex(glm::vec3(0.f, 1.f, 0.f));
@@ -226,4 +231,47 @@ void ee::loadUVsphere(unsigned nLon, unsigned nLat, VertBuffer* vertList, MeshFa
         indexList->push_back({size - 1, size - (lon + 2) - 1, size - (lon + 1) - 1});
     }
     indexList->push_back({ size - 1, size - 2, size - (nLon)-1 }); // fix up that seam
+}
+
+std::vector<std::size_t> ee::getUVSphereLatitude(std::size_t index, int nLong, int nLat)
+{
+    if (nLong <= 0 || nLat <= 0)
+    {
+        return std::vector<std::size_t>();
+    }
+
+    std::vector<std::size_t> result;
+    std::size_t indices = (nLong * index) + 1;
+    for (std::size_t i = 0; i < nLong; i++, indices++)
+    {
+        result.push_back(indices);
+    }
+    return std::move(result);
+}
+
+std::vector<std::size_t> ee::getUVSphereLongitude(std::size_t index, int nLong, int nLat)
+{
+    if (nLong <= 0 || nLat <= 0)
+    {
+        return std::vector<std::size_t>();
+    }
+
+    std::vector<std::size_t> result;
+    std::size_t start = 1 + index;
+    for (std::size_t i = 0; i < nLat; i++, start += nLong)
+    {
+        result.push_back(start);
+    }
+    return std::move(result);
+}
+
+int ee::getLatIndex(int nLong, int nLat, std::size_t vecID)
+{
+    return (vecID - 1) / nLong;
+}
+
+int ee::getLonIndex(int nLong, int nLat, std::size_t vecID)
+{
+
+    return (vecID - 1) % nLong;
 }

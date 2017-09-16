@@ -20,6 +20,8 @@
 #include "SoftBody/Objects/SBFixedPoint.hpp"
 #include "SoftBody/SBUtilities.hpp"
 
+#include "Alglib/interpolation.h"
+
 #include <string>
 #include <iostream>
 #include <vector>
@@ -30,10 +32,10 @@ bool g_enableWireFram = false;
 std::vector<ee::SBPointConstraint*> g_constraints;
 const float g_constraintMoveSpeed = 0.1f;
 
-const float DEFAULT_P = 5.f;
+const float DEFAULT_P = 0.f; // 5.f;
 
-const unsigned g_sphereLat = 49U;
-const unsigned g_sphereLon = 49U;
+const unsigned g_sphereLat = 33U; // more stable (increasing this might cause more of a "jelly" effect)
+const unsigned g_sphereLon = 33U;
 
 ee::RayTracer* g_tracer;
 
@@ -100,6 +102,19 @@ void setSpaceCallback(GLFWwindow* window, int key, int scancode, int action, int
 
 int main()
 {
+    // spline builder done:
+
+    double test[] = { 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3 };
+    alglib::pspline3interpolant spline;
+    alglib::real_2d_array arr;
+    arr.setcontent(3, 3, test);
+    alglib::pspline3build(arr, 3, 2, 0, spline);
+
+    double x, y, z;
+    alglib::pspline3calc(spline, 0.25, x, y, z);
+
+    // TODO: how to find what part the triangle is in (between what points).
+
     try
     {
         ee::RendererParam rendererParams;
