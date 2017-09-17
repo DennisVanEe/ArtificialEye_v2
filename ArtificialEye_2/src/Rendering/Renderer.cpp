@@ -5,9 +5,9 @@
 #include "Renderer.hpp"
 #include "Drawable.hpp"
 
-void dummyMouseCallback(GLFWwindow*, double, double) {}
-void dummyKeyboardCallBack(GLFWwindow*, int, int, int, int) {}
-void dummyScrollCallBack(GLFWwindow*, double, double) {}
+void dummyMouseCallback     (GLFWwindow*, double, double) {}
+void dummyKeyboardCallBack  (GLFWwindow*, int, int, int, int) {}
+void dummyScrollCallBack    (GLFWwindow*, double, double) {}
 
 namespace ee
 {
@@ -17,50 +17,39 @@ namespace ee
         std::unordered_map<std::string, std::unique_ptr<Shader>>        g_shaders;
         std::unordered_map<std::string, std::unique_ptr<TexturePack>>   g_textPacks;
         Camera                                                          g_camera        = Camera(glm::vec3(), glm::vec3(), 0.f, 0.f); // not the cleanest thing I have ever done,
-                                                                                                                           // but I need to initialize it to some dummy value for now.
+                                                                                                                                      // but I need to initialize it to some dummy value for now.
         // Window and renderer properties:
         glm::mat4                                                       g_perspective;
         GLFWwindow*                                                     g_window;
         glm::vec4                                                       g_clearColor;
         bool                                                            g_initialized;
 
-        // Time management information:
-        float                                                           g_lastFrameTime = 0.f;
-        float                                                           g_deltaTime     = 0.f;
-
         // The render queue:
-        std::multiset <Drawable*, DrawableCompare>                      g_drawables;
-        bool                                                            g_renderFirstSet = false;
-        bool                                                            g_renderLastSet  = false;
-
-        /////////////////////////////
-        // CALLBACK FUNCTIONS
-        /////////////////////////////
+        std::multiset<Drawable*, DrawableCompare>                       g_drawables;
 
         // these are for custom defintions that someone might want to add
         MouseCallbackFunc                                               g_custMouseCallback;
         KeyboardCallbackFunc                                            g_custKeyboardCallback;
         ScrollCallbackFunc                                              g_custScrollCallback;
 
-        // these are to be used by the callback function
-        bool                                                            g_firstMouse    = true;
-        double                                                          g_lastX         = 0.;
-        double                                                          g_lastY         = 0.;
-
         void mouseCallback(GLFWwindow* window, double xpos, double ypos)
         {
-            if (g_firstMouse)
+            static bool firstMouse = true;
+            static double lastX = 0.;
+            static double lastY = 0.;
+
+            if (firstMouse)
             {
-                g_lastX = xpos;
-                g_lastY = ypos;
-                g_firstMouse = false;
+                lastX = xpos;
+                lastY = ypos;
+                firstMouse = false;
             }
 
-            double xoffset = xpos - g_lastX;
-            double yoffset = g_lastY - ypos; // reversed since y-coordinates go from bottom to top
+            double xoffset = xpos - lastX;
+            double yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
 
-            g_lastX = xpos;
-            g_lastY = ypos;
+            lastX = xpos;
+            lastY = ypos;
 
             g_camera.processMInput(xoffset, yoffset);
 
@@ -77,6 +66,55 @@ namespace ee
             g_custScrollCallback(window, xoffset, yoffset);
         }
     }
+}
+
+void ee::Renderer::initialize(const std::string rootShaderDir, const RendererParam& rendererParam, const CameraParam& cameraParam)
+{
+    g_custMouseCallback = dummyMouseCallback;
+    g_custKeyboardCallback = dummyKeyboardCallBack;
+    g_custScrollCallback = dummyScrollCallBack;
+
+    // assign the values:
+    g_rootShaderDir = rootShaderDir;
+    g_camera = Camera(cameraParam.m_position, cameraParam.m_up, cameraParam.m_yaw, cameraParam.m_pitch);
+    g_perspective = glm::perspective(glm::radians(rendererParam.m_fov), rendererParam.m_aspect, rendererParam.m_near, rendererParam.m_far);
+
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    g_window = glfwCreateWindow(rendererParam.m_screenWidth, rendererParam.m_screenHeight, PROJ_NAME, nullptr, nullptr);
+
+    if (g_window == nullptr)
+    {
+        throw std::runtime_error("GLFW could not create a window.");
+    }
+
+    glfwMakeContextCurrent(g_window);
+
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        throw std::runtime_error("GLAD could not initialize OpenGL.");
+    }
+
+    glfwSetInputMode(g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    glfwSetCursorPosCallback(g_window, mouseCallback);
+    glfwSetKeyCallback(g_window, keyboardCallback);
+    glfwSetScrollCallback(g_window, scrollCallback);
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+
+    g_initialized = true;
+}
+
+void ee::Renderer::deinitialize()
+{
+    glfwSetWindowShouldClose(g_window, true);
+    glfwTerminate();
+    g_initialized = false;
 }
 
 const ee::Camera* ee::Renderer::getCamera()
@@ -122,10 +160,13 @@ void ee::Renderer::setCustomScrollCallback(const ScrollCallbackFunc func)
 
 float ee::Renderer::timeElapsed()
 {
+    static float lastFrameTime = 0.f;
+    static float deltaTime = 0.f;
+
     float currentFrame = glfwGetTime();
-    g_deltaTime = currentFrame - g_lastFrameTime;
-    g_lastFrameTime = currentFrame;
-    return g_deltaTime;
+    deltaTime = currentFrame - lastFrameTime;
+    lastFrameTime = currentFrame;
+    return deltaTime;
 }
 
 void ee::Renderer::update()
@@ -169,129 +210,71 @@ void ee::Renderer::update(const float deltaTime)
     }
 }
 
-ee::Renderer::ErrorCode ee::Renderer::initialize(const std::string rootShaderDir, const RendererParam& rendererParam, const CameraParam& cameraParam)
-{
-    g_custMouseCallback = dummyMouseCallback;
-    g_custKeyboardCallback = dummyKeyboardCallBack;
-    g_custScrollCallback = dummyScrollCallBack;
-
-    // assign the values:
-    g_rootShaderDir = rootShaderDir;
-    g_camera = Camera(cameraParam.m_position, cameraParam.m_up, cameraParam.m_yaw, cameraParam.m_pitch);
-    g_perspective = glm::perspective(glm::radians(rendererParam.m_fov), rendererParam.m_aspect, rendererParam.m_near, rendererParam.m_far);
-
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    g_window = glfwCreateWindow(rendererParam.m_screenWidth, rendererParam.m_screenHeight, PROJ_NAME, nullptr, nullptr);
-
-    if (g_window == nullptr)
-    {
-        return ErrorCode::GLFW_ERROR;
-    }
-
-    glfwMakeContextCurrent(g_window);
-
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        return ErrorCode::GLFW_ERROR;
-    }
-
-    glfwSetInputMode(g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-    glfwSetCursorPosCallback(g_window, mouseCallback);
-    glfwSetKeyCallback(g_window, keyboardCallback);
-    glfwSetScrollCallback(g_window, scrollCallback);
-
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL); // for the cube map
-
-    g_initialized = true;
-    return ErrorCode::SUCCESS;
-}
-
-void ee::Renderer::deinitialize()
-{
-    glfwSetWindowShouldClose(g_window, true);
-    glfwTerminate();
-    g_initialized = false;
-}
-
 void ee::Renderer::addDrawable(Drawable* d)
 {
-    int priority = d->getPriority();
+    static bool renderFirstSet = false;
+    static bool renderLastSet = false;
+
+    const int priority = d->getPriority();
     if (priority == RENDER_FIRST)
     {
-        if (g_renderFirstSet)
+        if (renderFirstSet)
         {
             throw std::logic_error("Can't have two drawables set to RENDER_FIRST");
         }
         else
         {
-            g_renderFirstSet = true;
+            renderFirstSet = true;
         }
     }
     else if (priority == RENDER_LAST)
     {
-        if (g_renderLastSet)
+        if (renderLastSet)
         {
             throw std::logic_error("Can't have two drawables set to RENDER_FIRST");
         }
         else
         {
-            g_renderLastSet = true;
+            renderLastSet = true;
         }
     }
 
     g_drawables.insert(d);
 }
 
-void ee::Renderer::drawAll()
-{
-    for (auto& d : g_drawables)
-    {
-        d->draw();
-    }
+void ee::Renderer::drawAll() 
+{ 
+    for (auto& d : g_drawables) 
+    { 
+        d->draw(); 
+    } 
 }
 
-void ee::Renderer::insertTextPackIntoMap(std::string name, ee::TexturePack* pack)
+ee::TexturePack* ee::Renderer::getTexturePack(const std::string& name)
 {
-    std::unique_ptr<ee::TexturePack> smartPtr(pack);
-    g_textPacks.insert(std::make_pair(name, std::move(smartPtr)));
-}
-
-bool ee::Renderer::checkTextPackMap(std::string name)
-{
-    return g_textPacks.find(name) == g_textPacks.end();
-}
-
-ee::TexturePack* ee::Renderer::getTexturePack(std::string name)
-{
-    auto it = g_textPacks.find(name);
+    const auto it = g_textPacks.find(name);
     if (it == g_textPacks.end())
     {
-        return nullptr;
+        throw std::runtime_error("TexturePack " + name + " not already loaded.");
     }
     return it->second.get();
 }
 
 ee::Shader* ee::Renderer::loadShader(const std::string& vertName, const std::string& fragName, const std::string& geomName)
 {
-    std::string key = vertName + "%" + fragName + "%" + geomName;
-    auto loc = g_shaders.find(key);
+    const std::string key = vertName + "%" + fragName + "%" + geomName;
+    const auto loc = g_shaders.find(key);
 
     if (loc == g_shaders.end())
     {
-        std::string vertDir = g_rootShaderDir + "/" + vertName + ".glsl";
-        std::string fragDir = g_rootShaderDir + "/" + fragName + ".glsl";
-        std::string geomDir = geomName.empty() ? "" : g_rootShaderDir + "/" + geomName + ".glsl";
+        const std::string vertDir = g_rootShaderDir + "/" + vertName + ".glsl";
+        const std::string fragDir = g_rootShaderDir + "/" + fragName + ".glsl";
+        const std::string geomDir = geomName.empty() ? "" : g_rootShaderDir + "/" + geomName + ".glsl";
         
-        Shader* shader = new Shader();
+        Shader* const shader = new Shader();
         if (!shader->initialize(vertDir, fragDir, geomDir))
         {
-            return nullptr;
+            throw std::runtime_error("Execution stopped because shader program could not be setup.");
         }
 
         g_shaders.insert(std::make_pair(key, std::unique_ptr<Shader>(shader)));
@@ -299,4 +282,14 @@ ee::Shader* ee::Renderer::loadShader(const std::string& vertName, const std::str
     }
 
     return loc->second.get();
+}
+
+void ee::Renderer::impl::insertTextPackIntoMap(std::string name, ee::TexturePack* pack)
+{
+    g_textPacks.insert(std::make_pair(name, std::unique_ptr<ee::TexturePack>(pack)));
+}
+
+bool ee::Renderer::impl::checkTextPackMap(const std::string& name)
+{
+    return g_textPacks.find(name) == g_textPacks.end();
 }

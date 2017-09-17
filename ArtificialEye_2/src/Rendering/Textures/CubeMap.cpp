@@ -1,7 +1,7 @@
 #include "CubeMap.hpp"
 
 #include <stb_image.hpp>
-#include <iostream>
+#include <sstream>
 
 ee::CubeMap ee::loadCubeMap(std::string rootDir, std::vector<std::string> mapFaces)
 {
@@ -11,7 +11,7 @@ ee::CubeMap ee::loadCubeMap(std::string rootDir, std::vector<std::string> mapFac
 
     if (mapFaces.size() != 6)
     {
-        return CubeMap(0);
+        throw std::runtime_error("Was not provided enough faces for cubemap.");
     }
 
     int width, height, nChannels;
@@ -20,15 +20,16 @@ ee::CubeMap ee::loadCubeMap(std::string rootDir, std::vector<std::string> mapFac
         unsigned char *data = stbi_load((rootDir + "/" + mapFaces[i]).c_str(), &width, &height, &nChannels, 0);
         if (data)
         {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
             stbi_image_free(data);
         }
         else
         {
-            std::cout << "[ERROR] Could not load cubemap face at path: " << (rootDir + "/" + mapFaces[i]) << std::endl;
+            std::stringstream strstrm;
+            strstrm << "Could not load cubemap face at path: " << (rootDir + "/" + mapFaces[i]) << std::endl;
             stbi_image_free(data);
             glDeleteTextures(1, &texture);
-            return CubeMap(0);
+            throw std::runtime_error(strstrm.str());
         }
     }
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -39,3 +40,20 @@ ee::CubeMap ee::loadCubeMap(std::string rootDir, std::vector<std::string> mapFac
 
     return CubeMap(texture);
 }
+
+ee::CubeMap::CubeMap(CubeMap&& other) : 
+    Texture(other.m_texture) 
+{ 
+    other.m_texture = 0; 
+}
+
+ee::CubeMap::~CubeMap()
+{
+    glDeleteTextures(1, &m_texture);
+}
+
+ee::CubeMap::CubeMap(GLuint texture) : 
+    Texture(texture) 
+{
+}
+

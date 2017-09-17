@@ -7,12 +7,6 @@
 
 using namespace std;
 
-ee::Shader::Shader(Shader&& shader) :
-    m_programID(shader.m_programID)
-{
-    shader.m_programID = 0;
-}
-
 ee::Shader::Shader() :
     m_programID(0)
 {
@@ -205,6 +199,12 @@ bool ee::Shader::initialize(const std::string& vtxPath, const std::string& frgPa
 ee::Shader::~Shader()
 {
 	glDeleteProgram(m_programID);
+}
+
+ee::Shader::Shader(Shader&& shader) :
+    m_programID(shader.m_programID)
+{
+    shader.m_programID = 0;
 }
 
 void ee::Shader::use() const

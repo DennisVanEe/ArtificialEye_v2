@@ -44,10 +44,8 @@ namespace ee
 
     namespace Renderer
     {
-        enum class ErrorCode {SUCCESS, GLFW_ERROR, GLAD_ERROR};
-
         // Initialize a renderer with the given parameters:
-        ErrorCode initialize(std::string rootShaderDir, const RendererParam& rendererParam, const CameraParam& cameraParam);
+        void initialize(std::string rootShaderDir, const RendererParam& rendererParam, const CameraParam& cameraParam);
         void deinitialize();
 
         // used with rendering:
@@ -65,28 +63,40 @@ namespace ee
         void setCustomScrollCallback(ScrollCallbackFunc func);
 
         float timeElapsed();
-
         void update(float deltaTime);
         void update();
 
         void pollEvents();
         void swapBuffers();
 
-        void addDrawable(Drawable* d);
-
-        // texture pack ownership goes towards the renderer itself
-        template<typename T>
-        T* addTexturePack(std::string name, T* pack);
-
         void drawAll();
 
-        // figure out what to do here:
-        void insertTextPackIntoMap(std::string name, ee::TexturePack* pack);
-        bool checkTextPackMap(std::string name);
-
-        TexturePack* getTexturePack(std::string name);
+        TexturePack* getTexturePack(const std::string& name);
         Shader* loadShader(const std::string& vertName, const std::string& fragName, const std::string& geomName = "");
+    
+        // Implementation:
+        // Needed for access by the addTexturePack function:
+        namespace impl
+        {
+            void insertTextPackIntoMap(std::string name, ee::TexturePack* pack);
+            bool checkTextPackMap(const std::string& name);
+        }
+
+        // The Drawable is not managed by the renderer
+        void addDrawable(Drawable* d);
+        // The texture pack IS managed by the renderer (memory managed)
+        // and it has to be moved into the result
+        template<class T>
+        T* addTexturePack(std::string name, T&& pack)
+        {
+            if (impl::checkTextPackMap(name))
+            {
+                T* ptr = new T(std::move(pack));
+                impl::insertTextPackIntoMap(name, ptr);
+                return ptr;
+            }
+
+            return nullptr;
+        }
     }
 }
-
-#include "Renderer.inl"

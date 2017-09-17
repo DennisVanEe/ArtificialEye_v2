@@ -3,8 +3,8 @@
 ee::Mesh::Mesh(const std::string textPack, const VertBuffer vertices, const MeshFaceBuffer faces, int priority, GLenum type) :
     Drawable(textPack, priority),
     m_type(type),
-    m_vertices(vertices),
-    m_faces(faces),
+    m_vertices(std::move(vertices)),
+    m_faces(std::move(faces)),
     m_VAO(0)
 {
     constructVAO();
@@ -48,6 +48,49 @@ void ee::Mesh::applyTransformation(glm::mat4 mat)
 
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * m_vertices.size(), m_vertices.data());
+}
+
+const ee::Vertex & ee::Mesh::getVertex(std::size_t vertexID) const 
+{ 
+    return m_vertices[vertexID]; 
+}
+
+std::size_t ee::Mesh::getNumVertices() const 
+{ 
+    return m_vertices.size(); 
+}
+
+std::size_t ee::Mesh::getVertexID(std::size_t indexID) const 
+{ 
+    return reinterpret_cast<const GLuint*>(m_faces.data())[indexID]; 
+}
+
+std::size_t ee::Mesh::getNumIndices() const 
+{ 
+    return m_faces.size() * (sizeof(MeshFace) / sizeof(GLuint)); 
+}
+
+const ee::MeshFace & ee::Mesh::getMeshFace(std::size_t meshFaceID) const 
+{ 
+    return m_faces[meshFaceID]; 
+}
+
+std::size_t ee::Mesh::getNumMeshFaces() const 
+{ 
+    return m_faces.size(); 
+}
+
+const glm::vec3 ee::Mesh::getNormal(std::size_t meshFaceID) const
+{
+    const auto& f = m_faces[meshFaceID];
+
+    glm::vec3 v0 = m_vertices[f.m_indices[0]].m_position;
+    glm::vec3 v1 = m_vertices[f.m_indices[1]].m_position;
+    glm::vec3 v2 = m_vertices[f.m_indices[2]].m_position;
+
+    glm::vec3 e0 = v1 - v0;
+    glm::vec3 e1 = v2 - v0;
+    return glm::normalize(glm::cross(e0, e1));
 }
 
 void ee::Mesh::draw()

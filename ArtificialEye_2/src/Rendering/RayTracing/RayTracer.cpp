@@ -50,13 +50,13 @@ ee::RayTracer::RayTracer(std::vector<glm::vec3> positions, const Mesh* lens, flo
     }
 
     // set up all the drawables:
-    ee::Renderer::addTexturePack("lineTextPack", &ee::LineUniColorTextPack(rayColor));
+    ee::Renderer::addTexturePack("lineTextPack", ee::LineUniColorTextPack(rayColor));
     for (std::size_t i = 0; i < m_rayOrigins.size() * m_cachedPoints.size(); i++)
     {
-        m_drawableLines.push_back(RayPack("lineTextPack"));
+        m_drawableLines.push_back(DrawLensRayPath("lineTextPack"));
     }
 
-    for (RayPack& rayPack : m_drawableLines)
+    for (DrawLensRayPath& rayPack : m_drawableLines)
     {
         rayPack.sendToDrawable();
     }
@@ -73,69 +73,29 @@ bool ee::RayTracer::lensRefract(const Ray startRay, LensRayPath* o_rayPath)
     const std::pair<std::size_t, glm::vec3> entryIntersection = nearestIntersection(m_lens, entryRay);
     assert(entryIntersection.first < m_lens->getNumMeshFaces());
 
-    result.m_entry = LineSegment(entryRay.m_origin, entryIntersection.second);
+    result.m_entry = Line(entryRay.m_origin, entryIntersection.second);
 
     const MeshFace& entryFace = m_lens->getMeshFace(entryIntersection.first);
     const glm::vec3 entryNormal = glm::vec3(m_lens->getNormalModelTrans() * glm::vec4(m_lens->getNormal(entryIntersection.first), 0.f));
-    const glm::vec3 entryRefraction = glm::normalize(refract(entryRay.m_dir, entryNormal, m_ETA));
+    const glm::vec3 entryRefraction = glm::normalize(cust::refract(entryRay.m_dir, entryNormal, m_ETA));
 
     // now let's find the next intersection:
     const std::pair<std::size_t, glm::vec3> passIntersection = nearestIntersection(m_lens, Ray(entryIntersection.second, entryRefraction), entryIntersection.first);
     assert(passIntersection.first < m_lens->getNumMeshFaces());
 
     // assign the line:
-    result.m_pass = LineSegment(entryIntersection.second, passIntersection.second);
+    result.m_pass = Line(entryIntersection.second, passIntersection.second);
 
     // now calulcate the next part:
     const MeshFace& passFace = m_lens->getMeshFace(passIntersection.first);
     const glm::vec3 passNormal = -glm::vec3(m_lens->getNormalModelTrans() * glm::vec4(m_lens->getNormal(passIntersection.first), 0.f));
-    const glm::vec3 passRefraction = glm::normalize(refract(entryRefraction, entryNormal, 1.f / m_ETA));
+    const glm::vec3 passRefraction = glm::normalize(cust::refract(entryRefraction, entryNormal, 1.f / m_ETA));
 
     // now set the last part:
     result.m_end = Ray(passIntersection.second, passRefraction);
 
     *o_rayPath = result;
     return result.m_end.m_dir != glm::vec3();
-
-    //Ray outRay;
-    //Ray inRay;
-    //inRay.m_dir = glm::normalize(startRay.m_dir);
-    //inRay.m_origin = startRay.m_origin;
-    //outRay = inRay;
-
-    //std::vector<glm::vec3> results;
-
-    //for (int i = 0; i < 2; i++)
-    //{
-    //    auto triangleIntersection = nearestIntersection(m_lens, inRay);
-    //    if (triangleIntersection.first >= m_lens->getNumMeshFaces())
-    //    {
-    //        break;
-    //    }
-
-    //    int multFactor = (i & 1) * -2 + 1;
-    //    float actualETA = (i & 1) ? 1.f / eta : eta;
-
-    //    const auto& face = m_lens->getMeshFace(triangleIntersection.first);
-    //    glm::vec3 normal = m_lens->getNormal(triangleIntersection.first);
-    //    normal *= multFactor;
-
-    //    // transform normal:
-    //    normal = glm::vec3(m_lens->getNormalModelTrans() * glm::vec4(normal, 0.f));
-
-    //    glm::vec3 intersectionPt = triangleIntersection.second;
-    //    glm::vec3 refractRay = refract(inRay.m_dir, normal, actualETA);
-
-    //    outRay.m_dir = glm::normalize(refractRay);
-    //    outRay.m_origin = intersectionPt;
-    //    results.push_back(intersectionPt);
-
-    //    inRay = outRay;
-    //}
-
-    //results.push_back(outRay.m_dir);
-
-    //return std::move(results);
 }
 
 glm::vec3 ee::RayTracer::raytrace(std::size_t pos, const float rInc, const float cInc)
@@ -157,4 +117,18 @@ glm::vec3 ee::RayTracer::raytrace(std::size_t pos, const float rInc, const float
     }
 
     return glm::vec3(); // for now
+}
+
+void ee::RayTracer::DrawLensRayPath::sendToDrawable()
+{
+    ee::Renderer::addDrawable(&m_begin);
+    ee::Renderer::addDrawable(&m_middle);
+    ee::Renderer::addDrawable(&m_end);
+}
+
+ee::RayTracer::DrawLensRayPath::DrawLensRayPath(std::string textPack) :
+    m_begin(textPack, glm::vec3(), glm::vec3()),
+    m_middle(textPack, glm::vec3(), glm::vec3()),
+    m_end(textPack, glm::vec3(), glm::vec3()) 
+{
 }

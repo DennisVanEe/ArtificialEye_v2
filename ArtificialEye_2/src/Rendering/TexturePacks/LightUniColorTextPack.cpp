@@ -22,11 +22,6 @@ void ee::LightUniColorTextPack::preDraw(Shader* shader, const ShaderMaterial* ma
     shader->assignVec3f("u_lightPosition", m_lightPosition);
 }
 
-ee::TexturePack* ee::LightUniColorTextPack::getCopy() const
-{
-    return new LightUniColorTextPack(*this);
-}
-
 std::string ee::LightUniColorTextPack::getVShaderName() const
 {
     return "modelLightUniColor_vert";

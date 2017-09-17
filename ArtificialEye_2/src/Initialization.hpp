@@ -27,10 +27,12 @@ namespace ee
         float           extspring_drag;
 
         float           pressure;
-        float           muscle_thickness;
+        unsigned        muscle_thickness;
+        float           refractive_index;
+        float           lens_thickness;
     };
 
     ArtificialEyeProp initializeArtificialEyeProp(const std::string& dir);
 
-    // const ArtificialEyeProp ARTIFICIAL_EYE_PROP = initializeArtificialEyeProp(ARTIFICIAL_EYE_PROP_DIR);
+    const ArtificialEyeProp ARTIFICIAL_EYE_PROP = initializeArtificialEyeProp(ARTIFICIAL_EYE_PROP_DIR);
 }

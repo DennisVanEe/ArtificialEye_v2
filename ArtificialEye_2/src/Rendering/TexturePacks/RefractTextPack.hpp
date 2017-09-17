@@ -11,18 +11,19 @@ namespace ee
     {
     public:
         RefractTextPack(glm::vec3 color, std::string rootDir, std::vector<std::string> cubeFaces, float refractIndex);
+        RefractTextPack(const RefractTextPack& other) = default;
+        RefractTextPack(RefractTextPack&& other);
 
         void preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera) override;
         void postDraw() override {}
-        TexturePack* getCopy() const override;
 
         std::string getVShaderName() const override;
         std::string getFShaderName() const override;
         std::string getGShaderName() const override;
         
     public:
-        glm::vec3 m_color;
-        CubeMap m_skyBox;
-        float m_refractIndex;
+        glm::vec3   m_color;
+        CubeMap     m_skyBox;
+        float       m_refractIndex;
     };
 }

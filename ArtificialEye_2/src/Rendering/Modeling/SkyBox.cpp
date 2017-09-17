@@ -1,7 +1,9 @@
 #include "SkyBox.hpp"
 
-const float ee::SkyBox::m_vertices[] = 
+namespace ee
 {
+    const float SKYBOX_VERTICES[] =
+    {
         // positions          
         -1.0f,  1.0f, -1.0f,
         -1.0f, -1.0f, -1.0f,
@@ -44,26 +46,39 @@ const float ee::SkyBox::m_vertices[] =
          1.0f, -1.0f, -1.0f,
         -1.0f, -1.0f,  1.0f,
          1.0f, -1.0f,  1.0f
-};
+    };
+}
 
-ee::SkyBox::SkyBox(std::string textPack) :
+ee::SkyBox::SkyBox(const std::string& textPack) :
     Drawable(textPack, RENDER_LAST)
 {
-    GLuint VBO;
     glGenVertexArrays(1, &m_VAO);
-    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &m_VBO);
 
-    glBindVertexArray(VBO);
+    glBindVertexArray(m_VAO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), &m_vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(SKYBOX_VERTICES), SKYBOX_VERTICES, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
     glBindVertexArray(0);
+}
 
-    glDeleteBuffers(1, &VBO);
+ee::SkyBox::SkyBox(SkyBox&& other) :
+    Drawable(std::move(other)),
+    m_VAO(other.m_VAO),
+    m_VBO(other.m_VBO)
+{
+    other.m_VAO = 0;
+    other.m_VBO = 0;
+}
+
+ee::SkyBox::~SkyBox()
+{
+    glDeleteVertexArrays(1, &m_VAO);
+    glDeleteBuffers(1, &m_VBO);
 }
 
 void ee::SkyBox::draw()
@@ -73,16 +88,16 @@ void ee::SkyBox::draw()
     // get the camera first (also, let's do a bind first, for that is best I think)
     const Camera* camera = Renderer::getCamera();
 
-    Drawable::m_shader->use();
-    m_texturePack->preDraw(Drawable::m_shader, &m_shaderMaterial, camera); // sets whatever values it may want to set
+    m_shader->use();
+    m_texturePack->preDraw(m_shader, &m_shaderMaterial, camera); // sets whatever values it may want to set
 
     glm::mat4 lookAt = glm::mat4(glm::mat3(camera->viewMatrix()));
     glm::mat4 perspective = Renderer::getPerspective();
     glm::mat4 trans = perspective * lookAt;
 
     // all shaders need this:
-    Drawable::m_shader->assignMat4f("u_posTrans", trans);
-    Drawable::m_shader->assignMat4f("u_model", glm::mat4()); // in case this is needed
+    m_shader->assignMat4f("u_posTrans", trans);
+    m_shader->assignMat4f("u_model", glm::mat4()); // in case this is needed
 
     glDrawArrays(GL_TRIANGLES, 0, 36);
     m_texturePack->postDraw();

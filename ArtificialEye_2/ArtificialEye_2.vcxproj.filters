@@ -123,9 +123,6 @@
     <ClCompile Include="src\Rendering\RayTracing\Intersections.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Rendering\Modeling\Line.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Types.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -184,6 +181,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\alglib\statistics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Modeling\DrawLine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\TexturePacks\SkyBoxTextPack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\TexturePacks\UniColorTextPack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -275,19 +281,10 @@
     <ClInclude Include="src\Rendering\Modeling\Mesh.hpp">
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="src\Rendering\Modeling\Model.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Rendering\Modeling\SkyBox.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Rendering\RayTracing\Ray.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Rendering\RayTracing\Intersections.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Rendering\Modeling\Line.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Rendering\TexturePacks\LineUniColorTextPack.hpp">
@@ -350,6 +347,12 @@
     <ClInclude Include="src\alglib\statistics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Rendering\Textures\Texture.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\Modeling\DrawLine.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\modelUniColor_vert.glsl" />
@@ -363,9 +366,6 @@
     <None Include="Shaders\modelRefract_geom.glsl" />
     <None Include="Shaders\lineUniColor_vert.glsl" />
     <None Include="Shaders\lineUniColor_frag.glsl" />
-    <None Include="src\Rendering\Renderer.inl">
-      <Filter>Header Files</Filter>
-    </None>
     <None Include="src\SoftBody\Simulation\SBSimulation.inl">
       <Filter>Header Files</Filter>
     </None>

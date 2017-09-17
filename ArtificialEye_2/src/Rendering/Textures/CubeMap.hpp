@@ -4,26 +4,19 @@
 #include <string>
 #include <vector>
 
+#include "Texture.hpp"
+
 namespace ee
 {
-    class CubeMap
+    class CubeMap : public Texture
     {
     public:
-        ~CubeMap()
-        {
-            glDeleteTextures(1, &m_texture);
-        }
-
-        GLuint getTexture() const
-        {
-            return m_texture;
-        }
+        CubeMap(CubeMap&& other);
+        ~CubeMap();
 
     private:
-        CubeMap(GLuint texture) : m_texture(texture) {}
+        CubeMap(GLuint texture);
         friend CubeMap loadCubeMap(std::string, std::vector<std::string>);
-
-        GLuint m_texture;
     };
 
     CubeMap loadCubeMap(std::string rootDir, std::vector<std::string> mapFaces);

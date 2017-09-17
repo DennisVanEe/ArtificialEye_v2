@@ -168,7 +168,7 @@
     <ClCompile Include="src\Rendering\Camera.cpp" />
     <ClCompile Include="src\Rendering\Drawable.cpp" />
     <ClCompile Include="src\Rendering\Modeling\DynamicMesh.cpp" />
-    <ClCompile Include="src\Rendering\Modeling\Line.cpp" />
+    <ClCompile Include="src\Rendering\Modeling\DrawLine.cpp" />
     <ClCompile Include="src\Rendering\Modeling\Mesh.cpp" />
     <ClCompile Include="src\Rendering\Modeling\SkyBox.cpp" />
     <ClCompile Include="src\Rendering\RayTracing\Intersections.cpp" />
@@ -178,6 +178,8 @@
     <ClCompile Include="src\Rendering\shader.cpp" />
     <ClCompile Include="src\Rendering\TexturePacks\LightUniColorTextPack.cpp" />
     <ClCompile Include="src\Rendering\TexturePacks\RefractTextPack.cpp" />
+    <ClCompile Include="src\Rendering\TexturePacks\SkyBoxTextPack.cpp" />
+    <ClCompile Include="src\Rendering\TexturePacks\UniColorTextPack.cpp" />
     <ClCompile Include="src\Rendering\Textures\CubeMap.cpp" />
     <ClCompile Include="src\SoftBody\Constraints\SBLengthConstraint.cpp" />
     <ClCompile Include="src\SoftBody\Constraints\SBPointConstraint.cpp" />
@@ -214,12 +216,10 @@
     <ClInclude Include="src\Rendering\Camera.hpp" />
     <ClInclude Include="src\Rendering\Drawable.hpp" />
     <ClInclude Include="src\Rendering\Modeling\DynamicMesh.hpp" />
-    <ClInclude Include="src\Rendering\Modeling\Line.hpp" />
+    <ClInclude Include="src\Rendering\Modeling\DrawLine.hpp" />
     <ClInclude Include="src\Rendering\Modeling\Mesh.hpp" />
-    <ClInclude Include="src\Rendering\Modeling\Model.hpp" />
     <ClInclude Include="src\Rendering\Modeling\SkyBox.hpp" />
     <ClInclude Include="src\Rendering\RayTracing\Intersections.hpp" />
-    <ClInclude Include="src\Rendering\RayTracing\Ray.hpp" />
     <ClInclude Include="src\Rendering\RayTracing\RayTracer.hpp" />
     <ClInclude Include="src\Rendering\Renderer.hpp" />
     <ClInclude Include="src\Rendering\RenderingUtilities.hpp" />
@@ -232,6 +232,7 @@
     <ClInclude Include="src\Rendering\TexturePacks\TexturePack.hpp" />
     <ClInclude Include="src\Rendering\TexturePacks\UniColorTextPack.hpp" />
     <ClInclude Include="src\Rendering\Textures\CubeMap.hpp" />
+    <ClInclude Include="src\Rendering\Textures\Texture.hpp" />
     <ClInclude Include="src\SoftBody\Constraints\SBConstraint.hpp" />
     <ClInclude Include="src\SoftBody\Constraints\SBLengthConstraint.hpp" />
     <ClInclude Include="src\SoftBody\Constraints\SBPointConstraint.hpp" />
@@ -265,7 +266,6 @@
     <None Include="Shaders\modelUniColor_vert.glsl" />
     <None Include="Shaders\skyBox_frag.glsl" />
     <None Include="Shaders\skyBox_vert.glsl" />
-    <None Include="src\Rendering\Renderer.inl" />
     <None Include="src\SoftBody\Simulation\SBSimulation.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -9,33 +9,30 @@
 namespace ee
 {
     // annoying Windows.h macros...
-    const int RENDER_LAST = (std::numeric_limits<int>::max)();
-    const int RENDER_FIRST = (std::numeric_limits<int>::min)();
+    const int RENDER_LAST =  INT_MAX;
+    const int RENDER_FIRST = INT_MIN;
 
     class Drawable
     {
     public:
-        Drawable(std::string textPack, int priority);
-        Drawable(std::string vertName, std::string fragName);
+        Drawable(const std::string& textPack, int priority);
+        Drawable(const std::string& vertName, const std::string& fragName);
 
         void setShaderMaterial(ShaderMaterial mat);
 
-        int getPriority() const { return m_priority; }
+        int getPriority() const;
 
         virtual void draw() = 0;
 
     protected:
-        TexturePack* m_texturePack;
-        Shader* m_shader;
-        ShaderMaterial m_shaderMaterial;
-        int m_priority;
+        TexturePack*    m_texturePack;
+        Shader*         m_shader;
+        ShaderMaterial  m_shaderMaterial;
+        int             m_priority;
     };
 
     struct DrawableCompare
     {
-        bool operator()(const Drawable* a, const Drawable* b) const
-        {
-            return a->getPriority() < b->getPriority();
-        }
+        bool operator()(const Drawable* a, const Drawable* b) const;
     };
 }

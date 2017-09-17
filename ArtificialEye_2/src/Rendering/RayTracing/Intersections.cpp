@@ -95,7 +95,7 @@ std::pair<std::size_t, glm::vec3> ee::nearestIntersection(const Mesh* mesh, Ray 
     return std::make_pair(minFace, minPoint);
 }
 
-glm::vec3 ee::refract(const glm::vec3& I, const glm::vec3& N, const float eta)
+glm::vec3 ee::cust::refract(const glm::vec3& I, const glm::vec3& N, const float eta)
 {
     float k = 1.0 - eta * eta * (1.0 - glm::dot(N, I) * glm::dot(N, I));
     if (k < 0.0)

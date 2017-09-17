@@ -5,11 +5,11 @@
 #include <glm/glm.hpp>
 
 #include "../Modeling/Mesh.hpp"
-#include "Ray.hpp"
+#include "../../Types.hpp"
 #include "../Renderer.hpp"
 
 #include "../TexturePacks/LineUniColorTextPack.hpp"
-#include "../Modeling/Line.hpp"
+#include "../Modeling/DrawLine.hpp"
 #include "Intersections.hpp"
 
 namespace ee
@@ -26,34 +26,25 @@ namespace ee
         static RayTracer& initialize(std::vector<glm::vec3> positions, const Mesh* lens, float lensRefractiveIndex, RayTracerParam param, glm::vec3 rayColor);
 
         void raytrace();
-
         const std::vector<glm::vec3>& getResultColors() const;
 
     private:
-        struct RayPack
+        struct DrawLensRayPath
         {
-            Line m_begin;
-            Line m_middle;
-            Line m_end;
+            DrawLine m_begin;
+            DrawLine m_middle;
+            DrawLine m_end;
 
-            void sendToDrawable()
-            {
-                ee::Renderer::addDrawable(&m_begin);
-                ee::Renderer::addDrawable(&m_middle);
-                ee::Renderer::addDrawable(&m_end);
-            }
+            void sendToDrawable();
 
-            RayPack(std::string textPack) :
-                m_begin(textPack, glm::vec3(), glm::vec3()),
-                m_middle(textPack, glm::vec3(), glm::vec3()),
-                m_end(textPack, glm::vec3(), glm::vec3()) {}
+            DrawLensRayPath(std::string textPack);
         };
 
         struct LensRayPath
         {
-            LineSegment m_entry;
-            LineSegment m_pass;
-            Ray         m_end;
+            Line m_entry;
+            Line m_pass;
+            Ray  m_end;
         };
 
     private:
@@ -67,9 +58,9 @@ namespace ee
         
         bool lensRefract(Ray startRay, LensRayPath* o_rayPath);
 
-        std::vector<glm::vec3> m_rayOrigins;
-        std::vector<glm::vec3> m_resultColors; // the colors that will result
-        std::vector<glm::vec3> m_cachedPoints;
-        std::vector<RayPack>   m_drawableLines; // for rendering
+        std::vector<glm::vec3>        m_rayOrigins;
+        std::vector<glm::vec3>        m_resultColors; // the colors that will result
+        std::vector<glm::vec3>        m_cachedPoints;
+        std::vector<DrawLensRayPath>  m_drawableLines; // for rendering
     };
 }

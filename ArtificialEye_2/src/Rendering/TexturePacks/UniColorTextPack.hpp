@@ -9,14 +9,13 @@ namespace ee
     class UniColorTextPack : public TexturePack
     {
     public:
-        UniColorTextPack(glm::vec4 color) : m_color(color) {}
+        UniColorTextPack(glm::vec4 color);
 
-        void preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera) override { shader->assignColor("u_modelColor", m_color); }
+        void preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera) override;
         void postDraw() override {}
-        TexturePack* getCopy() const override { return new UniColorTextPack(*this); }
 
-        std::string getVShaderName() const override { return "modelUniColor_vert"; }
-        std::string getFShaderName() const override { return "modelUniColor_frag"; }
+        std::string getVShaderName() const override;
+        std::string getFShaderName() const override;
 
     private:
         glm::vec4 m_color;

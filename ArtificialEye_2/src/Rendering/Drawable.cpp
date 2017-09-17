@@ -2,11 +2,11 @@
 
 #include <sstream>
 
-ee::Drawable::Drawable(std::string textPack, int priority) :
+ee::Drawable::Drawable(const std::string& textPack, const int priority) :
     m_texturePack(Renderer::getTexturePack(textPack)),
     m_priority(priority)
 {
-    if (priority < 0 && priority != RENDER_FIRST)
+    if (m_priority < 0 && m_priority != RENDER_FIRST)
     {
         m_priority = 0;
     }
@@ -28,7 +28,7 @@ ee::Drawable::Drawable(std::string textPack, int priority) :
     }
 }
 
-ee::Drawable::Drawable(const std::string vertName, const std::string fragName) :
+ee::Drawable::Drawable(const std::string& vertName, const std::string& fragName) :
     m_shader(Renderer::loadShader(vertName, fragName)),
     m_texturePack(nullptr)
 {
@@ -40,7 +40,17 @@ ee::Drawable::Drawable(const std::string vertName, const std::string fragName) :
     }
 }
 
-void ee::Drawable::setShaderMaterial(ShaderMaterial mat)
+void ee::Drawable::setShaderMaterial(ShaderMaterial mat) 
+{ 
+    m_shaderMaterial = mat; 
+}
+
+int ee::Drawable::getPriority() const 
+{ 
+    return m_priority; 
+}
+
+bool ee::DrawableCompare::operator()(const Drawable* a, const Drawable* b) const
 {
-    m_shaderMaterial = mat;
+    return a->getPriority() < b->getPriority();
 }

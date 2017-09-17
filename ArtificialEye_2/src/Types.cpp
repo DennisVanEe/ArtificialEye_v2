@@ -6,3 +6,15 @@ glm::vec3 ee::removeZeroError(glm::vec3 vec)
     vec *= result;
     return vec;
 }
+
+ee::Ray::Ray(glm::vec3 origin, glm::vec3 dir) : 
+    m_origin(origin), 
+    m_dir(dir) 
+{
+}
+
+ee::Line::Line(glm::vec3 start, glm::vec3 end) : 
+    m_start(start), 
+    m_end(end) 
+{
+}

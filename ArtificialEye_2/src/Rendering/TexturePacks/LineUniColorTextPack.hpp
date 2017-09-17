@@ -19,7 +19,6 @@ namespace ee
         }
 
         void postDraw() override {}
-        TexturePack* getCopy() const override { return new LineUniColorTextPack(*this); }
 
         std::string getVShaderName() const override { return "lineUniColor_vert"; }
         std::string getFShaderName() const override { return "lineUniColor_frag"; }

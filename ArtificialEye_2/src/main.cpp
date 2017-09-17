@@ -5,7 +5,6 @@
 #include "Rendering/TexturePacks/LightUniColorTextpack.hpp"
 #include "Rendering/Modeling/DynamicMesh.hpp"
 #include "Rendering/Modeling/SkyBox.hpp"
-#include "Rendering/Modeling/Line.hpp"
 #include "Rendering/RenderingUtilities.hpp"
 #include "Rendering/TexturePacks/SkyBoxTextPack.hpp"
 #include "Rendering/TexturePacks/RefractTextPack.hpp"
@@ -26,27 +25,35 @@
 #include <iostream>
 #include <vector>
 
+using namespace ee;
+
+std::vector<std::string> g_cubeMapFaces
+{
+    "right.jpg",
+    "left.jpg",
+    "top.jpg",
+    "bottom.jpg",
+    "back.jpg",
+    "front.jpg"
+};
+
+const std::string g_textureDir = "Textures/";
+const std::string g_cubeMapDir = "SkyBox";
+
 bool g_startSoftBody = false;
 bool g_enableWireFram = false;
 
 std::vector<ee::SBPointConstraint*> g_constraints;
 const float g_constraintMoveSpeed = 0.1f;
-
-const float DEFAULT_P = 0.f; // 5.f;
-
-const unsigned g_sphereLat = 33U; // more stable (increasing this might cause more of a "jelly" effect)
-const unsigned g_sphereLon = 33U;
-
 ee::RayTracer* g_tracer;
-
 bool g_defaultP = true;
 
 void addConstraints(const std::size_t thickness, ee::SBSimulation* sim, const ee::Mesh* mesh)
 {
     for (std::size_t i = 0, sub = (thickness / 2 + 1); i < thickness; i++, sub--)
     {
-        std::size_t index = (g_sphereLat / 2 - sub) * (g_sphereLon)+1;
-        std::size_t end = index + g_sphereLon;
+        const std::size_t index = (ARTIFICIAL_EYE_PROP.latitude / 2 - sub) * (ARTIFICIAL_EYE_PROP.longitude) + 1;
+        const std::size_t end = index + ARTIFICIAL_EYE_PROP.longitude;
 
         for (std::size_t j = index; j < end; j++)
         {
@@ -102,6 +109,11 @@ void setSpaceCallback(GLFWwindow* window, int key, int scancode, int action, int
 
 int main()
 {
+    if (!ARTIFICIAL_EYE_PROP.success)
+    {
+        return -1;
+    }
+
     // spline builder done:
 
     double test[] = { 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3 };
@@ -113,97 +125,50 @@ int main()
     double x, y, z;
     alglib::pspline3calc(spline, 0.25, x, y, z);
 
-    // TODO: how to find what part the triangle is in (between what points).
-
     try
     {
-        ee::RendererParam rendererParams;
-        ee::CameraParam cameraParams;
-        std::string sharedDir = "Shaders";
-
-        rendererParams.m_aspect = 16.f / 9.f;
-        rendererParams.m_screenWidth = 1920;
-        rendererParams.m_screenHeight = 1080;
-        rendererParams.m_fov = 45.f;
-        rendererParams.m_far = 100.f;
-        rendererParams.m_near = 0.1f;
-
+        // The default camera parameters:
+        CameraParam cameraParams;
         cameraParams.m_position = glm::vec3(10.f, 0.f, 0.f);
         cameraParams.m_up = glm::vec3(0.f, 1.f, 0.f);
         cameraParams.m_yaw = 180.f;
         cameraParams.m_pitch = 0.f;
 
-        ee::Renderer::ErrorCode res = ee::Renderer::initialize(sharedDir, rendererParams, cameraParams);
-        ee::Renderer::setCustomKeyboardCallback(setSpaceCallback);
+        // prepare the renderer:
+        Renderer::initialize(ARTIFICIAL_EYE_PROP.shader_dir, ARTIFICIAL_EYE_PROP.render_param, cameraParams);
+        Renderer::setCustomKeyboardCallback(setSpaceCallback);
 
-        ee::VertBuffer vertBuffer;
-        ee::MeshFaceBuffer indBuffer;
-        // ee::loadIcosphere(4, &vertBuffer, &indBuffer);
-        ee::loadUVsphere(g_sphereLon, g_sphereLat, &vertBuffer, &indBuffer);
+        // loaded cubemap twice, not efficient, but not important right now:
+        void* res = Renderer::addTexturePack("refractTextPack", RefractTextPack(glm::vec3(), g_textureDir + g_cubeMapDir, g_cubeMapFaces, ARTIFICIAL_EYE_PROP.refractive_index)); assert(res);
+        res =       Renderer::addTexturePack("skyBoxTextPack", SkyBoxTextPack(g_textureDir + g_cubeMapDir, g_cubeMapFaces)); assert(res);
 
-        // now create a model:
+        // generate the UV Sphere lens (not super efficient)
+        VertBuffer uvSphereVertexBuffer;
+        MeshFaceBuffer uvSphereIndexBuffer;
+        loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude, &uvSphereVertexBuffer, &uvSphereIndexBuffer);
+        DynamicMesh lensMesh("refractTextPack", std::move(uvSphereVertexBuffer), std::move(uvSphereIndexBuffer));
 
-        ee::UniColorTextPack uniColor(glm::vec4(0.f, 1.f, 0.f, 1.f));
-        ee::Renderer::addTexturePack("uniColor", &uniColor);
+        SkyBox skyBox("skyBoxTextPack");
+        Renderer::addDrawable(&skyBox);
+        Renderer::addDrawable(&lensMesh);
 
-        ee::LightUniColorTextPack lightUniColor;
-        lightUniColor.m_color = glm::vec3(0.2f, 1.f, 0.f);
-        lightUniColor.m_lightPosition = glm::vec3(2.f, 2.f, 2.f);
-        lightUniColor.m_material.m_ambient = glm::vec3(1.0f, 0.5f, 0.31f);
-        lightUniColor.m_material.m_diffuse = glm::vec3(1.0f, 0.5f, 0.31f);
-        ee::Renderer::addTexturePack("lightUniColor", &lightUniColor);
+        // update the positons of the lens
+        const glm::mat4 lensModelTrans = glm::scale(glm::rotate(glm::mat4(), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f)), glm::vec3(1.f, ARTIFICIAL_EYE_PROP.lens_thickness, 1.f));
+        lensMesh.setModelTrans(lensModelTrans);
 
-        std::vector<std::string> cubemapcomp
-        {
-            "right.jpg",
-            "left.jpg",
-            "top.jpg",
-            "bottom.jpg",
-            "back.jpg",
-            "front.jpg"
-        };
+        // prepare the simulation
+        SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &lensMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
+        lensSim.m_constIterations = ARTIFICIAL_EYE_PROP.iterations;
+        addInteriorSpringsUVSphere(&lensSim, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.intspring_coeff, ARTIFICIAL_EYE_PROP.intspring_drag);
+        addConstraints(5, &lensSim, &lensMesh);
+        lensSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 20.f, ARTIFICIAL_EYE_PROP.extspring_drag));
 
-        ee::RefractTextPack refractTextPack(glm::vec3(), "Textures/SkyBox", cubemapcomp, 1.33f);
-        ee::SkyBoxTextPack skyBoxTextPack("Textures/SkyBox", cubemapcomp);
-        ee::LineUniColorTextPack lineTextPack(glm::vec3(1.f, 0.f, 0.f));
-        ee::Renderer::addTexturePack("SkyBoxTextPack", &skyBoxTextPack);
-        ee::Renderer::addTexturePack("refractTextPack", &refractTextPack);
-        ee::Renderer::addTexturePack("lineTextPack", &lineTextPack);
-
-        // load the skybox
-        ee::SkyBox skyBox("SkyBoxTextPack");
-        ee::Renderer::addDrawable(&skyBox);
-
-        // load the dynModel
-        ee::DynamicMesh dynModel("refractTextPack", std::move(vertBuffer), std::move(indBuffer));
-        ee::Renderer::addDrawable(&dynModel);
-
-        // transform the sphere:
-        glm::mat4 modelTrans = glm::rotate(glm::mat4(), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
-        modelTrans = glm::scale(modelTrans, glm::vec3(1.f, 0.75f, 1.f));
-
-        // dynModel.applyTransformation(modelTrans);
-        dynModel.setModelTrans(modelTrans); // glm::mat4();
-
-        ee::Renderer::setClearColor(glm::vec3(0.45f, 0.45f, 0.45f));
-
-        ///////////////////////////////////////////////////////
-        // SIMULATION PARAM
-        ///////////////////////////////////////////////////////
-        ee::SBClosedBodySim clothSim(DEFAULT_P, &dynModel, 5.f, 3.f, 1.f);
-        clothSim.m_constIterations = 5.f; // 10.f;
-
-        ee::addInteriorSpringsUVSphere(&clothSim, g_sphereLat, g_sphereLon, 20.f, 1.f);
-
-        addConstraints(5, &clothSim, &dynModel);
-
-        clothSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 20.f, 0.01f));
-
+        // test stuff:
         const std::vector<glm::vec3> pos = { glm::vec3(0.f, 0.f, -2.f) };
-        ee::RayTracerParam param;
+        RayTracerParam param;
         param.m_widthResolution = 5.f;
         param.m_heightResolution = 5.f;
-        g_tracer = &ee::RayTracer::initialize(pos, &dynModel, 1.56f, param, glm::vec3(1.f, 0.f, 0.f));
+        // g_tracer = &ee::RayTracer::initialize(pos, &lensMesh, 1.56f, param, glm::vec3(1.f, 0.f, 0.f));
 
         while (ee::Renderer::isInitialized())
         {
@@ -218,27 +183,27 @@ int main()
 
             if (g_defaultP)
             {
-                clothSim.setP(DEFAULT_P);
+                lensSim.setP(ARTIFICIAL_EYE_PROP.pressure);
             }
             else
             {
-                clothSim.setP(0.f);
+                lensSim.setP(0.f);
             }
 
             ee::Renderer::clearBuffers();
 
-            float time = ee::Renderer::timeElapsed();
+            float time = Renderer::timeElapsed();
             if (g_startSoftBody)
             {
-                clothSim.update(time);
+                lensSim.update(time);
             }
 
-            g_tracer->raytrace();
+            // g_tracer->raytrace();
 
-            ee::Renderer::drawAll();
-            ee::Renderer::update(time);
-            ee::Renderer::swapBuffers();
-            ee::Renderer::pollEvents();
+            Renderer::drawAll();
+            Renderer::update(time);
+            Renderer::swapBuffers();
+            Renderer::pollEvents();
         }
     }
     catch (const std::exception& e)
@@ -247,8 +212,10 @@ int main()
         std::cout << e.what() << std::endl;
         std::cout << "Press ENTER to exit." << std::endl;
         std::cin.get();
+        Renderer::deinitialize();
         return -1;
     }
 
+    Renderer::deinitialize();
     return 0;
 }

@@ -7,6 +7,13 @@ ee::RefractTextPack::RefractTextPack(glm::vec3 color, std::string rootDir, std::
 {
 }
 
+ee::RefractTextPack::RefractTextPack(RefractTextPack&& other) : 
+    m_color(other.m_color), 
+    m_skyBox(std::move(other.m_skyBox)), 
+    m_refractIndex(other.m_refractIndex) 
+{
+}
+
 void ee::RefractTextPack::preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera)
 {
     // shader->assignColor("u_modelColor", m_color); // assign the color
@@ -14,11 +21,6 @@ void ee::RefractTextPack::preDraw(Shader* shader, const ShaderMaterial* material
     shader->assignVec3f("u_cameraPosition", camPos);
     shader->assignfloat("u_refractIndex", m_refractIndex);
     shader->bindTexture(GL_TEXTURE_CUBE_MAP, 0, m_skyBox.getTexture());
-}
-
-ee::TexturePack* ee::RefractTextPack::getCopy() const
-{
-    return new RefractTextPack(*this);
 }
 
 std::string ee::RefractTextPack::getVShaderName() const

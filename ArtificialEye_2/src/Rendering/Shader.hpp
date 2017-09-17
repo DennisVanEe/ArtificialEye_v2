@@ -19,7 +19,6 @@ namespace ee
 
         Shader(const Shader&) = delete;
         Shader& operator=(const Shader&) = delete;
-
         Shader(Shader&& shader);
 
         void use() const;
@@ -36,7 +35,6 @@ namespace ee
         void unbindTexture(GLenum target);
 
     private:
-        bool m_bound2DText;
         GLuint m_programID;
     };
 }

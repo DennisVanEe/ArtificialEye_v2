@@ -8,13 +8,15 @@ namespace ee
     class SkyBox : public Drawable
     {
     public:
-        SkyBox(std::string textPack);
+        SkyBox(const std::string& textPack);
+        SkyBox(const SkyBox& other) = default;
+        SkyBox(SkyBox&& other);
+        ~SkyBox();
 
         void draw() override;
 
     private:
-        static const float m_vertices[];
-
         GLuint m_VAO;
+        GLuint m_VBO;
     };
 }
