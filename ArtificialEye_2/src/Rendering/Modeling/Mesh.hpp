@@ -2,7 +2,6 @@
 
 #include "../Drawable.hpp"
 #include "../Renderer.hpp"
-#include "../TexturePacks/TexturePack.hpp"
 #include "../../Types.hpp"
 
 #include <vector>

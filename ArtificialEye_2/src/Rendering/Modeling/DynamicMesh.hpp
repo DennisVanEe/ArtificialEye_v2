@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Mesh.hpp"
-#include "../../Types.hpp"
-#include <glm/gtc/type_ptr.hpp>
 
 namespace ee
 {

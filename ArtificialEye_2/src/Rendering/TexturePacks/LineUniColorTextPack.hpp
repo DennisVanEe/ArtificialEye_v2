@@ -10,18 +10,15 @@ namespace ee
     class LineUniColorTextPack : public TexturePack
     {
     public:
-        LineUniColorTextPack(glm::vec3 color) : m_color(color) {}
-        LineUniColorTextPack() : m_color(1.f, 1.f, 1.f) {}
+        LineUniColorTextPack(glm::vec3 color);
+        LineUniColorTextPack();
 
-        void preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera) override
-        {
-            shader->assignColor("u_color", m_color);
-        }
+        void preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera) override;
 
-        void postDraw() override {}
+        void postDraw() override;
 
-        std::string getVShaderName() const override { return "lineUniColor_vert"; }
-        std::string getFShaderName() const override { return "lineUniColor_frag"; }
+        std::string getVShaderName() const override;
+        std::string getFShaderName() const override;
 
     public:
         glm::vec3 m_color;

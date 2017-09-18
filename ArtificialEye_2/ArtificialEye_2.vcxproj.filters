@@ -192,6 +192,9 @@
     <ClCompile Include="src\Rendering\TexturePacks\UniColorTextPack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Rendering\TexturePacks\LineUniColorTextPack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Types.hpp">
@@ -370,5 +373,8 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="ArtificialEye_Properties.ini" />
+    <None Include="src\Rendering\Renderer.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

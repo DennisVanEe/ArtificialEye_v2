@@ -1,5 +1,8 @@
 #include "DynamicMesh.hpp"
 
+#include "../../Types.hpp"
+#include <glm/gtc/type_ptr.hpp>
+
 ee::DynamicMesh::DynamicMesh(std::string textPack, VertBuffer vertices, MeshFaceBuffer indices, int priority) : 
     Mesh(textPack, vertices, indices, priority, GL_DYNAMIC_DRAW) 
 {

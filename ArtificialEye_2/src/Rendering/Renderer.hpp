@@ -82,21 +82,15 @@ namespace ee
             bool checkTextPackMap(const std::string& name);
         }
 
+        GLuint getTexture()
+
         // The Drawable is not managed by the renderer
         void addDrawable(Drawable* d);
         // The texture pack IS managed by the renderer (memory managed)
         // and it has to be moved into the result
         template<class T>
-        T* addTexturePack(std::string name, T&& pack)
-        {
-            if (impl::checkTextPackMap(name))
-            {
-                T* ptr = new T(std::move(pack));
-                impl::insertTextPackIntoMap(name, ptr);
-                return ptr;
-            }
-
-            return nullptr;
-        }
+        T* addTexturePack(std::string name, T&& pack);
     }
 }
+
+#include "Renderer.inl"

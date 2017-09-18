@@ -177,6 +177,7 @@
     <ClCompile Include="src\Rendering\RenderingUtilities.cpp" />
     <ClCompile Include="src\Rendering\shader.cpp" />
     <ClCompile Include="src\Rendering\TexturePacks\LightUniColorTextPack.cpp" />
+    <ClCompile Include="src\Rendering\TexturePacks\LineUniColorTextPack.cpp" />
     <ClCompile Include="src\Rendering\TexturePacks\RefractTextPack.cpp" />
     <ClCompile Include="src\Rendering\TexturePacks\SkyBoxTextPack.cpp" />
     <ClCompile Include="src\Rendering\TexturePacks\UniColorTextPack.cpp" />
@@ -266,6 +267,7 @@
     <None Include="Shaders\modelUniColor_vert.glsl" />
     <None Include="Shaders\skyBox_frag.glsl" />
     <None Include="Shaders\skyBox_vert.glsl" />
+    <None Include="src\Rendering\Renderer.inl" />
     <None Include="src\SoftBody\Simulation\SBSimulation.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

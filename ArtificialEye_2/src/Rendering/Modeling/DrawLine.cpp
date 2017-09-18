@@ -1,6 +1,8 @@
 #include "DrawLine.hpp"
 
-ee::DrawLine::DrawLine(std::string textPack, glm::vec3 p0, glm::vec3 p1, int priority, GLenum dataUsage) :
+#include "../Renderer.hpp"
+
+ee::DrawLine::DrawLine(const std::string& textPack, glm::vec3 p0, glm::vec3 p1, int priority, GLenum dataUsage) :
     Drawable(textPack, priority),
     m_type(dataUsage),
     m_VAO(0)

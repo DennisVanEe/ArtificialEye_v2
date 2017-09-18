@@ -125,6 +125,8 @@ int main()
     double x, y, z;
     alglib::pspline3calc(spline, 0.25, x, y, z);
 
+    // TODO: ignore the band around the lens
+
     try
     {
         // The default camera parameters:
@@ -168,7 +170,7 @@ int main()
         RayTracerParam param;
         param.m_widthResolution = 5.f;
         param.m_heightResolution = 5.f;
-        // g_tracer = &ee::RayTracer::initialize(pos, &lensMesh, 1.56f, param, glm::vec3(1.f, 0.f, 0.f));
+        g_tracer = &ee::RayTracer::initialize(pos, &lensMesh, 1.56f, param, glm::vec3(1.f, 0.f, 0.f));
 
         while (ee::Renderer::isInitialized())
         {
@@ -198,7 +200,7 @@ int main()
                 lensSim.update(time);
             }
 
-            // g_tracer->raytrace();
+            g_tracer->raytrace();
 
             Renderer::drawAll();
             Renderer::update(time);
