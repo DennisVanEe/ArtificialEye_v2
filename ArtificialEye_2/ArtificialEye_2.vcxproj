@@ -182,6 +182,7 @@
     <ClCompile Include="src\Rendering\TexturePacks\SkyBoxTextPack.cpp" />
     <ClCompile Include="src\Rendering\TexturePacks\UniColorTextPack.cpp" />
     <ClCompile Include="src\Rendering\Textures\CubeMap.cpp" />
+    <ClCompile Include="src\Rendering\Textures\Texture.cpp" />
     <ClCompile Include="src\SoftBody\Constraints\SBLengthConstraint.cpp" />
     <ClCompile Include="src\SoftBody\Constraints\SBPointConstraint.cpp" />
     <ClCompile Include="src\SoftBody\ForceGens\SBGravity.cpp" />

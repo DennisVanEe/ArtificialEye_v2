@@ -11,8 +11,8 @@ namespace ee
     class CubeMap : public Texture
     {
     public:
+        CubeMap(const CubeMap& other) = default;
         CubeMap(CubeMap&& other);
-        ~CubeMap();
 
     private:
         CubeMap(GLuint texture);

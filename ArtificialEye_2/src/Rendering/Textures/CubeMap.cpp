@@ -1,11 +1,21 @@
 #include "CubeMap.hpp"
 
+#include "../Renderer.hpp"
+
 #include <stb_image.hpp>
 #include <sstream>
 
 ee::CubeMap ee::loadCubeMap(std::string rootDir, std::vector<std::string> mapFaces)
 {
-    GLuint texture;
+    const std::string key = rootDir + "?CubeMap";
+
+    GLuint texture = Renderer::getTexture(key);
+
+    if (texture != 0)
+    {
+        return CubeMap(texture);
+    }
+
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
 
@@ -38,22 +48,16 @@ ee::CubeMap ee::loadCubeMap(std::string rootDir, std::vector<std::string> mapFac
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
+    Renderer::addTexture(key, texture);
     return CubeMap(texture);
 }
 
 ee::CubeMap::CubeMap(CubeMap&& other) : 
-    Texture(other.m_texture) 
+    Texture(other) 
 { 
-    other.m_texture = 0; 
-}
-
-ee::CubeMap::~CubeMap()
-{
-    glDeleteTextures(1, &m_texture);
 }
 
 ee::CubeMap::CubeMap(GLuint texture) : 
     Texture(texture) 
 {
 }
-

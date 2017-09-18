@@ -16,6 +16,7 @@ namespace ee
         std::string g_rootShaderDir;
         std::unordered_map<std::string, std::unique_ptr<Shader>>        g_shaders;
         std::unordered_map<std::string, std::unique_ptr<TexturePack>>   g_textPacks;
+        std::unordered_map<std::string, GLuint>                         g_textures;
         Camera                                                          g_camera        = Camera(glm::vec3(), glm::vec3(), 0.f, 0.f); // not the cleanest thing I have ever done,
                                                                                                                                       // but I need to initialize it to some dummy value for now.
         // Window and renderer properties:
@@ -115,6 +116,12 @@ void ee::Renderer::deinitialize()
     glfwSetWindowShouldClose(g_window, true);
     glfwTerminate();
     g_initialized = false;
+
+    // deallocate any information here
+    for (const auto& text : g_textures)
+    {
+        glDeleteTextures(1, &(text.second));
+    }
 }
 
 const ee::Camera* ee::Renderer::getCamera()
@@ -208,6 +215,22 @@ void ee::Renderer::update(const float deltaTime)
     {
         g_camera.processKBInput(CameraDir::RIGHT, deltaTime);
     }
+}
+
+GLuint ee::Renderer::getTexture(const std::string& dir)
+{
+    auto it = g_textures.find(dir);
+    if (it == g_textures.end())
+    {
+        return 0;
+    }
+
+    return it->second;
+}
+
+void ee::Renderer::addTexture(std::string dir, GLuint texture)
+{
+    g_textures.insert(std::make_pair(dir, texture));
 }
 
 void ee::Renderer::addDrawable(Drawable* d)

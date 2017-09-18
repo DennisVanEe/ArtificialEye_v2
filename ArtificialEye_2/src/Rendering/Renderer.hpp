@@ -71,6 +71,8 @@ namespace ee
 
         void drawAll();
 
+        // Removing one is not really necessary in this case (it'll happpen at the end)
+        // And there aren't any particles in this case that would lead to that.
         TexturePack* getTexturePack(const std::string& name);
         Shader* loadShader(const std::string& vertName, const std::string& fragName, const std::string& geomName = "");
     
@@ -82,7 +84,8 @@ namespace ee
             bool checkTextPackMap(const std::string& name);
         }
 
-        GLuint getTexture()
+        GLuint getTexture(const std::string& dir);
+        void addTexture(std::string dir, GLuint texture);
 
         // The Drawable is not managed by the renderer
         void addDrawable(Drawable* d);
