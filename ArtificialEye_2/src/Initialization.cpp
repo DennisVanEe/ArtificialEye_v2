@@ -77,6 +77,7 @@ ee::ArtificialEyeProp ee::initializeArtificialEyeProp(const std::string& dir)
     // This is the windows specific implementation (too lazy to get another library)
 
     ArtificialEyeProp result;
+    result.success = true;
 
     try
     {
@@ -115,10 +116,11 @@ ee::ArtificialEyeProp ee::initializeArtificialEyeProp(const std::string& dir)
         std::cout << e.what() << std::endl;
         std::cout << "Press ENTER to exit." << std::endl;
         std::cin.get();
+
         result.success = false;
-        return result;
     }
 
-    result.success = true;
     return result;
 }
+
+const ee::ArtificialEyeProp ee::ARTIFICIAL_EYE_PROP = ee::initializeArtificialEyeProp(ARTIFICIAL_EYE_PROP_DIR);

@@ -34,5 +34,5 @@ namespace ee
 
     ArtificialEyeProp initializeArtificialEyeProp(const std::string& dir);
 
-    const ArtificialEyeProp ARTIFICIAL_EYE_PROP = initializeArtificialEyeProp(ARTIFICIAL_EYE_PROP_DIR);
+    extern const ArtificialEyeProp ARTIFICIAL_EYE_PROP;
 }

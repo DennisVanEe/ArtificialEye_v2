@@ -1,8 +1,10 @@
 #include "RayTracer.hpp"
 
-ee::RayTracer& ee::RayTracer::initialize(std::vector<glm::vec3> positions, const Mesh* lens, float lensRefractiveIndex, RayTracerParam param, glm::vec3 rayColor)
+#include "../Rendering/RenderingUtilities.hpp"
+
+ee::RayTracer& ee::RayTracer::initialize(std::vector<glm::vec3> positions, UVMeshSphere sphere, float lensRefractiveIndex, RayTracerParam param, glm::vec3 rayColor)
 {
-    static RayTracer rayTracer(positions, lens, lensRefractiveIndex, param, rayColor);
+    static RayTracer rayTracer(positions, sphere, lensRefractiveIndex, param, rayColor);
     return rayTracer;
 }
 
@@ -23,10 +25,12 @@ const std::vector<glm::vec3>& ee::RayTracer::getResultColors() const
     return m_resultColors;
 }
 
-ee::RayTracer::RayTracer(std::vector<glm::vec3> positions, const Mesh* lens, float lensRefractiveIndex, RayTracerParam param, glm::vec3 rayColor) :
-    m_lens(lens),
+ee::RayTracer::RayTracer(std::vector<glm::vec3> positions, UVMeshSphere sphere, float lensRefractiveIndex, RayTracerParam param, glm::vec3 rayColor) :
+    m_lens(sphere.getMesh()),
     m_ETA(1.f / lensRefractiveIndex),
     m_parameters(param),
+    m_muscleBegin(sphere.getMuscleBegin()),
+    m_muscleEnd(sphere.getMuscleEnd()),
     m_rayOrigins(positions)
 {
     m_resultColors.resize(m_rayOrigins.size());
@@ -61,7 +65,19 @@ ee::RayTracer::RayTracer(std::vector<glm::vec3> positions, const Mesh* lens, flo
         rayPack.sendToDrawable();
     }
 
-    // assert(m_drawableLines.size() == m_rayOrigins.size() * m_cachedPoints.size());
+    // the lat's are failry easy in this case
+    const unsigned lat = sphere.getLatitudes();
+    const unsigned lon = sphere.getLongitudes();
+
+    for (std::size_t i = 0; i < lat; i++)
+    {
+        m_latitudes.push_back(getUVSphereLatitude(i, lon, lat));
+    }
+
+    for (std::size_t i = 0; i < lon; i++)
+    {
+        m_longitudes.push_back(getUVSphereLatitude(i, lon, lat));
+    }
 }
 
 bool ee::RayTracer::lensRefract(const Ray startRay, LensRayPath* o_rayPath)
@@ -70,8 +86,12 @@ bool ee::RayTracer::lensRefract(const Ray startRay, LensRayPath* o_rayPath)
 
     const Ray entryRay(startRay.m_origin, glm::normalize(startRay.m_dir));
 
-    const std::pair<std::size_t, glm::vec3> entryIntersection = nearestIntersection(m_lens, entryRay);
+    const std::pair<std::size_t, glm::vec3> entryIntersection = nearestIntersectionMesh(m_lens, entryRay);
     assert(entryIntersection.first < m_lens->getNumMeshFaces());
+
+    // get point of intersection:
+    const MeshFace& entryFace = m_lens->getMeshFace(entryIntersection.first);
+
 
     result.m_entry = Line(entryRay.m_origin, entryIntersection.second);
 
@@ -80,7 +100,7 @@ bool ee::RayTracer::lensRefract(const Ray startRay, LensRayPath* o_rayPath)
     const glm::vec3 entryRefraction = glm::normalize(cust::refract(entryRay.m_dir, entryNormal, m_ETA));
 
     // now let's find the next intersection:
-    const std::pair<std::size_t, glm::vec3> passIntersection = nearestIntersection(m_lens, Ray(entryIntersection.second, entryRefraction), entryIntersection.first);
+    const std::pair<std::size_t, glm::vec3> passIntersection = nearestIntersectionMesh(m_lens, Ray(entryIntersection.second, entryRefraction), entryIntersection.first);
     assert(passIntersection.first < m_lens->getNumMeshFaces());
 
     // assign the line:

@@ -9,9 +9,8 @@
 #include "Rendering/TexturePacks/SkyBoxTextPack.hpp"
 #include "Rendering/TexturePacks/RefractTextPack.hpp"
 #include "Rendering/TexturePacks/LineUniColorTextPack.hpp"
-#include "Rendering/RayTracing/Intersections.hpp"
-#include "Rendering/RayTracing/RayTracer.hpp"
-
+#include "RayTracing/RayTracer.hpp"
+#include "Rendering/UVMeshSphere.hpp"
 #include "SoftBody/Simulation/SBClosedBodySim.hpp"
 #include "SoftBody/ForceGens/SBGravity.hpp"
 #include "SoftBody/Constraints/SBPointConstraint.hpp"
@@ -119,8 +118,19 @@ int main()
     double test[] = { 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3 };
     alglib::pspline3interpolant spline;
     alglib::real_2d_array arr;
-    arr.setcontent(3, 3, test);
-    alglib::pspline3build(arr, 3, 2, 0, spline);
+    arr.setcontent(4, 3, test);
+    alglib::pspline3build(arr, 4, 2, 0, spline);
+
+    alglib::real_1d_array arr2;
+    alglib::ae_int_t param;
+    alglib::pspline3parametervalues(spline, param, arr2);
+
+    double l = 0.f;
+    for (int i = 0; i < param; i++)
+    {
+        double k = arr2[i];
+        l += k;
+    }
 
     double x, y, z;
     alglib::pspline3calc(spline, 0.25, x, y, z);
@@ -170,7 +180,8 @@ int main()
         RayTracerParam param;
         param.m_widthResolution = 5.f;
         param.m_heightResolution = 5.f;
-        g_tracer = &ee::RayTracer::initialize(pos, &lensMesh, 1.56f, param, glm::vec3(1.f, 0.f, 0.f));
+        UVMeshSphere sphere(&lensMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
+        g_tracer = &ee::RayTracer::initialize(pos, sphere, 1.56f, param, glm::vec3(1.f, 0.f, 0.f));
 
         while (ee::Renderer::isInitialized())
         {
