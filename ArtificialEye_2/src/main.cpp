@@ -172,7 +172,7 @@ int main()
         SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &lensMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
         lensSim.m_constIterations = ARTIFICIAL_EYE_PROP.iterations;
         addInteriorSpringsUVSphere(&lensSim, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.intspring_coeff, ARTIFICIAL_EYE_PROP.intspring_drag);
-        addConstraints(5, &lensSim, &lensMesh);
+        //addConstraints(5, &lensSim, &lensMesh);
         lensSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 20.f, ARTIFICIAL_EYE_PROP.extspring_drag));
 
         // test stuff:
@@ -180,8 +180,12 @@ int main()
         RayTracerParam param;
         param.m_widthResolution = 5.f;
         param.m_heightResolution = 5.f;
+        param.m_lensRefractiveIndex = 1.56f;
+        param.m_enviRefractiveIndex = 1.f;
+        param.m_rayColor = glm::vec3(1.f, 0.f, 0.f);
         UVMeshSphere sphere(&lensMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
-        g_tracer = &ee::RayTracer::initialize(pos, sphere, 1.56f, param, glm::vec3(1.f, 0.f, 0.f));
+        g_constraints = sphere.addConstraints(5, &lensSim);
+        g_tracer = &ee::RayTracer::initialize(pos, sphere, param);
 
         while (ee::Renderer::isInitialized())
         {
