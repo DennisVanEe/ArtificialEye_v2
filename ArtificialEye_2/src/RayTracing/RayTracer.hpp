@@ -62,6 +62,10 @@ namespace ee
         };
 
     private:
+        // for debugging:
+        DrawLine* testNormals[3];
+        bool set = false;
+
         RayTracer(std::vector<glm::vec3> positions, UVMeshSphere sphere, RayTracerParam param);
 
         glm::vec3 raytrace(std::size_t pos, float rInc, float cInc);

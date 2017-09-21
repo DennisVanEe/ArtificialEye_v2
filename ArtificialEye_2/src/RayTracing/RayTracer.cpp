@@ -34,8 +34,8 @@ ee::RayTracer::RayTracer(std::vector<glm::vec3> positions, UVMeshSphere sphere, 
     m_widthResolution(param.m_widthResolution),
     m_heightResolution(param.m_heightResolution),
     m_lens(sphere),
-    m_rayOrigins(positions)
-{
+    m_rayOrigins(positions)    
+{    
     m_resultColors.resize(m_rayOrigins.size());
 
     assert(m_heightResolution > 0);
@@ -68,6 +68,14 @@ ee::RayTracer::RayTracer(std::vector<glm::vec3> positions, UVMeshSphere sphere, 
         m_drawableLines.push_back(DrawLensRayPath("lineTextPack"));
     }
 
+    testNormals[0] = new DrawLine("lineTextPack", glm::vec3(), glm::vec3());
+    testNormals[1] = new DrawLine("lineTextPack", glm::vec3(), glm::vec3());
+    testNormals[2] = new DrawLine("lineTextPack", glm::vec3(), glm::vec3());
+
+    ee::Renderer::addDrawable(testNormals[0]);
+    ee::Renderer::addDrawable(testNormals[1]);
+    ee::Renderer::addDrawable(testNormals[2]);
+
     for (DrawLensRayPath& rayPack : m_drawableLines)
     {
         rayPack.sendToDrawable();
@@ -98,24 +106,21 @@ bool ee::RayTracer::lensRefract(const Ray startRay, LensRayPath* o_rayPath)
 
     result.m_entry = Line(entryRay.m_origin, entryIntersection.second);
 
-    const glm::vec3 entryNormal = glm::vec3(lensMesh->getNormalModelTrans() * glm::vec4(getNormal(entryIntersection.first, entryIntersection.second), 0.f));
+    const glm::vec3 entryNormal = getNormal(entryIntersection.first, entryIntersection.second); // glm::vec3(lensMesh->getNormalModelTrans() * glm::vec4(getNormal(entryIntersection.first, entryIntersection.second), 0.f));
     const glm::vec3 entryRefraction = glm::normalize(cust::refract(entryRay.m_dir, entryNormal, m_ETA));
 
     // now let's find the next intersection:
     const std::pair<std::size_t, glm::vec3> passIntersection = nearestIntersectionMesh(lensMesh, Ray(entryIntersection.second, entryRefraction), entryIntersection.first);
-    // assert(passIntersection.first < lensMesh->getNumMeshFaces());
-    if (passIntersection.first >= lensMesh->getNumMeshFaces())
-    {
-        return false;
-    }
+    if (passIntersection.first >= lensMesh->getNumMeshFaces()) { return false; }
 
     // assign the line:
     result.m_pass = Line(entryIntersection.second, passIntersection.second);
 
     // now calulcate the next part:
     const MeshFace& passFace = lensMesh->getMeshFace(passIntersection.first);
-    const glm::vec3 passNormal = -glm::vec3(lensMesh->getNormalModelTrans() * glm::vec4(getNormal(passIntersection.first, passIntersection.second), 0.f));
-    const glm::vec3 passRefraction = glm::normalize(cust::refract(entryRefraction, entryNormal, 1.f / m_ETA));
+    const glm::vec3 passNormal = -getNormal(passIntersection.first, passIntersection.second); //glm::vec3(lensMesh->getNormalModelTrans() * glm::vec4(getNormal(passIntersection.first, passIntersection.second), 0.f));
+    const glm::vec3 passRefraction = glm::normalize(cust::refract(entryRefraction, passNormal, m_invETA));
+    // TODO: fix the weirdness that is happening
 
     // now set the last part:
     result.m_end = Ray(passIntersection.second, passRefraction);
@@ -259,6 +264,14 @@ glm::vec3 ee::RayTracer::getNormal(std::size_t triangle, glm::vec3 interPoint)
         const glm::vec3 splineNormal = glm::normalize(glm::cross(latTangent, lonTangent));
         const glm::vec3 faceNormal = lensMesh->getNormal(triangle);
         const glm::vec3 result = glm::dot(splineNormal, faceNormal) >= 0 ? splineNormal : -splineNormal;
+
+        if (set)
+        {
+             //testNormals[0]->setRay(Ray(interPoint, latTangent), 1.f);
+             //testNormals[1]->setRay(Ray(interPoint, faceNormal), 1.f);
+             // testNormals[2]->setRay(Ray(interPoint, result), 1.f);
+            // set = false;
+        }
 
         return result; // glm::dot(splineNormal, faceNormal) >= 0 ? splineNormal : -splineNormal;
     }
@@ -457,17 +470,15 @@ glm::vec3 ee::RayTracer::getLatTangent(unsigned startSplineID, unsigned endSplin
 {
     assert(startSplineID != endSplineID);
 
-    // TODO: set this value:
-
-    const glm::vec3 startPoint = getLatParamValue(startSplineID, startParam);
-    const glm::vec3 endPoint = getLatParamValue(endSplineID, endParam);
+    const glm::vec3 startBeginPoint = getLatParamValue(startSplineID, startParam);
+    const glm::vec3 endBeginPoint = getLatParamValue(endSplineID, endParam);
+    const glm::vec3 beginVector = endBeginPoint - startBeginPoint;
 
     const glm::vec3 startTangent = getLatParamTangent(startSplineID, startParam); assert(startTangent != glm::vec3());
     const glm::vec3 endTangent = getLatParamTangent(endSplineID, endParam); assert(endTangent != glm::vec3());
 
-    const glm::vec3 baseRay = endPoint - startPoint;
-
-    const glm::vec3 beginVector = endBeginPoint - startBeginPoint;
+    const glm::vec3 startEndPoint = startBeginPoint + startTangent;
+    const glm::vec3 endEndPoint = endBeginPoint + endTangent;
     const glm::vec3 endVector = endEndPoint - startEndPoint;
 
     const glm::vec3 tangentPoint0 = glm::normalize(beginVector) * (lonRatio * glm::length(beginVector)) + startBeginPoint;
@@ -500,6 +511,8 @@ glm::vec3 ee::RayTracer::getLonTangent(unsigned startSplineID, unsigned endSplin
 
 glm::vec3 ee::RayTracer::raytrace(std::size_t pos, const float rInc, const float cInc)
 {
+    set = true;
+
     m_latSplines.clear(); m_latSplines.resize(m_lens.getNumLatitudes());
     m_lonSplinesBottom.clear(); m_lonSplinesBottom.resize(m_lens.getNumLongitudes());
     m_lonSplinesTop.clear(); m_lonSplinesTop.resize(m_lens.getNumLongitudes());
