@@ -32,4 +32,6 @@ namespace ee
     };
 
     glm::vec3 removeZeroError(glm::vec3 vec);
+    glm::vec3 transPoint3(const glm::mat4& mat, glm::vec3 vec);
+    glm::vec3 transVector3(const glm::mat4& mat, glm::vec3 vec);
 }

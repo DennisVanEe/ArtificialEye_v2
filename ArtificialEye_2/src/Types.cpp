@@ -18,3 +18,13 @@ ee::Line::Line(glm::vec3 start, glm::vec3 end) :
     m_end(end) 
 {
 }
+
+glm::vec3 ee::transPoint3(const glm::mat4& mat, glm::vec3 vec)
+{
+    return glm::vec3(mat * glm::vec4(vec, 1.f));
+}
+
+glm::vec3 ee::transVector3(const glm::mat4& mat, glm::vec3 vec)
+{
+    return glm::vec3(mat * glm::vec4(vec, 0.f));
+}

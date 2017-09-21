@@ -178,8 +178,8 @@ int main()
         // test stuff:
         const std::vector<glm::vec3> pos = { glm::vec3(0.f, 0.f, -2.f) };
         RayTracerParam param;
-        param.m_widthResolution = 5.f;
-        param.m_heightResolution = 5.f;
+        param.m_widthResolution = 2.f; // 5.f;
+        param.m_heightResolution = 2.f; // 5.f;
         param.m_lensRefractiveIndex = 1.56f;
         param.m_enviRefractiveIndex = 1.f;
         param.m_rayColor = glm::vec3(1.f, 0.f, 0.f);

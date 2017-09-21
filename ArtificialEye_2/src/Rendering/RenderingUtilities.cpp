@@ -265,13 +265,13 @@ std::vector<std::size_t> ee::getUVSphereLongitude(std::size_t index, int nLong, 
     return std::move(result);
 }
 
-int ee::getLatIndex(int nLong, int nLat, std::size_t vecID)
+int ee::getLatIndex(int nLon, int nLat, std::size_t vecID)
 {
-    return (vecID - 1) / nLong;
+    return (vecID - 1) / nLon;
 }
 
-int ee::getLonIndex(int nLong, int nLat, std::size_t vecID)
+int ee::getLonIndex(int nLon, int nLat, std::size_t vecID)
 {
 
-    return (vecID - 1) % nLong;
+    return (vecID - 1) % nLon;
 }
