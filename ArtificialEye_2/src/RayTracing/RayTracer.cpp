@@ -129,8 +129,8 @@ glm::vec3 ee::RayTracer::getNormal(std::size_t triangle, glm::vec3 interPoint)
     Mesh* const lensMesh = m_lens.getMesh();
     const MeshFace& face = lensMesh->getMeshFace(triangle);
 
-    glm::vec3 p[3]; // get all of the points of the triangle: // don't bother with this
-    for (int i = 0; i < 3; i++) { p[i] = transPoint3(lensMesh->getModelTrans(), lensMesh->getVertex(face.m_indices[i]).m_position); }
+    glm::vec3 trianglePoints[3]; // get all of the points of the triangle: // don't bother with this
+    for (int i = 0; i < 3; i++) { trianglePoints[i] = transPoint3(lensMesh->getModelTrans(), lensMesh->getVertex(face.m_indices[i]).m_position); }
 
      glm::vec3 _p[3]; // get all of the points of the triangle: // don't bother with this
     for (int i = 0; i < 3; i++) { _p[i] = lensMesh->getVertex(face.m_indices[i]).m_position; }
@@ -200,26 +200,6 @@ glm::vec3 ee::RayTracer::getNormal(std::size_t triangle, glm::vec3 interPoint)
         assert(latTriPointID_single < 4);
         assert(lonTriPointID_single < 4);
 
-        // calculate the ratios:
-        const unsigned latStartTriPointIDID = glm::min(latTriPointID_pair[0], latTriPointID_pair[1]);
-        const unsigned lonStartTriPointIDID = glm::min(lonTriPointID_pair[0], lonTriPointID_pair[1]);
-        const unsigned latEndTriPointIDID = glm::max(latTriPointID_pair[0], latTriPointID_pair[1]);
-        const unsigned lonEndTriPointIDID = glm::max(lonTriPointID_pair[0], latTriPointID_pair[1]);
-
-        const glm::vec3 latVector = transVector3(lensMesh->getModelTrans(), 
-            lensMesh->getVertex(face.m_indices[latEndTriPointIDID]).m_position - lensMesh->getVertex(face.m_indices[latStartTriPointIDID]).m_position);
-        const glm::vec3 lonVector = transVector3(lensMesh->getModelTrans(),
-            lensMesh->getVertex(face.m_indices[lonEndTriPointIDID]).m_position - lensMesh->getVertex(face.m_indices[lonStartTriPointIDID]).m_position);
-
-        const glm::vec3 temp0 = transPoint3(lensMesh->getModelTrans(), lensMesh->getVertex(face.m_indices[latTriPointID_pair[latStartTriPointIDID]]).m_position);
-        const glm::vec3 temp1 = transPoint3(lensMesh->getModelTrans(), lensMesh->getVertex(face.m_indices[lonTriPointID_pair[lonStartTriPointIDID]]).m_position);
-        const glm::vec3 latToIntVector = interPoint - temp0; // transPoint3(lensMesh->getModelTrans(), lensMesh->getVertex(face.m_indices[latTriPointID_pair[latStartTriPointIDID]]).m_position);
-        const glm::vec3 lonToIntVector = interPoint - temp1; // transPoint3(lensMesh->getModelTrans(), lensMesh->getVertex(face.m_indices[lonTriPointID_pair[lonStartTriPointIDID]]).m_position);
-
-        // now project it:
-        const float latRatio = glm::dot(latToIntVector, glm::normalize(latVector)) / glm::length(latVector);
-        const float lonRatio = glm::dot(lonToIntVector, glm::normalize(lonVector)) / glm::length(lonVector);
-
         // Build the splines:
         bool bottom = latID[0] < m_lens.getMuscleBegin();
         buildLatSpline(latID[latTriPointID_pair[0]]);
@@ -247,6 +227,18 @@ glm::vec3 ee::RayTracer::getNormal(std::size_t triangle, glm::vec3 interPoint)
                 }
             }
         }
+
+        const glm::vec3 latVector = transVector3(lensMesh->getModelTrans(),
+            lensMesh->getVertex(face.m_indices[triPointIDLat_end]).m_position - lensMesh->getVertex(face.m_indices[triPointID_start]).m_position);
+        const glm::vec3 lonVector = transVector3(lensMesh->getModelTrans(),
+            lensMesh->getVertex(face.m_indices[triPointIDLon_end]).m_position - lensMesh->getVertex(face.m_indices[triPointID_start]).m_position);
+
+        const glm::vec3 latToIntVector = interPoint - transPoint3(lensMesh->getModelTrans(), lensMesh->getVertex(face.m_indices[triPointID_start]).m_position);
+        const glm::vec3 lonToIntVector = interPoint - transPoint3(lensMesh->getModelTrans(), lensMesh->getVertex(face.m_indices[triPointID_start]).m_position);
+
+                                                             // now project it:
+        const float latRatio = glm::dot(latToIntVector, glm::normalize(latVector)) / glm::length(latVector);
+        const float lonRatio = glm::dot(lonToIntVector, glm::normalize(lonVector)) / glm::length(lonVector);
         
         const double latParam0 = latSplineParameter(latID[latTriPointID_pair[0]], lonID[triPointID_start], lonID[triPointIDLat_end], latRatio);
         const double latParam1 = latSplineParameter(latID[latTriPointID_single], lonID[triPointID_start], lonID[triPointIDLat_end], latRatio);
@@ -258,8 +250,8 @@ glm::vec3 ee::RayTracer::getNormal(std::size_t triangle, glm::vec3 interPoint)
         const glm::vec3 p2 = getLonParamValue(lonID[lonTriPointID_pair[0]], lonParam0, bottom);
         const glm::vec3 p3 = getLonParamValue(lonID[lonTriPointID_single], lonParam1, bottom);
         
-        const glm::vec3 latTangent = (getLatParamValue(latID[latTriPointID_pair[0]], latParam0) - getLatParamValue(latID[latTriPointID_single], latParam1));
-        const glm::vec3 lonTangent = (getLonParamValue(lonID[lonTriPointID_pair[0]], lonParam0, bottom) - getLonParamValue(lonID[lonTriPointID_single], lonParam1, bottom));
+        const glm::vec3 latTangent = getLatTangent(latID[triPointID_start], latID[latTriPointID_single], latParam0, latParam1, lonRatio);
+        const glm::vec3 lonTangent = getLonTangent(lonID[triPointID_start], lonID[lonTriPointID_single], lonParam0, lonParam1, latRatio, bottom);
 
         const glm::vec3 thePoint0 = (latTangent * lonRatio) + getLatParamValue(latID[latTriPointID_single], latParam1);
         const glm::vec3 thePoint1 = (lonTangent * latRatio) + getLonParamValue(lonID[lonTriPointID_single], lonParam1, bottom);
@@ -360,11 +352,8 @@ double ee::RayTracer::latSplineParameter(unsigned splineID, unsigned startLonID,
     alglib::ae_int_t size;
     alglib::pspline3parametervalues(m_latSplines[splineID].m_spline, size, data);
 
-    const unsigned startParamID = glm::min(startLonID, endLonID);
-    const unsigned endParamID = glm::max(startLonID, endLonID);
-
-    const double startParam = data[startParamID];
-    const double endParam = data[endParamID];
+    const double startParam = data[startLonID];
+    const double endParam = data[endLonID];
 
     const double relativeParam = (endParam - startParam) * parameter;
     return relativeParam + startParam;
@@ -401,11 +390,8 @@ double ee::RayTracer::lonSplineParameter(unsigned splineID, unsigned startLatID,
         newEndLonID = bottom ? m_lens.getMuscleBegin() + 2 + endLatID : ((m_lens.getNumLatitudes() - 1) - m_lens.getMuscleEnd()) + 2 + ((m_lens.getNumLatitudes() - 1) - endLatID);
     }
 
-    const unsigned startParamID = glm::min(newStartLonID, newEndLonID);
-    const unsigned endParamID = glm::max(newStartLonID, newEndLonID);
-
-    const double startParam = data[startParamID];
-    const double endParam = data[endParamID];
+    const double startParam = data[newStartLonID];
+    const double endParam = data[newEndLonID];
 
     const double relativeParam = (endParam - startParam) * parameter;
     return relativeParam + startParam;
@@ -413,6 +399,7 @@ double ee::RayTracer::lonSplineParameter(unsigned splineID, unsigned startLatID,
 
 glm::vec3 ee::RayTracer::getLatParamValue(unsigned splineID, double param)
 {
+    param = param < 0 ? 0 : param;
     double x, y, z;
     alglib::pspline3calc(m_latSplines[splineID].m_spline, param, x, y, z);
     return glm::vec3(x, y, z);
@@ -420,6 +407,8 @@ glm::vec3 ee::RayTracer::getLatParamValue(unsigned splineID, double param)
 
 glm::vec3 ee::RayTracer::getLonParamValue(unsigned splineID, double param, bool bottom)
 {
+    param = param < 0 ? 0 : param;
+
     const unsigned halfNumLon = m_lens.getNumLongitudes() / 2;
     const unsigned splineID0 = splineID < halfNumLon ? splineID : splineID - halfNumLon;
 
@@ -434,6 +423,79 @@ glm::vec3 ee::RayTracer::getLonParamValue(unsigned splineID, double param, bool 
 
     }
     return glm::vec3(x, y, z);
+}
+
+glm::vec3 ee::RayTracer::getLatParamTangent(unsigned splineID, double param)
+{
+    param = param < 0 ? 0 : param;
+    double x, y, z;
+    alglib::pspline3tangent(m_latSplines[splineID].m_spline, param, x, y, z);
+    return glm::vec3(x, y, z);
+}
+
+glm::vec3 ee::RayTracer::getLonParamTangent(unsigned splineID, double param, bool bottom)
+{
+    param = param < 0 ? 0 : param;
+
+    const unsigned halfNumLon = m_lens.getNumLongitudes() / 2;
+    const unsigned splineID0 = splineID < halfNumLon ? splineID : splineID - halfNumLon;
+
+    double x, y, z;
+    if (bottom)
+    {
+        alglib::pspline3tangent(m_lonSplinesBottom[splineID0].m_spline, param, x, y, z);
+    }
+    else
+    {
+        alglib::pspline3tangent(m_lonSplinesTop[splineID0].m_spline, param, x, y, z);
+
+    }
+    return glm::vec3(x, y, z);
+}
+
+glm::vec3 ee::RayTracer::getLatTangent(unsigned startSplineID, unsigned endSplineID, double startParam, double endParam, float lonRatio)
+{
+    assert(startSplineID != endSplineID);
+
+    // TODO: set this value:
+
+    const glm::vec3 startPoint = getLatParamValue(startSplineID, startParam);
+    const glm::vec3 endPoint = getLatParamValue(endSplineID, endParam);
+
+    const glm::vec3 startTangent = getLatParamTangent(startSplineID, startParam); assert(startTangent != glm::vec3());
+    const glm::vec3 endTangent = getLatParamTangent(endSplineID, endParam); assert(endTangent != glm::vec3());
+
+    const glm::vec3 baseRay = endPoint - startPoint;
+
+    const glm::vec3 beginVector = endBeginPoint - startBeginPoint;
+    const glm::vec3 endVector = endEndPoint - startEndPoint;
+
+    const glm::vec3 tangentPoint0 = glm::normalize(beginVector) * (lonRatio * glm::length(beginVector)) + startBeginPoint;
+    const glm::vec3 tangentPoint1 = glm::normalize(endVector) * (lonRatio * glm::length(endVector)) + startEndPoint;
+
+    return glm::normalize(tangentPoint1 - tangentPoint0);
+}
+
+glm::vec3 ee::RayTracer::getLonTangent(unsigned startSplineID, unsigned endSplineID, double startParam, double endParam, float latRatio, bool bottom)
+{
+    assert(startSplineID != endSplineID);
+
+    const glm::vec3 startBeginPoint = getLonParamValue(startSplineID, startParam, bottom);
+    const glm::vec3 endBeginPoint = getLonParamValue(endSplineID, endParam, bottom);
+
+    const glm::vec3 startTangent = getLonParamTangent(startSplineID, startParam, bottom); assert(startTangent != glm::vec3());
+    const glm::vec3 endTangent = getLonParamTangent(endSplineID, endParam, bottom); assert(endTangent != glm::vec3());
+
+    const glm::vec3 startEndPoint = startBeginPoint + startTangent;
+    const glm::vec3 endEndPoint = endBeginPoint + endTangent;
+
+    const glm::vec3 beginVector = endBeginPoint - startBeginPoint;
+    const glm::vec3 endVector = endEndPoint - startEndPoint;
+
+    const glm::vec3 tangentPoint0 = glm::normalize(beginVector) * (latRatio * glm::length(beginVector)) + startBeginPoint;
+    const glm::vec3 tangentPoint1 = glm::normalize(endVector) * (latRatio * glm::length(endVector)) + startEndPoint;
+
+    return glm::normalize(tangentPoint1 - tangentPoint0);
 }
 
 glm::vec3 ee::RayTracer::raytrace(std::size_t pos, const float rInc, const float cInc)

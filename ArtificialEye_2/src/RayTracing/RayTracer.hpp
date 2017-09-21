@@ -74,6 +74,11 @@ namespace ee
 
         glm::vec3 getLatParamValue(unsigned splineID, double param);
         glm::vec3 getLonParamValue(unsigned splineID, double param, bool bottom);
+        glm::vec3 getLatParamTangent(unsigned splineID, double param);
+        glm::vec3 getLonParamTangent(unsigned splineID, double param, bool bottom);
+
+        glm::vec3 getLatTangent(unsigned startSplineID, unsigned endSplineID, double startParam, double endParam, float lonRatio);
+        glm::vec3 getLonTangent(unsigned startSplineID, unsigned endSplineID, double startParam, double endParam, float latRatio, bool bottom);
 
         const float    m_ETA;
         const float    m_invETA;
