@@ -63,14 +63,15 @@ ee::RayTracer::RayTracer(std::vector<glm::vec3> positions, UVMeshSphere sphere, 
 
     // Set up the drawalb rays:
     ee::Renderer::addTexturePack("lineTextPack", ee::LineUniColorTextPack(param.m_rayColor));
+    ee::Renderer::addTexturePack("lineTextPack2", ee::LineUniColorTextPack(glm::vec3(0.f, 1.f, 0.f)));
     for (std::size_t i = 0; i < m_rayOrigins.size() * m_cachedPoints.size(); i++)
     {
         m_drawableLines.push_back(DrawLensRayPath("lineTextPack"));
     }
 
-    testNormals[0] = new DrawLine("lineTextPack", glm::vec3(), glm::vec3());
-    testNormals[1] = new DrawLine("lineTextPack", glm::vec3(), glm::vec3());
-    testNormals[2] = new DrawLine("lineTextPack", glm::vec3(), glm::vec3());
+    testNormals[0] = new DrawLine("lineTextPack2", glm::vec3(), glm::vec3());
+    testNormals[1] = new DrawLine("lineTextPack2", glm::vec3(), glm::vec3());
+    testNormals[2] = new DrawLine("lineTextPack2", glm::vec3(), glm::vec3());
 
     ee::Renderer::addDrawable(testNormals[0]);
     ee::Renderer::addDrawable(testNormals[1]);
@@ -121,6 +122,12 @@ bool ee::RayTracer::lensRefract(const Ray startRay, LensRayPath* o_rayPath)
     const glm::vec3 passNormal = -getNormal(passIntersection.first, passIntersection.second); //glm::vec3(lensMesh->getNormalModelTrans() * glm::vec4(getNormal(passIntersection.first, passIntersection.second), 0.f));
     const glm::vec3 passRefraction = glm::normalize(cust::refract(entryRefraction, passNormal, m_invETA));
     // TODO: fix the weirdness that is happening
+
+    if (set)
+    {
+        testNormals[0]->setRay(Ray(passIntersection.second, passNormal), 0.5f);
+        set = false;
+    }
 
     // now set the last part:
     result.m_end = Ray(passIntersection.second, passRefraction);
@@ -265,14 +272,6 @@ glm::vec3 ee::RayTracer::getNormal(std::size_t triangle, glm::vec3 interPoint)
         const glm::vec3 faceNormal = lensMesh->getNormal(triangle);
         const glm::vec3 result = glm::dot(splineNormal, faceNormal) >= 0 ? splineNormal : -splineNormal;
 
-        if (set)
-        {
-             //testNormals[0]->setRay(Ray(interPoint, latTangent), 1.f);
-             //testNormals[1]->setRay(Ray(interPoint, faceNormal), 1.f);
-             // testNormals[2]->setRay(Ray(interPoint, result), 1.f);
-            // set = false;
-        }
-
         return result; // glm::dot(splineNormal, faceNormal) >= 0 ? splineNormal : -splineNormal;
     }
 }
@@ -296,7 +295,7 @@ void ee::RayTracer::buildLatSpline(unsigned latID)
 
     alglib::real_2d_array data;
     data.setcontent(points.size(), 3, reinterpret_cast<const double*>(points.data()));
-    alglib::pspline3build(data, points.size(), 2, 0, m_latSplines[latID].m_spline);
+    alglib::pspline3build(data, points.size(), 0, 0, m_latSplines[latID].m_spline);
     m_latSplines[latID].m_valid = true;
 }
 
@@ -355,7 +354,7 @@ void ee::RayTracer::buildLonSpline(const unsigned lonID, const bool bottom)
 
     alglib::real_2d_array data;
     data.setcontent(points.size(), 3, reinterpret_cast<const double*>(points.data()));
-    alglib::pspline3build(data, points.size(), 2, 0, lonSplines[lonID0].m_spline);
+    alglib::pspline3build(data, points.size(), 0, 0, lonSplines[lonID0].m_spline);
     lonSplines[lonID0].m_valid = true;
 }
 
