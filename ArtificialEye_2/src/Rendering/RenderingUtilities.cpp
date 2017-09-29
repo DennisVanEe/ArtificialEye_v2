@@ -178,14 +178,14 @@ void ee::loadUVsphere(int nLon, int nLat, VertBuffer* vertList, MeshFaceBuffer* 
     for (unsigned lat = 0; lat < nLat; lat++)
     {
         float angleLat = glm::pi<float>() * (float)(lat + 1) / (nLat + 1);
-        float sinLat = std::sinf(angleLat);
-        float cosLat = std::cosf(angleLat);
+        float sinLat = std::sin(angleLat);
+        float cosLat = std::cos(angleLat);
 
         for (unsigned lon = 0; lon < nLon; lon++)
         {
             float angleLon = 2 * glm::pi<float>() * (float)(lon) / nLon; // (float)(lon == nLon ? 0 : lon) / nLon;
-            float sinLon = std::sinf(angleLon);
-            float cosLon = std::cosf(angleLon);
+            float sinLon = std::sin(angleLon);
+            float cosLon = std::cos(angleLon);
 
             std::size_t index = lon + lat * (nLon) + 1;
             (*vertList)[index] = Vertex(glm::vec3(sinLat * cosLon, cosLat, sinLat * sinLon));
@@ -231,47 +231,4 @@ void ee::loadUVsphere(int nLon, int nLat, VertBuffer* vertList, MeshFaceBuffer* 
         indexList->push_back({size - 1, size - (lon + 2) - 1, size - (lon + 1) - 1});
     }
     indexList->push_back({ size - 1, size - 2, size - (nLon)-1 }); // fix up that seam
-}
-
-std::vector<std::size_t> ee::getUVSphereLatitude(std::size_t index, int nLong, int nLat)
-{
-    if (nLong <= 0 || nLat <= 0)
-    {
-        return std::vector<std::size_t>();
-    }
-
-    std::vector<std::size_t> result;
-    std::size_t indices = (nLong * index) + 1;
-    for (std::size_t i = 0; i < nLong; i++, indices++)
-    {
-        result.push_back(indices);
-    }
-    return std::move(result);
-}
-
-std::vector<std::size_t> ee::getUVSphereLongitude(std::size_t index, int nLong, int nLat)
-{
-    if (nLong <= 0 || nLat <= 0)
-    {
-        return std::vector<std::size_t>();
-    }
-
-    std::vector<std::size_t> result;
-    std::size_t start = 1 + index;
-    for (std::size_t i = 0; i < nLat; i++, start += nLong)
-    {
-        result.push_back(start);
-    }
-    return std::move(result);
-}
-
-int ee::getLatIndex(int nLon, int nLat, std::size_t vecID)
-{
-    return (vecID - 1) / nLon;
-}
-
-int ee::getLonIndex(int nLon, int nLat, std::size_t vecID)
-{
-
-    return (vecID - 1) % nLon;
 }

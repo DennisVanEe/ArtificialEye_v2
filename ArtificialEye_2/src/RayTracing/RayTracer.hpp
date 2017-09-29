@@ -56,50 +56,64 @@ namespace ee
         struct SplineCache
         {
             bool m_valid;
+
+            std::vector<float>          m_edgeLens; // used to find the overall parameter value
             alglib::pspline3interpolant m_spline;
 
             SplineCache() : m_valid(false) {}
+
+            template<typename T>
+            void setEdgeLengths(const std::vector<glm::tvec3<T>>& points)
+            {
+                // now set the lengtsh needed:
+                for (int i = 0; i < points.size() - 1; i++)
+                {
+                    const float length = static_cast<float>(glm::length(points[i] - points[i + 1]));
+                    m_edgeLens.push_back(length);
+                }
+            }
         };
 
     private:
         // for debugging:
-        DrawLine* testNormals[3];
-        bool set = false;
+        DrawLine* testNormals[13];
 
         RayTracer(std::vector<glm::vec3> positions, UVMeshSphere sphere, RayTracerParam param);
 
         glm::vec3 raytrace(std::size_t pos, float rInc, float cInc);
-        bool lensRefract(Ray startRay, LensRayPath* o_rayPath);
-        glm::vec3 getNormal(std::size_t triangle, glm::vec3 interPoint);
-        void buildLatSpline(unsigned latID);
-        void buildLonSpline(unsigned lonID, bool bottom);
-        double latSplineParameter(unsigned splineID, unsigned startLonID, unsigned endLonID, float parameter);
-        double lonSplineParameter(unsigned splineID, unsigned startLatID, unsigned endLatID, float parameter, bool bottom);
+        bool      lensRefract(Ray startRay, LensRayPath* o_rayPath, unsigned id); // TODO: remove "debug" ray id from the execution
+        glm::vec3 getNormal(int triangle, glm::vec3 interPoint, unsigned id);
+        void      buildLatSpline(int latID);
+        void      buildLonSpline(int lonID, bool bottom);
+        double    latSplineParameter(int splineID, int startLonID, int endLonID, float parameter);
+        double    lonSplineParameter(int splineID, int startLatID, int endLatID, float parameter, bool bottom);
 
-        glm::vec3 getLatParamValue(unsigned splineID, double param);
-        glm::vec3 getLonParamValue(unsigned splineID, double param, bool bottom);
-        glm::vec3 getLatParamTangent(unsigned splineID, double param);
-        glm::vec3 getLonParamTangent(unsigned splineID, double param, bool bottom);
+        glm::vec3 getLatParamValue(int splineID, double param);
+        glm::vec3 getLonParamValue(int splineID, double param, bool bottom);
+        glm::vec3 getLatParamTangent(int splineID, double param);
+        glm::vec3 getLonParamTangent(int splineID, double param, bool bottom);
 
-        glm::vec3 getLatTangent(unsigned startSplineID, unsigned endSplineID, double startParam, double endParam, float lonRatio);
-        glm::vec3 getLonTangent(unsigned startSplineID, unsigned endSplineID, double startParam, double endParam, float latRatio, bool bottom);
+        glm::vec3 getLatTangent(int startSplineID, int endSplineID, double startParam, double endParam, float lonRatio);
+        glm::vec3 getLonTangent(int startSplineID, int endSplineID, double startParam, double endParam, float latRatio, bool bottom);
 
-        const float    m_ETA;
-        const float    m_invETA;
+        const float          m_ETA;
+        const float          m_invETA;
         const std::size_t    m_widthResolution;
         const std::size_t    m_heightResolution;
 
-        UVMeshSphere   m_lens;
+        UVMeshSphere         m_lens;
 
-        // caches for higher performances:
+        // intersection caches:
         std::vector<glm::vec3> m_rayOrigins;
         std::vector<glm::vec3> m_cachedPoints;
 
+        // spline caches:
+        void clearSplineCache();
         std::vector<SplineCache> m_latSplines;
         std::vector<SplineCache> m_lonSplinesTop;
         std::vector<SplineCache> m_lonSplinesBottom;
 
-        std::vector<glm::vec3> m_resultColors; // the colors that will result
-        std::vector<DrawLensRayPath> m_drawableLines; // for rendering
+        std::vector<glm::vec3>       m_resultColors; // the colors that will result
+        std::vector<DrawLensRayPath> m_drawableLines; // for rendering (these are all the rays to draw)
     };
 }

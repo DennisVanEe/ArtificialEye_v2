@@ -9,34 +9,34 @@ namespace ee
     class UVMeshSphere
     {
     public:
-        UVMeshSphere(Mesh* mesh, unsigned nLat, unsigned nLon);
+        UVMeshSphere(Mesh* mesh, int nLat, int nLon);
 
-        std::vector<ee::SBPointConstraint*> addConstraints(std::size_t thickness, ee::SBSimulation* sim);
+        std::vector<ee::SBPointConstraint*> addConstraints(int thickness, ee::SBSimulation* sim);
 
         Mesh*       getMesh();
         const Mesh* getMesh() const;
 
-        unsigned getNumLatitudes() const;
-        unsigned getNumLongitudes() const;
+        int getNumLatitudes() const;
+        int getNumLongitudes() const;
 
-        unsigned getLatitudeIndex(std::size_t index) const;
-        unsigned getLongitudeIndex(std::size_t index) const;
+        int getLatitudeIndex(int index) const;
+        int getLongitudeIndex(int index) const;
 
-        const std::vector<std::size_t>& getLatitudes(unsigned index) const;
-        const std::vector<std::size_t>& getLongitudes(unsigned index) const;
+        const std::vector<int>& getLatitudes(int index) const;
+        const std::vector<int>& getLongitudes(int index) const;
 
-        unsigned getMuscleEnd() const;
-        unsigned getMuscleBegin() const;
+        int getConstraintStart() const;
+        int getConstraintEnd() const;
 
     private:
-        std::vector<std::vector<std::size_t>> m_latitudes;
-        std::vector<std::vector<std::size_t>> m_longitudes;
+        std::vector<std::vector<int>> m_latitudes;
+        std::vector<std::vector<int>> m_longitudes;
 
         Mesh* const m_mesh;
-        const unsigned m_nLatitudes;
-        const unsigned m_nLongitudes;
+        const int   m_nLatitudes;
+        const int   m_nLongitudes;
 
-        unsigned m_muscleBegin;
-        unsigned m_muslceEnd;
+        int m_constraintStart;
+        int m_constraintEnd;
     };
 }

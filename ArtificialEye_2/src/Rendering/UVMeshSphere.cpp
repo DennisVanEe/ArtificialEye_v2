@@ -2,45 +2,58 @@
 
 #include "RenderingUtilities.hpp"
 
-ee::UVMeshSphere::UVMeshSphere(Mesh* mesh, unsigned nLat, unsigned nLon) :
+ee::UVMeshSphere::UVMeshSphere(Mesh* mesh, int nLat, int nLon) :
     m_mesh(mesh),
     m_nLatitudes(nLat),
     m_nLongitudes(nLon),
-    m_muscleBegin(nLat),
-    m_muslceEnd(nLat)
+    m_constraintStart(-1),
+    m_constraintEnd(-1)
 {
+    m_latitudes.reserve(nLat);
     for (std::size_t i = 0; i < nLat; i++)
     {
-        m_latitudes.push_back(getUVSphereLatitude(i, nLon, nLat));
+        std::vector<int> temp;
+        int indices = (m_nLongitudes * i) + 1;
+        for (int j = 0; j < m_nLongitudes; j++, indices++)
+        {
+            temp.push_back(indices);
+        }
+        m_latitudes.push_back(temp);
     }
 
+    m_longitudes.reserve(nLon);
     for (std::size_t i = 0; i < nLon; i++)
     {
-        m_longitudes.push_back(getUVSphereLongitude(i, nLon, nLat));
+        std::vector<int> temp;
+        for (int j = 0, indices = i + 1; j < nLat; j++, indices += m_nLongitudes)
+        {
+            temp.push_back(indices);
+        }
+        m_longitudes.push_back(temp);
     }
 }
 
-std::vector<ee::SBPointConstraint*> ee::UVMeshSphere::addConstraints(const std::size_t thickness, ee::SBSimulation* sim)
+std::vector<ee::SBPointConstraint*> ee::UVMeshSphere::addConstraints(int thickness, ee::SBSimulation* sim)
 {
     std::vector<ee::SBPointConstraint*> constraints;
 
-    std::size_t beginIndex = (m_nLatitudes / 2 - (thickness / 2 + 1)) * (m_nLongitudes) + 1;
-    std::size_t endIndex;
-    for (std::size_t i = 0, sub = (thickness / 2 + 1); i < thickness; i++, sub--)
+    int beginIndex = (m_nLatitudes / 2 - (thickness / 2 + 1)) * (m_nLongitudes) + 1;
+    int endIndex;
+    for (int i = 0, sub = (thickness / 2 + 1); i < thickness; i++, sub--)
     {
-        const std::size_t index = (m_nLatitudes / 2 - sub) * (m_nLongitudes) + 1;
+        const int index = (m_nLatitudes / 2 - sub) * (m_nLongitudes) + 1;
         endIndex = index;
-        const std::size_t end = index + m_nLongitudes;
+        const int end = index + m_nLongitudes;
 
-        for (std::size_t j = index; j < end; j++)
+        for (int j = index; j < end; j++)
         {
             auto ptr = sim->addConstraint(&ee::SBPointConstraint(m_mesh->getVertex(j).m_position, sim->getVertexObject(j)));
             constraints.push_back(ptr);
         }
     }
 
-    m_muscleBegin = getLatIndex(m_nLatitudes, m_nLongitudes, beginIndex);
-    m_muslceEnd   = getLatIndex(m_nLatitudes, m_nLongitudes, endIndex);
+    m_constraintStart = getLatitudeIndex(beginIndex);
+    m_constraintEnd   = getLatitudeIndex(endIndex);
 
     return std::move(constraints);
 }
@@ -55,42 +68,42 @@ const ee::Mesh* ee::UVMeshSphere::getMesh() const
     return m_mesh;
 }
 
-unsigned ee::UVMeshSphere::getNumLatitudes() const
+int ee::UVMeshSphere::getNumLatitudes() const
 {
     return m_nLatitudes;
 }
 
-unsigned ee::UVMeshSphere::getNumLongitudes() const
+int ee::UVMeshSphere::getNumLongitudes() const
 {
     return m_nLongitudes;
 }
 
-unsigned ee::UVMeshSphere::getLatitudeIndex(std::size_t index) const
+int ee::UVMeshSphere::getLatitudeIndex(int index) const
 {
-    return getLatIndex(m_nLongitudes, m_nLatitudes, index);
+    return (index - 1) / m_nLongitudes;
 }
 
-unsigned ee::UVMeshSphere::getLongitudeIndex(std::size_t index) const
+int ee::UVMeshSphere::getLongitudeIndex(int index) const
 {
-    return getLonIndex(m_nLongitudes, m_nLatitudes, index);
+    return (index - 1) % m_nLongitudes;
 }
 
-const std::vector<std::size_t>& ee::UVMeshSphere::getLatitudes(unsigned index) const
+const std::vector<int>& ee::UVMeshSphere::getLatitudes(int index) const
 {
     return m_latitudes[index];
 }
 
-const std::vector<std::size_t>& ee::UVMeshSphere::getLongitudes(unsigned index) const
+const std::vector<int>& ee::UVMeshSphere::getLongitudes(int index) const
 {
     return m_longitudes[index];
 }
 
-unsigned ee::UVMeshSphere::getMuscleEnd() const
+int ee::UVMeshSphere::getConstraintStart() const
 {
-    return m_muslceEnd;
+    return m_constraintStart;
 }
 
-unsigned ee::UVMeshSphere::getMuscleBegin() const
+int ee::UVMeshSphere::getConstraintEnd() const
 {
-    return m_muscleBegin;
+    return m_constraintEnd;
 }

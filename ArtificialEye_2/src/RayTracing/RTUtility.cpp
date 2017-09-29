@@ -5,7 +5,7 @@
 
 std::pair<bool, glm::vec3> ee::intersectTriangle(Ray ray, glm::vec3 p0, glm::vec3 p1, glm::vec3 p2)
 {
-    const float EPS = FLT_EPSILON;
+    const float EPS = 1e-8;
 
     std::pair<bool, glm::vec3> badResult(false, glm::vec3());
 
@@ -13,7 +13,7 @@ std::pair<bool, glm::vec3> ee::intersectTriangle(Ray ray, glm::vec3 p0, glm::vec
     const glm::vec3 edge1 = p2 - p0;
     const glm::vec3 h = glm::cross(ray.m_dir, edge1);
     const float a = glm::dot(edge0, h); // determinent
-    if (fabsf(a) < EPS)
+    if (std::abs(a) < EPS)
     {
         return badResult;
     }
