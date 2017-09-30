@@ -57,18 +57,23 @@ namespace ee
         {
             bool m_valid;
 
-            std::vector<float>          m_edgeLens; // used to find the overall parameter value
+            std::vector<double>         m_edgeLens; // used to find the overall parameter value
+            double                      m_totalEdgeLen;
+            std::vector<glm::dvec3>     m_splinePoints;
             alglib::pspline3interpolant m_spline;
 
             SplineCache() : m_valid(false) {}
 
-            template<typename T>
-            void setEdgeLengths(const std::vector<glm::tvec3<T>>& points)
+            void setEdgeLengths()
             {
+                assert(!m_splinePoints.empty());
+
                 // now set the lengtsh needed:
-                for (int i = 0; i < points.size() - 1; i++)
+                m_totalEdgeLen = 0.;
+                for (int i = 0; i < m_splinePoints.size() - 1; i++)
                 {
-                    const float length = static_cast<float>(glm::length(points[i] - points[i + 1]));
+                    const double length = glm::length(m_splinePoints[i] - m_splinePoints[i + 1]);
+                    m_totalEdgeLen += length;
                     m_edgeLens.push_back(length);
                 }
             }
@@ -84,8 +89,18 @@ namespace ee
         bool      lensRefract(Ray startRay, LensRayPath* o_rayPath, unsigned id); // TODO: remove "debug" ray id from the execution
         glm::vec3 getNormal(int triangle, glm::vec3 interPoint, unsigned id);
         void      buildLatSpline(int latID);
-        void      buildLonSpline(int lonID, bool bottom);
-        double    latSplineParameter(int splineID, int startLonID, int endLonID, float parameter);
+        void      buildLonSpline(int lonID, bool isBottom);
+        int       normalizeLonID(int originalLonID, int* o_sisterLonID = nullptr) const; // helper function for functions that require lon IDs. 
+                                                                                         // The first part is 
+
+        double    getLatSplineParameter(int splineID, int latSplinePointID_start, int latSplinePointID_end, glm::dvec3 interPoint) const;
+        double    getLonSplineParameter(int splineID, int lonSplinePointID_start, int lonSplinePointID_end, glm::dvec3 interPoint, bool bottom) const;
+        double    getSplineParameter(int splineID, int splinePointID_start, int splinePointID_end, glm::dvec3 interPoint, const std::vector<SplineCache>& splineList) const;
+
+        glm::dvec3 getLatTangent(int spline0, double param0, int spline1, double param1, glm::dvec3 interPoint) const;
+        glm::dvec3 getLonTangent(int spline0, double param0, int spline1, double param1, glm::dvec3 interPoint, bool bottom) const;
+        glm::dvec3 getTangent(int spline0, double param0, int spline1, double param1, glm::dvec3 interPoint, const std::vector<SplineCache>& splineList) const;
+
         double    lonSplineParameter(int splineID, int startLatID, int endLatID, float parameter, bool bottom);
 
         glm::vec3 getLatParamValue(int splineID, double param);
