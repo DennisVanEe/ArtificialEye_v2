@@ -145,8 +145,6 @@ glm::vec3 ee::RayTracer::getNormal(int triangle, glm::vec3 interPoint, unsigned 
     glm::vec3 trianglePoints[3]; // get all of the points of the triangle: // don't bother with this
     for (int i = 0; i < 3; i++) { trianglePoints[i] = transPoint3(lensMesh->getModelTrans(), lensMesh->getVertex(face.m_indices[i]).m_position); }
 
-    glm::vec4 t = lensMesh->getModelTrans() * glm::vec4(lensMesh->getVertex(face.m_indices[0]).m_position, 1.f);
-
     bool isCap = false; // check whether or not it is a cap
     for (int i = 0; i < 3; i++) { isCap = (face.m_indices[i] == 0 || face.m_indices[i] == (lensMesh->getNumVertices() - 1)) || isCap; }
 
@@ -224,8 +222,8 @@ glm::vec3 ee::RayTracer::getNormal(int triangle, glm::vec3 interPoint, unsigned 
         // the point that comes first is always the point with the lowest 
         // index (simple, but there is one issue)
         // If one is equal to the greatest value and one is equal to the smallest value
-        int latSplinePointID_start = glm::min(lonID[latTriPointID_pair[0]], lonID[latTriPointID_single]);
-        int latSplinePointID_end   = glm::max(lonID[latTriPointID_pair[0]], lonID[latTriPointID_single]);
+        int latSplinePointID_start = glm::min(lonID[latTriPointID_pair[0]], lonID[latTriPointID_pair[1]]);
+        int latSplinePointID_end   = glm::max(lonID[latTriPointID_pair[0]], lonID[latTriPointID_pair[1]]);
         if (latSplinePointID_end - latSplinePointID_start != 1)
         {
             latSplinePointID_start = m_lens.getNumLongitudes() - 1;
@@ -243,26 +241,26 @@ glm::vec3 ee::RayTracer::getNormal(int triangle, glm::vec3 interPoint, unsigned 
         {
             if (isFirstHalf) // then the greater index comes first
             {
-                lonSplinePointID_start = m_lens.getConstraintStart() - glm::max(latID[lonTriPointID_pair[0]], latID[lonTriPointID_single]);
-                lonSplinePointID_end = m_lens.getConstraintStart() - glm::min(latID[lonTriPointID_pair[0]], latID[lonTriPointID_single]);
+                lonSplinePointID_start = m_lens.getConstraintStart() - glm::max(latID[lonTriPointID_pair[0]], latID[lonTriPointID_pair[1]]);
+                lonSplinePointID_end = m_lens.getConstraintStart() - glm::min(latID[lonTriPointID_pair[0]], latID[lonTriPointID_pair[1]]);
             }
             else // the lower one goes first now
             {
-                lonSplinePointID_start = m_lens.getConstraintStart() + 2 + glm::min(latID[lonTriPointID_pair[0]], latID[lonTriPointID_single]);
-                lonSplinePointID_end = m_lens.getConstraintStart() + 2 + glm::max(latID[lonTriPointID_pair[0]], latID[lonTriPointID_single]);
+                lonSplinePointID_start = m_lens.getConstraintStart() + 2 + glm::min(latID[lonTriPointID_pair[0]], latID[lonTriPointID_pair[1]]);
+                lonSplinePointID_end = m_lens.getConstraintStart() + 2 + glm::max(latID[lonTriPointID_pair[0]], latID[lonTriPointID_pair[1]]);
             }
         }
         else
         {
             if (isFirstHalf) // then the greater index comes first
             {
-                lonSplinePointID_start = glm::min(latID[lonTriPointID_pair[0]], latID[lonTriPointID_single]) - m_lens.getConstraintEnd();
-                lonSplinePointID_end = glm::max(latID[lonTriPointID_pair[0]], latID[lonTriPointID_single]) - m_lens.getConstraintEnd();
+                lonSplinePointID_start = glm::min(latID[lonTriPointID_pair[0]], latID[lonTriPointID_pair[1]]) - m_lens.getConstraintEnd();
+                lonSplinePointID_end = glm::max(latID[lonTriPointID_pair[0]], latID[lonTriPointID_pair[1]]) - m_lens.getConstraintEnd();
             }
             else // the lower one goes first now
             {
-                lonSplinePointID_start = m_lens.getNumLatitudes() - glm::max(latID[lonTriPointID_pair[0]], latID[lonTriPointID_single]) + m_lens.getNumLatitudes() - m_lens.getConstraintEnd();
-                lonSplinePointID_end = m_lens.getNumLatitudes() - glm::min(latID[lonTriPointID_pair[0]], latID[lonTriPointID_single]) + m_lens.getNumLatitudes() - m_lens.getConstraintEnd();
+                lonSplinePointID_start = m_lens.getNumLatitudes() - glm::max(latID[lonTriPointID_pair[0]], latID[lonTriPointID_pair[1]]) + m_lens.getNumLatitudes() - m_lens.getConstraintEnd();
+                lonSplinePointID_end = m_lens.getNumLatitudes() - glm::min(latID[lonTriPointID_pair[0]], latID[lonTriPointID_pair[1]]) + m_lens.getNumLatitudes() - m_lens.getConstraintEnd();
             }
         }
         // don't have to worry about the cap because that is handled elsewhere
@@ -312,7 +310,7 @@ void ee::RayTracer::buildLatSpline(int latID)
 
     // need to add the last point so it all works out
     const glm::dvec3 p(transPoint3(m_lens.getMesh()->getModelTrans(), m_lens.getMesh()->getVertex(latitudes[0]).m_position));
-    points.push_back(glm::dvec3(p));
+    points.push_back(glm::dvec3(p)); // TODO: remove this redundancy
     m_latSplines[latID].m_splinePoints = std::move(points);
     m_latSplines[latID].setEdgeLengths();
 }
