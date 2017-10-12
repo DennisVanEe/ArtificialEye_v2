@@ -126,7 +126,7 @@ bool ee::RayTracer::lensRefract(const Ray startRay, LensRayPath* o_rayPath, unsi
 
     // now calulcate the next part:
     const MeshFace& passFace = lensMesh->getMeshFace(passIntersection.first);
-    const glm::vec3 passNormal = -getNormal(passIntersection.first, passIntersection.second, id); //glm::vec3(lensMesh->getNormalModelTrans() * glm::vec4(getNormal(passIntersection.first, passIntersection.second), 0.f));
+    const glm::vec3 passNormal = -getNormal(passIntersection.first, passIntersection.second, id + 1); //glm::vec3(lensMesh->getNormalModelTrans() * glm::vec4(getNormal(passIntersection.first, passIntersection.second), 0.f));
     const glm::vec3 passRefraction = glm::normalize(cust::refract(entryRefraction, passNormal, m_invETA));
     // TODO: fix the weirdness that is happening
 
@@ -156,6 +156,8 @@ glm::vec3 ee::RayTracer::getNormal(int triangle, glm::vec3 interPoint, unsigned 
     }
     else
     {
+        // return lensMesh->getNormal(triangle);
+
         // stores the latitude and longitude spline ids:
         int latID[3];
         int lonID[3];
@@ -224,8 +226,8 @@ glm::vec3 ee::RayTracer::getNormal(int triangle, glm::vec3 interPoint, unsigned 
         // the point that comes first is always the point with the lowest 
         // index (simple, but there is one issue)
         // If one is equal to the greatest value and one is equal to the smallest value
-        int latSplinePointID_start = glm::min(lonID[latTriPointID_pair[0]], lonID[latTriPointID_single]);
-        int latSplinePointID_end   = glm::max(lonID[latTriPointID_pair[0]], lonID[latTriPointID_single]);
+        int latSplinePointID_start = glm::min(lonID[latTriPointID_pair[0]], lonID[latTriPointID_pair[1]]);
+        int latSplinePointID_end   = glm::max(lonID[latTriPointID_pair[0]], lonID[latTriPointID_pair[1]]);
         if (latSplinePointID_end - latSplinePointID_start != 1)
         {
             latSplinePointID_start = m_lens.getNumLongitudes() - 1;
@@ -243,28 +245,32 @@ glm::vec3 ee::RayTracer::getNormal(int triangle, glm::vec3 interPoint, unsigned 
         {
             if (isFirstHalf) // then the greater index comes first
             {
-                lonSplinePointID_start = m_lens.getConstraintStart() - glm::max(latID[lonTriPointID_pair[0]], latID[lonTriPointID_single]);
-                lonSplinePointID_end = m_lens.getConstraintStart() - glm::min(latID[lonTriPointID_pair[0]], latID[lonTriPointID_single]);
+                lonSplinePointID_start = m_lens.getConstraintStart() - glm::max(latID[lonTriPointID_pair[0]], latID[lonTriPointID_pair[1]]);
+                lonSplinePointID_end = m_lens.getConstraintStart() - glm::min(latID[lonTriPointID_pair[0]], latID[lonTriPointID_pair[1]]);
             }
             else // the lower one goes first now
             {
-                lonSplinePointID_start = m_lens.getConstraintStart() + 2 + glm::min(latID[lonTriPointID_pair[0]], latID[lonTriPointID_single]);
-                lonSplinePointID_end = m_lens.getConstraintStart() + 2 + glm::max(latID[lonTriPointID_pair[0]], latID[lonTriPointID_single]);
+                lonSplinePointID_start = m_lens.getConstraintStart() + 2 + glm::min(latID[lonTriPointID_pair[0]], latID[lonTriPointID_pair[1]]);
+                lonSplinePointID_end = m_lens.getConstraintStart() + 2 + glm::max(latID[lonTriPointID_pair[0]], latID[lonTriPointID_pair[1]]);
             }
         }
         else
         {
             if (isFirstHalf) // then the greater index comes first
             {
-                lonSplinePointID_start = glm::min(latID[lonTriPointID_pair[0]], latID[lonTriPointID_single]) - m_lens.getConstraintEnd();
-                lonSplinePointID_end = glm::max(latID[lonTriPointID_pair[0]], latID[lonTriPointID_single]) - m_lens.getConstraintEnd();
+                lonSplinePointID_start = glm::min(latID[lonTriPointID_pair[0]], latID[lonTriPointID_pair[1]]) - m_lens.getConstraintEnd();
+                lonSplinePointID_end = glm::max(latID[lonTriPointID_pair[0]], latID[lonTriPointID_pair[1]]) - m_lens.getConstraintEnd();
             }
             else // the lower one goes first now
             {
-                lonSplinePointID_start = m_lens.getNumLatitudes() - glm::max(latID[lonTriPointID_pair[0]], latID[lonTriPointID_single]) + m_lens.getNumLatitudes() - m_lens.getConstraintEnd();
-                lonSplinePointID_end = m_lens.getNumLatitudes() - glm::min(latID[lonTriPointID_pair[0]], latID[lonTriPointID_single]) + m_lens.getNumLatitudes() - m_lens.getConstraintEnd();
+                lonSplinePointID_start = m_lens.getNumLatitudes() - glm::max(latID[lonTriPointID_pair[0]], latID[lonTriPointID_pair[1]]) + m_lens.getNumLatitudes() - m_lens.getConstraintEnd();
+                lonSplinePointID_end = m_lens.getNumLatitudes() - glm::min(latID[lonTriPointID_pair[0]], latID[lonTriPointID_pair[1]]) + m_lens.getNumLatitudes() - m_lens.getConstraintEnd();
             }
         }
+        
+        glm::vec3 t_p0 = trianglePoints[lonTriPointID_pair[0]];
+        glm::vec3 t_p1 = trianglePoints[lonTriPointID_pair[1]];
+
         // don't have to worry about the cap because that is handled elsewhere
         
         const double latParam0 = getLatSplineParameter(latID[latTriPointID_pair[0]], latSplinePointID_start, latSplinePointID_end, interPoint);
@@ -276,15 +282,15 @@ glm::vec3 ee::RayTracer::getNormal(int triangle, glm::vec3 interPoint, unsigned 
         const glm::vec3 lonTangent = getLonTangent(lonID[lonTriPointID_pair[0]], lonParam0, lonID[lonTriPointID_single], lonParam1, interPoint, isBottom);
 
         // TODO: debug info:
-        int debugIndex = 3 * id;
+        /*int debugIndex = 3 * id;
         testNormals[debugIndex + 1]->setRay(Ray(interPoint, lonTangent), 1.f);
-        testNormals[debugIndex + 2]->setRay(Ray(interPoint, latTangent), 1.f);
+        testNormals[debugIndex + 2]->setRay(Ray(interPoint, latTangent), 1.f);*/
 
         const glm::vec3 splineNormal = glm::normalize(glm::cross(latTangent, lonTangent));
         const glm::vec3 roughNormal = glm::normalize(interPoint); // for some reason, for certain triangles, the resulting normal is completely off.
         const glm::vec3 result = glm::dot(splineNormal, roughNormal) < 0 ? -splineNormal : splineNormal;
 
-        testNormals[debugIndex]->setRay(Ray(interPoint, -result), 1.f);
+        // testNormals[debugIndex]->setRay(Ray(interPoint, -result), 1.f);
 
         return result; // glm::dot(splineNormal, faceNormal) >= 0 ? splineNormal : -splineNormal;
     }
@@ -364,7 +370,7 @@ void ee::RayTracer::buildLonSpline(int lonID, bool isBottom)
 
     alglib::real_2d_array data;
     data.setcontent(points.size(), 3, reinterpret_cast<const double*>(points.data()));
-    alglib::pspline3build(data, points.size(), 1, 0, lonSplines[lonID0].m_spline);
+    alglib::pspline3build(data, points.size(), CAT_ROM, 0, lonSplines[lonID0].m_spline);
     lonSplines[lonID0].m_valid = true;
     lonSplines[lonID0].m_splinePoints = std::move(points);
     lonSplines[lonID0].setEdgeLengths();
@@ -394,25 +400,30 @@ double ee::RayTracer::getLonSplineParameter(int splineID, int lonSplinePointID_s
 double ee::RayTracer::getSplineParameter(int splineID, int splinePointID_start, int splinePointID_end, glm::dvec3 interPoint, const std::vector<SplineCache>& splineList) const
 {
     assert(splineList[splineID].m_valid);
+    assert(splinePointID_start < splineList[splineID].m_splinePoints.size());
+    assert(splinePointID_end < splineList[splineID].m_splinePoints.size());
 
-    // get the points:
+    // get the points from the spline list of points
+    // NB: it is up to the caller to make sure that these work
     const glm::dvec3 startPoint = splineList[splineID].m_splinePoints[splinePointID_start];
     const glm::dvec3 endPoint = splineList[splineID].m_splinePoints[splinePointID_end];
 
     // get the position vector:
+    // startPoint ---------- endPoint
+    // \
+    //  \
+    //   interPoint <- project this point onto vec endPoint - startPoint
     const glm::dvec3 edgeVector = endPoint - startPoint;
     const glm::dvec3 interVector = interPoint - startPoint;
 
-    double ratio = glm::dot(interVector, glm::normalize(edgeVector)) / glm::length(edgeVector);
+    // get ratio of the projection:
+    const double ratio = glm::dot(interVector, glm::normalize(edgeVector)) / glm::length(edgeVector);
 
-    double lengths = 0.;
-    for (int i = 0; i < splinePointID_start; i++)
-    {
-        lengths += splineList[splineID].m_edgeLens[i];
-    }
-    lengths += splineList[splineID].m_edgeLens[splinePointID_start] * ratio;
+    const double upToEdgeLength = splineList[splineID].getEdgeLengthUpTo(splinePointID_start);
+    const double edgeLength = splineList[splineID].getEdgeLengthUpTo(splinePointID_end) - upToEdgeLength;
 
-    return lengths / splineList[splineID].m_totalEdgeLen;
+    const double totalRatio = ((edgeLength * ratio) + upToEdgeLength) / splineList[splineID].getTotalEdgeLength();
+    return totalRatio < 0 ? 0 : totalRatio;
 }
 
 glm::dvec3 ee::RayTracer::getLatTangent(int spline0, double param0, int spline1, double param1, glm::dvec3 interPoint) const
@@ -429,6 +440,7 @@ glm::dvec3 ee::RayTracer::getLonTangent(int spline0, double param0, int spline1,
 
 glm::dvec3 ee::RayTracer::getTangent(int spline0, double param0, int spline1, double param1, glm::dvec3 interPoint, const std::vector<SplineCache>& splineList) const
 {
+    // make sure that the splines are valid in both cases
     assert(splineList[spline0].m_valid);
     assert(splineList[spline1].m_valid);
 
@@ -443,19 +455,21 @@ glm::dvec3 ee::RayTracer::getTangent(int spline0, double param0, int spline1, do
     alglib::pspline3tangent(splineList[spline0].m_spline, param0, x, y, z);
     const glm::dvec3 tangent0(x, y, z);
     alglib::pspline3tangent(splineList[spline1].m_spline, param1, x, y, z);
-    const glm::dvec3 tangent1 = glm::dot(tangent0, glm::dvec3(x, y, z)) >= 0 ? glm::dvec3(x, y, z) : -glm::dvec3(x, y, z); // make sure the tangents face in the same direction
+    const glm::dvec3 tangent1 = flipSameDir(glm::dvec3(x, y, z), tangent0); // make sure they are both facing the same direction (no weird crossing)
 
     const glm::dvec3 edgeVector = glm::normalize(point1 - point0);
-    const glm::dvec3 interVector = interPoint - point0;
-    const glm::dvec3 tangentStart = (glm::dot(interVector, edgeVector) * edgeVector) + point0;
+    const glm::dvec3 interVector = interPoint - point0; // we are going to try and project the point onto the edgeVector....
+    const glm::dvec3 tangentStart = glm::proj(interVector, edgeVector) + point0;
 
     // exten them out by one:
     const glm::dvec3 secondPoint0 = point0 + tangent0;
     const glm::dvec3 secondPoint1 = point1 + tangent1;
     const glm::dvec3 secondEdgeVector = glm::normalize(secondPoint1 - secondPoint0);
-    const glm::dvec3 tangentEnd = (glm::dot(interVector, secondEdgeVector) * secondEdgeVector) + secondPoint0;
+    const glm::dvec3 secondInterVector = interPoint - secondPoint0;
+    const glm::dvec3 tangentEnd = glm::proj(secondInterVector, secondEdgeVector) + secondPoint0;
 
-    return glm::normalize(tangentEnd - tangentStart); // this should be unit anyways, but nothing wrong with normalizing extra
+    const glm::dvec3 resultingTangent = glm::normalize(tangentEnd - tangentStart);
+    return resultingTangent;
 }
 
 double ee::RayTracer::lonSplineParameter(int splineID, int startLatID, int endLatID, float parameter, bool bottom)
@@ -623,11 +637,11 @@ glm::vec3 ee::RayTracer::raytrace(std::size_t pos, const float rInc, const float
     clearSplineCache();
     for (std::size_t i = 0; i < m_rayOrigins.size(); i++)
     {
-        for (std::size_t j = 0; j < m_cachedPoints.size(); j++)
+        for (std::size_t j = 0, k = 0; j < m_cachedPoints.size(); j++, k += 2)
         {
             const Ray currRay(glm::vec3(m_cachedPoints[j].x, m_cachedPoints[j].y, m_rayOrigins[i].z), glm::vec3(0.f, 0.f, 1.f)); // m_cachedPoints[j] - m_rayOrigins[i]);
             LensRayPath path;
-            if (lensRefract(currRay, &path, j))
+            if (lensRefract(currRay, &path, k))
             {
                 std::size_t index = i * m_cachedPoints.size() + j;
                 m_drawableLines[index].m_begin.setLine(path.m_entry);

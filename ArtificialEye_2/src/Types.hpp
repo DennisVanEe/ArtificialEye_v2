@@ -34,4 +34,10 @@ namespace ee
     glm::vec3 removeZeroError(glm::vec3 vec);
     glm::vec3 transPoint3(const glm::mat4& mat, glm::vec3 vec);
     glm::vec3 transVector3(const glm::mat4& mat, glm::vec3 vec);
+
+    template<typename T>
+    glm::tvec3<T> flipSameDir(glm::tvec3<T> toFlip, glm::tvec3<T> ref)
+    {
+        return glm::dot(toFlip, ref) >= 0 ? toFlip : -toFlip;
+    }
 }
