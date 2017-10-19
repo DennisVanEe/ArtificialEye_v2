@@ -1,4 +1,0 @@
-- Fix weird warping issue with refraction shader
-- Implement Spherical shape (not accurate to lense)
-	- Go Here for Sphere:
-		- https://schneide.wordpress.com/2016/07/15/generating-an-icosphere-in-c/

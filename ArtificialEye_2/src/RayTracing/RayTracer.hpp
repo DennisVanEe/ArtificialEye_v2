@@ -97,7 +97,9 @@ namespace ee
 
     private:
         // for debugging:
-        DrawLine* testNormals[13];
+        // DrawLine* testNormals[13];
+
+        std::vector<DrawLine*> testNormals;
 
         RayTracer(std::vector<glm::vec3> positions, UVMeshSphere sphere, RayTracerParam param);
 
