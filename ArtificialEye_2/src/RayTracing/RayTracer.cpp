@@ -150,10 +150,10 @@ glm::vec3 ee::RayTracer::getNormal(int triangle, glm::vec3 interPoint, unsigned 
     }
     else
     {
-        //auto normal = transVector3(lensMesh->getNormalModelTrans(), lensMesh->getNormal(triangle));
-        //if (id != UINT_MAX)
-        //    testNormals[id]->setRay(Ray(interPoint, normal), 10.f);
-        //return normal;
+        auto normal = transVector3(lensMesh->getNormalModelTrans(), lensMesh->getNormal(triangle));
+        if (id != UINT_MAX)
+            testNormals[id]->setRay(Ray(interPoint, normal), 10.f);
+        return normal;
 
         // stores the latitude and longitude spline ids:
         int latID[3];

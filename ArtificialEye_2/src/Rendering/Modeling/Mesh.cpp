@@ -50,6 +50,26 @@ void ee::Mesh::applyTransformation(glm::mat4 mat)
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * m_vertices.size(), m_vertices.data());
 }
 
+ee::VertBuffer& ee::Mesh::getVerticesData()
+{
+    return m_vertices;
+}
+
+const ee::VertBuffer& ee::Mesh::getVerticesData() const
+{
+    return m_vertices();
+}
+
+ee::MeshFaceBuffer & ee::Mesh::getMeshFaceData()
+{
+    return m_faces;
+}
+
+const ee::MeshFaceBuffer& ee::Mesh::getMeshFaceData() const
+{
+    return m_faces();
+}
+
 const ee::Vertex & ee::Mesh::getVertex(std::size_t vertexID) const 
 { 
     return m_vertices[vertexID]; 

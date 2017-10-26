@@ -218,6 +218,7 @@
     <ClInclude Include="src\Initialization.hpp" />
     <ClInclude Include="src\Rendering\Camera.hpp" />
     <ClInclude Include="src\Rendering\Drawable.hpp" />
+    <ClInclude Include="src\Rendering\Subdivision.hpp" />
     <ClInclude Include="src\Rendering\UVMeshSphere.hpp" />
     <ClInclude Include="src\Rendering\Modeling\DynamicMesh.hpp" />
     <ClInclude Include="src\Rendering\Modeling\DrawLine.hpp" />
@@ -271,6 +272,7 @@
     <None Include="Shaders\skyBox_frag.glsl" />
     <None Include="Shaders\skyBox_vert.glsl" />
     <None Include="src\Rendering\Renderer.inl" />
+    <ClCompile Include="src\Rendering\Subdivision.cpp" />
     <None Include="src\SoftBody\Simulation\SBSimulation.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

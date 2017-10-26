@@ -365,6 +365,9 @@
     <ClInclude Include="src\Rendering\UVMeshSphere.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Rendering\Subdivision.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\modelUniColor_vert.glsl" />
@@ -383,6 +386,9 @@
     </None>
     <None Include="ArtificialEye_Properties.ini" />
     <None Include="src\Rendering\Renderer.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="src\Rendering\Subdivision.cpp">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
