@@ -44,7 +44,14 @@ namespace ee
         Mesh(Mesh&& other);
         virtual ~Mesh();
 
-        void applyTransformation(glm::mat4 mat); // this actually changes the individual vertex information
+        // this actually changes the individual vertex information
+        void applyTransformation(glm::mat4 mat);
+
+        VertBuffer& getVerticesData();
+        const VertBuffer& getVerticesData() const;
+
+        MeshFaceBuffer& getMeshFaceData();
+        const MeshFaceBuffer& getMeshFaceData() const;
 
         virtual const Vertex& getVertex(std::size_t vertexID) const;
         virtual std::size_t getNumVertices() const;
