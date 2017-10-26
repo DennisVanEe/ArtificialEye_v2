@@ -57,7 +57,7 @@ ee::VertBuffer& ee::Mesh::getVerticesData()
 
 const ee::VertBuffer& ee::Mesh::getVerticesData() const
 {
-    return m_vertices();
+    return m_vertices;
 }
 
 ee::MeshFaceBuffer & ee::Mesh::getMeshFaceData()
@@ -67,7 +67,7 @@ ee::MeshFaceBuffer & ee::Mesh::getMeshFaceData()
 
 const ee::MeshFaceBuffer& ee::Mesh::getMeshFaceData() const
 {
-    return m_faces();
+    return m_faces;
 }
 
 const ee::Vertex & ee::Mesh::getVertex(std::size_t vertexID) const 

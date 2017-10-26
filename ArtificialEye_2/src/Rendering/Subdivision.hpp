@@ -4,5 +4,5 @@
 
 namespace ee
 {
-    void catmullClarkSubdiv(const Mesh* original, Mesh* subdivided);
+    void catmullClarkSubdiv(const VertBuffer& oVertices, const MeshFaceBuffer& oFaces, VertBuffer& nVertices, MeshFaceBuffer& nFaces);
 }
