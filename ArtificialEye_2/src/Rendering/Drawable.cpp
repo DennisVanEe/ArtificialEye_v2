@@ -6,6 +6,11 @@ ee::Drawable::Drawable(const std::string& textPack, const int priority) :
     m_texturePack(Renderer::getTexturePack(textPack)),
     m_priority(priority)
 {
+    if (m_texturePack == nullptr)
+    {
+        return; // it won't be rendered (this is kind of a hack, but it is quick)
+    }
+
     if (m_priority < 0 && m_priority != RENDER_FIRST)
     {
         m_priority = 0;
@@ -48,6 +53,11 @@ void ee::Drawable::setShaderMaterial(ShaderMaterial mat)
 int ee::Drawable::getPriority() const 
 { 
     return m_priority; 
+}
+
+bool ee::Drawable::willDraw() const
+{
+    return m_texturePack != nullptr;
 }
 
 bool ee::DrawableCompare::operator()(const Drawable* a, const Drawable* b) const

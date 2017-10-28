@@ -134,39 +134,40 @@ int main()
         // generate the UV Sphere lens (not super efficient)
         VertBuffer uvSphereVertexBuffer;
         MeshFaceBuffer uvSphereIndexBuffer;
-        //loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude, &uvSphereVertexBuffer, &uvSphereIndexBuffer);
-        loadIndexedCube(&uvSphereVertexBuffer, &uvSphereIndexBuffer);
+        loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude, &uvSphereVertexBuffer, &uvSphereIndexBuffer);
+        //loadIndexedCube(&uvSphereVertexBuffer, &uvSphereIndexBuffer);
         VertBuffer subDividedVertBuff;
         MeshFaceBuffer subDividedFaceBuff;
-        catmullClarkSubdiv(uvSphereVertexBuffer, uvSphereIndexBuffer, subDividedVertBuff, subDividedFaceBuff);
+        loopSubdiv(uvSphereVertexBuffer, uvSphereIndexBuffer, subDividedVertBuff, subDividedFaceBuff, 0);
+        DynamicMesh lensMesh("refractTextPack", std::move(subDividedVertBuff), std::move(subDividedFaceBuff));
         DynamicMesh lensMesh("refractTextPack", std::move(subDividedVertBuff), std::move(subDividedFaceBuff));
 
         SkyBox skyBox("skyBoxTextPack");
         Renderer::addDrawable(&skyBox);
         Renderer::addDrawable(&lensMesh);
 
-        //// update the positons of the lens
-        //const glm::mat4 lensModelTrans = glm::scale(glm::rotate(glm::mat4(), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f)), glm::vec3(1.f, ARTIFICIAL_EYE_PROP.lens_thickness, 1.f));
-        //lensMesh.setModelTrans(lensModelTrans);
+        // update the positons of the lens
+        const glm::mat4 lensModelTrans = glm::scale(glm::rotate(glm::mat4(), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f)), glm::vec3(1.f, ARTIFICIAL_EYE_PROP.lens_thickness, 1.f));
+        lensMesh.setModelTrans(lensModelTrans);
 
-        //// prepare the simulation
-        //SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &lensMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
-        //lensSim.m_constIterations = ARTIFICIAL_EYE_PROP.iterations;
-        //addInteriorSpringsUVSphere(&lensSim, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.intspring_coeff, ARTIFICIAL_EYE_PROP.intspring_drag);
-        ////addConstraints(5, &lensSim, &lensMesh);
-        //lensSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 20.f, ARTIFICIAL_EYE_PROP.extspring_drag));
+        // prepare the simulation
+        SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &lensMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
+        lensSim.m_constIterations = ARTIFICIAL_EYE_PROP.iterations;
+        addInteriorSpringsUVSphere(&lensSim, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.intspring_coeff, ARTIFICIAL_EYE_PROP.intspring_drag);
+        //addConstraints(5, &lensSim, &lensMesh);
+        lensSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 20.f, ARTIFICIAL_EYE_PROP.extspring_drag));
 
-        //// test stuff:
-        //const std::vector<glm::vec3> pos = { glm::vec3(0.f, 0.f, -2.f) };
-        //RayTracerParam param;
-        //param.m_widthResolution = 5;
-        //param.m_heightResolution = 5;
-        //param.m_lensRefractiveIndex = 1.56f;
-        //param.m_enviRefractiveIndex = 1.f;
-        //param.m_rayColor = glm::vec3(1.f, 0.f, 0.f);
-        //UVMeshSphere sphere(&lensMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
-        //g_constraints = sphere.addConstraints(5, &lensSim);
-        //g_tracer = &ee::RayTracer::initialize(pos, sphere, param);
+        // test stuff:
+        const std::vector<glm::vec3> pos = { glm::vec3(0.f, 0.f, -2.f) };
+        RayTracerParam param;
+        param.m_widthResolution = 5;
+        param.m_heightResolution = 5;
+        param.m_lensRefractiveIndex = 1.56f;
+        param.m_enviRefractiveIndex = 1.f;
+        param.m_rayColor = glm::vec3(1.f, 0.f, 0.f);
+        UVMeshSphere sphere(&lensMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
+        g_constraints = sphere.addConstraints(5, &lensSim);
+        g_tracer = &ee::RayTracer::initialize(pos, sphere, param);
 
         while (ee::Renderer::isInitialized())
         {
@@ -179,24 +180,30 @@ int main()
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             }
 
-            //if (g_defaultP)
-            //{
-            //    lensSim.setP(ARTIFICIAL_EYE_PROP.pressure);
-            //}
-            //else
-            //{
-            //    lensSim.setP(0.f);
-            //}
+            if (g_defaultP)
+            {
+                lensSim.setP(ARTIFICIAL_EYE_PROP.pressure);
+            }
+            else
+            {
+                lensSim.setP(0.f);
+            }
 
             ee::Renderer::clearBuffers();
 
             float time = Renderer::timeElapsed();
-            //if (g_startSoftBody)
-            //{
-            //    lensSim.update(time);
-            //}
+            if (g_startSoftBody)
+            {
+                lensSim.update(time);
+            }
 
-            // g_tracer->raytrace();
+            VertBuffer subDividedVertBuff;
+            MeshFaceBuffer subDividedFaceBuff;
+            loopSubdiv(lensMesh.getVerticesData(), lensMesh.getMeshFaceData(), subDividedVertBuff, subDividedFaceBuff, 1);
+            lensMesh.getVerticesData() = subDividedVertBuff;
+            lensMesh.getMeshFaceData() = subDividedFaceBuff;
+
+            g_tracer->raytrace();
 
             Renderer::drawAll();
             Renderer::update(time);

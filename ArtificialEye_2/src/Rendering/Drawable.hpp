@@ -22,6 +22,8 @@ namespace ee
 
         int getPriority() const;
 
+        bool willDraw() const;
+
         virtual void draw() = 0;
 
     protected:

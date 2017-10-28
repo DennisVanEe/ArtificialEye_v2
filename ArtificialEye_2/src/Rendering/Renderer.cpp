@@ -275,6 +275,11 @@ void ee::Renderer::drawAll()
 
 ee::TexturePack* ee::Renderer::getTexturePack(const std::string& name)
 {
+    if (name.empty())
+    {
+        return nullptr;
+    }
+
     const auto it = g_textPacks.find(name);
     if (it == g_textPacks.end())
     {

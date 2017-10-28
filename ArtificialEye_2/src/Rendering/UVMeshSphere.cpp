@@ -88,6 +88,15 @@ int ee::UVMeshSphere::getLongitudeIndex(int index) const
     return (index - 1) % m_nLongitudes;
 }
 
+glm::vec3 ee::UVMeshSphere::getNormal(int faceID) const
+{
+    glm::vec3 norm = m_mesh->getNormal(faceID);
+    MeshFace face = m_mesh->getMeshFace(faceID);
+    glm::vec3 est = glm::normalize(m_mesh->getVertex(face.m_indices[0]).m_position + m_mesh->getVertex(face.m_indices[1]).m_position
+        + m_mesh->getVertex(face.m_indices[2]).m_position);
+    return glm::dot(norm, est) > 0 ? norm : -norm;
+}
+
 const std::vector<int>& ee::UVMeshSphere::getLatitudes(int index) const
 {
     return m_latitudes[index];

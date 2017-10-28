@@ -22,6 +22,9 @@ namespace ee
         int getLatitudeIndex(int index) const;
         int getLongitudeIndex(int index) const;
 
+        // makes sure the normals are facing out:
+        glm::vec3 getNormal(int faceID) const;
+
         const std::vector<int>& getLatitudes(int index) const;
         const std::vector<int>& getLongitudes(int index) const;
 
