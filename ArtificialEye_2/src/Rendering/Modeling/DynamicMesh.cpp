@@ -8,12 +8,12 @@ ee::DynamicMesh::DynamicMesh(std::string textPack, VertBuffer vertices, MeshFace
 {
 }
 
-ee::DynamicMesh::DynamicMesh(const DynamicMesh & mesh) : 
+ee::DynamicMesh::DynamicMesh(const DynamicMesh& mesh) : 
     Mesh(mesh) 
 {
 }
 
-ee::DynamicMesh::DynamicMesh(DynamicMesh && mesh) : 
+ee::DynamicMesh::DynamicMesh(DynamicMesh&& mesh) : 
     Mesh(std::move(mesh)) 
 {
 }
@@ -56,4 +56,22 @@ void ee::DynamicMesh::setVertex(const Vertex& vertex, std::size_t vertexID)
     glBufferSubData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertexID + offsetof(Vertex, m_normal), sizeof(glm::vec3), glm::value_ptr(vertex.m_normal));
     glBufferSubData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertexID + offsetof(Vertex, m_textCoord), sizeof(glm::vec3), glm::value_ptr(vertex.m_textCoord));
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void ee::DynamicMesh::setVertices(const VertBuffer& vertices)
+{
+    assert(vertices.size() == m_vertices.size());
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), vertices.data());
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void ee::DynamicMesh::setMeshFace(const MeshFaceBuffer& faces)
+{
+    assert(faces.size() == m_faces.size());
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, faces.size() * sizeof(MeshFace), faces.data());
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }

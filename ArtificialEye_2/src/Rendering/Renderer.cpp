@@ -235,6 +235,11 @@ void ee::Renderer::addTexture(std::string dir, GLuint texture)
 
 void ee::Renderer::addDrawable(Drawable* d)
 {
+    if (!d->willDraw())
+    {
+        return; // don't add it (there is no point, you see)
+    }
+
     static bool renderFirstSet = false;
     static bool renderLastSet = false;
 

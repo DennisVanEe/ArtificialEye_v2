@@ -18,5 +18,7 @@ namespace ee
 
         // the dynamic part:
         void setVertex(const Vertex& vertex, std::size_t vertexID);
+        void setVertices(const VertBuffer& vertices);
+        void setMeshFace(const MeshFaceBuffer& faces);
     };
 }
