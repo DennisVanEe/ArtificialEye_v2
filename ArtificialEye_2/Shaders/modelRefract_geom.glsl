@@ -14,6 +14,10 @@ void main()
     vec3 a = vec3(gl_in[1].gl_Position) - vec3(gl_in[0].gl_Position);
     vec3 b = vec3(gl_in[2].gl_Position) - vec3(gl_in[0].gl_Position);
     vec3 norm = normalize(cross(b, a));
+    if (dot(norm, vec3(gl_in[0].gl_Position)) > 0)
+    {
+        norm = -norm;
+    }
 
     // apply these normals and send them off
     for(int i = 0; i < gl_in.length(); i++)

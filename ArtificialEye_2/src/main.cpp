@@ -139,7 +139,7 @@ int main()
 
         VertBuffer subDividedVertBuff;
         MeshFaceBuffer subDividedFaceBuff;
-        loopSubdiv(uvSphereVertexBuffer, uvSphereIndexBuffer, subDividedVertBuff, subDividedFaceBuff, 3);
+        loopSubdiv(uvSphereVertexBuffer, uvSphereIndexBuffer, subDividedVertBuff, subDividedFaceBuff, ARTIFICIAL_EYE_PROP.subdiv_level);
         DynamicMesh subLensMesh("refractTextPack", std::move(subDividedVertBuff), std::move(subDividedFaceBuff));
 
         SkyBox skyBox("skyBoxTextPack");
@@ -166,7 +166,7 @@ int main()
         param.m_lensRefractiveIndex = 1.56f;
         param.m_enviRefractiveIndex = 1.f;
         param.m_rayColor = glm::vec3(1.f, 0.f, 0.f);
-        UVMeshSphere sphere(&dynLensMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
+        UVMeshSphere sphere(&subLensMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
         g_constraints = sphere.addConstraints(5, &lensSim);
         g_tracer = &ee::RayTracer::initialize(pos, sphere, param);
 
@@ -198,7 +198,7 @@ int main()
                 lensSim.update(time);
                 VertBuffer subDividedVertBuff;
                 MeshFaceBuffer subDividedFaceBuff;
-                loopSubdiv(dynLensMesh.getVerticesData(), dynLensMesh.getMeshFaceData(), subDividedVertBuff, subDividedFaceBuff, 3);
+                loopSubdiv(dynLensMesh.getVerticesData(), dynLensMesh.getMeshFaceData(), subDividedVertBuff, subDividedFaceBuff, ARTIFICIAL_EYE_PROP.subdiv_level);
                 subLensMesh.setVertices(subDividedVertBuff);
                 subLensMesh.setMeshFace(subDividedFaceBuff);
             }

@@ -30,6 +30,8 @@ namespace ee
         unsigned        muscle_thickness;
         float           refractive_index;
         float           lens_thickness;
+
+        unsigned        subdiv_level;
     };
 
     ArtificialEyeProp initializeArtificialEyeProp(const std::string& dir);
