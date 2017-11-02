@@ -70,7 +70,7 @@ ee::RayTracer::RayTracer(std::vector<glm::vec3> positions, UVMeshSphere sphere, 
         m_drawableLines.push_back(DrawLensRayPath("lineTextPack"));
     }
 
-    for (int i = 0; i < m_cachedPoints.size(); i++)
+    for (int i = 0; i < 2 * m_cachedPoints.size(); i++)
     {
         testNormals.push_back(new DrawLine("lineTextPack3", glm::vec3(), glm::vec3()));
     }
@@ -93,7 +93,7 @@ bool ee::RayTracer::lensRefract(const Ray startRay, LensRayPath* o_rayPath, unsi
 {
     LensRayPath result;
 
-    Mesh* const lensMesh = m_lens.getMesh();
+    const Mesh* const lensMesh = m_lens.getMesh();
     const Ray entryRay(startRay.m_origin, glm::normalize(startRay.m_dir));
 
     const std::pair<std::size_t, glm::vec3> entryIntersection = nearestIntersectionMesh(lensMesh, entryRay);
@@ -108,11 +108,12 @@ bool ee::RayTracer::lensRefract(const Ray startRay, LensRayPath* o_rayPath, unsi
 
     result.m_entry = Line(entryRay.m_origin, entryIntersection.second);
 
-    const glm::vec3 entryNormal = getNormal(entryIntersection.first, entryIntersection.second, id); // glm::vec3(lensMesh->getNormalModelTrans() * glm::vec4(getNormal(entryIntersection.first, entryIntersection.second), 0.f));
+    const glm::vec3 entryNormal = glm::normalize(entryIntersection.second); //getNormal(entryIntersection.first, entryIntersection.second, id); // glm::vec3(lensMesh->getNormalModelTrans() * glm::vec4(getNormal(entryIntersection.first, entryIntersection.second), 0.f));
     const glm::vec3 entryRefraction = glm::normalize(cust::refract(entryRay.m_dir, entryNormal, m_ETA));
 
     // now let's find the next intersection:
-    const std::pair<std::size_t, glm::vec3> passIntersection = nearestIntersectionMesh(lensMesh, Ray(entryIntersection.second, entryRefraction), entryIntersection.first);
+    const std::pair<std::size_t, glm::vec3> passIntersection = nearestIntersectionMesh(lensMesh, 
+        Ray(entryIntersection.second, entryRefraction), entryIntersection.first);
     if (passIntersection.first >= lensMesh->getNumMeshFaces()) { return false; }
 
     // assign the line:
@@ -121,8 +122,11 @@ bool ee::RayTracer::lensRefract(const Ray startRay, LensRayPath* o_rayPath, unsi
     // now calulcate the next part:
     const MeshFace& passFace = lensMesh->getMeshFace(passIntersection.first);
     const glm::vec3 passNormal = -getNormal(passIntersection.first, passIntersection.second, UINT_MAX); //glm::vec3(lensMesh->getNormalModelTrans() * glm::vec4(getNormal(passIntersection.first, passIntersection.second), 0.f));
-    const glm::vec3 passRefraction = glm::normalize(cust::refract(entryRefraction, passNormal, m_invETA));
-    // TODO: fix the weirdness that is happening
+    
+    //int p = m_cachedPoints.size() - 1 + id;
+    //testNormals[p]->setRay(Ray(passIntersection.second, passNormal), 10.f);
+    
+    const glm::vec3 passRefraction = glm::normalize(cust::refract(entryRefraction, passNormal, 1.f));
 
     // now set the last part:
     result.m_end = Ray(passIntersection.second, passRefraction);
@@ -150,7 +154,9 @@ glm::vec3 ee::RayTracer::getNormal(int triangle, glm::vec3 interPoint, unsigned 
     {
         glm::vec3 normal = transVector3(lensMesh->getNormalModelTrans(), m_lens.getNormal(triangle));
         if (id != UINT_MAX)
+        {
             testNormals[id]->setRay(Ray(interPoint, normal), 10.f);
+        }
         return normal;
 
         // stores the latitude and longitude spline ids:

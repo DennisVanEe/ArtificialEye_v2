@@ -94,13 +94,11 @@ std::pair<std::size_t, glm::vec3> ee::nearestIntersectionMesh(const Mesh* mesh, 
 
 glm::vec3 ee::cust::refract(const glm::vec3& I, const glm::vec3& N, const float eta)
 {
-    float k = 1.f - eta * eta * (1.f - glm::dot(N, I) * glm::dot(N, I));
+    const float NdotI = glm::dot(N, I);
+    const float k = 1.f - eta * eta * (1.f - NdotI * NdotI);
     if (k < 0.f)
     {
         return glm::vec3();
     }
-    else
-    {
-        return eta * I - (eta * glm::dot(N, I) + sqrtf(k)) * N;
-    }
+    return eta * I - (eta * NdotI + sqrtf(k)) * N;
 }

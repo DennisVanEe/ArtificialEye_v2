@@ -163,13 +163,14 @@ int main()
         RayTracerParam param;
         param.m_widthResolution = 5;
         param.m_heightResolution = 5;
-        param.m_lensRefractiveIndex = 1.56f;
+        param.m_lensRefractiveIndex = 1.406f;
         param.m_enviRefractiveIndex = 1.f;
         param.m_rayColor = glm::vec3(1.f, 0.f, 0.f);
         UVMeshSphere sphere(&subLensMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
         g_constraints = sphere.addConstraints(5, &lensSim);
         g_tracer = &ee::RayTracer::initialize(pos, sphere, param);
 
+        g_tracer->raytrace();
         while (ee::Renderer::isInitialized())
         {
             if (g_enableWireFram)
@@ -193,17 +194,17 @@ int main()
             ee::Renderer::clearBuffers();
 
             float time = Renderer::timeElapsed();
-            if (g_startSoftBody)
-            {
-                lensSim.update(time);
-                VertBuffer subDividedVertBuff;
-                MeshFaceBuffer subDividedFaceBuff;
-                loopSubdiv(dynLensMesh.getVerticesData(), dynLensMesh.getMeshFaceData(), subDividedVertBuff, subDividedFaceBuff, ARTIFICIAL_EYE_PROP.subdiv_level);
-                subLensMesh.setVertices(subDividedVertBuff);
-                subLensMesh.setMeshFace(subDividedFaceBuff);
-            }
+            //if (g_startSoftBody)
+            //{
+            //    lensSim.update(time);
+            //    VertBuffer subDividedVertBuff;
+            //    MeshFaceBuffer subDividedFaceBuff;
+            //    loopSubdiv(dynLensMesh.getVerticesData(), dynLensMesh.getMeshFaceData(), subDividedVertBuff, subDividedFaceBuff, ARTIFICIAL_EYE_PROP.subdiv_level);
+            //    subLensMesh.setVertices(subDividedVertBuff);
+            //    subLensMesh.setMeshFace(subDividedFaceBuff);
+            //}
 
-            g_tracer->raytrace();
+            //g_tracer->raytrace();
 
             Renderer::drawAll();
             Renderer::update(time);

@@ -65,6 +65,8 @@ void ee::DynamicMesh::setVertices(const VertBuffer& vertices)
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
     glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), vertices.data());
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    m_vertices = vertices;
 }
 
 void ee::DynamicMesh::setMeshFace(const MeshFaceBuffer& faces)
@@ -74,4 +76,6 @@ void ee::DynamicMesh::setMeshFace(const MeshFaceBuffer& faces)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
     glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, faces.size() * sizeof(MeshFace), faces.data());
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    m_faces = faces;
 }
