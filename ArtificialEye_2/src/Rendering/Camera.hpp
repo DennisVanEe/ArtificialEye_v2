@@ -17,6 +17,7 @@ namespace ee
 		RIGHT
 	};
 
+    // All floats because it is mainly used for OpenGL rendering
 	class Camera
 	{
 	public:

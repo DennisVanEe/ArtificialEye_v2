@@ -167,8 +167,8 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Rendering\Camera.cpp" />
     <ClCompile Include="src\Rendering\Drawable.cpp" />
+    <ClCompile Include="src\Rendering\Modeling\DrawableMeshContainer.cpp" />
     <ClCompile Include="src\Rendering\UVMeshSphere.cpp" />
-    <ClCompile Include="src\Rendering\Modeling\DynamicMesh.cpp" />
     <ClCompile Include="src\Rendering\Modeling\DrawLine.cpp" />
     <ClCompile Include="src\Rendering\Modeling\Mesh.cpp" />
     <ClCompile Include="src\Rendering\Modeling\SkyBox.cpp" />
@@ -199,7 +199,6 @@
     <ClCompile Include="src\SoftBody\Simulation\SBClosedBodySim.cpp" />
     <ClCompile Include="src\SoftBody\Simulation\SBMeshBasedSim.cpp" />
     <ClCompile Include="src\SoftBody\Simulation\SBSimulation.cpp" />
-    <ClCompile Include="src\Types.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\alglib\alglibinternal.h" />
@@ -218,9 +217,9 @@
     <ClInclude Include="src\Initialization.hpp" />
     <ClInclude Include="src\Rendering\Camera.hpp" />
     <ClInclude Include="src\Rendering\Drawable.hpp" />
+    <ClInclude Include="src\Rendering\Modeling\DrawableMeshContainer.hpp" />
     <ClInclude Include="src\Rendering\Subdivision.hpp" />
     <ClInclude Include="src\Rendering\UVMeshSphere.hpp" />
-    <ClInclude Include="src\Rendering\Modeling\DynamicMesh.hpp" />
     <ClInclude Include="src\Rendering\Modeling\DrawLine.hpp" />
     <ClInclude Include="src\Rendering\Modeling\Mesh.hpp" />
     <ClInclude Include="src\Rendering\Modeling\SkyBox.hpp" />

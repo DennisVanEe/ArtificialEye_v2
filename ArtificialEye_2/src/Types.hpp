@@ -10,33 +10,55 @@ namespace ee
 {
     const char PROJ_NAME[] = "ArtificalEye";
 
-    const float PI  = glm::pi<float>();
-    const float PI2 = 2 * PI;
+    using Float = double;
+    using Vec4 = glm::tvec4<Float>;
+    using Vec3 = glm::tvec3<Float>;
+    using Vec2 = glm::tvec2<Float>;
+    using Mat4 = glm::tmat4x4<Float>;
+
+    const Float PI  = glm::pi<Float>();
+    const Float PI2 = 2 * PI;
 
     struct Ray
     {
-        glm::vec3 m_origin;
-        glm::vec3 m_dir;
+        Vec3 m_origin;
+        Vec3 m_dir;
 
-        Ray() = default;
-        Ray(glm::vec3 origin, glm::vec3 dir);
+        Ray() {}
+        Ray(Vec3 origin, Vec3 dir) : m_origin(origin), m_dir(dir) {}
     };
 
     struct Line
     {
-        glm::vec3 m_start;
-        glm::vec3 m_end;
+        Vec3 m_start;
+        Vec3 m_end;
 
-        Line() = default;
-        Line(glm::vec3 start, glm::vec3 end);
+        Line() {}
+        Line(Vec3 start, Vec3 end) : m_start(start), m_end(end) {}
     };
 
-    glm::vec3 removeZeroError(glm::vec3 vec);
-    glm::vec3 transPoint3(const glm::mat4& mat, glm::vec3 vec);
-    glm::vec3 transVector3(const glm::mat4& mat, glm::vec3 vec);
+    // Zeros the vector if it is close enough to zero
+    Vec3 zeroVector(Vec3 vec)
+    {
+        int result = !(glm::epsilonEqual(vec, Vec3(), glm::epsilon<Float>()) != glm::bvec3(true, true, true));
+        vec *= result;
+        return vec;
+    }
 
-    template<typename T>
-    glm::tvec3<T> flipSameDir(glm::tvec3<T> toFlip, glm::tvec3<T> ref)
+    // Translates a point direction
+    Vec3 transPoint3(const Mat4& mat, const Vec3& vec)
+    {
+        return Vec3(mat * Vec4(vec, 1.f));
+    }
+
+    // Translates a vector direction
+    Vec3 transVector3(const Mat4& mat, Vec3 vec)
+    {
+        return Vec3(mat * Vec4(vec, 0.f));
+    }
+
+    // Flips the vector if it doesn't face the same direction
+    Vec3 flipSameDir(const Vec3& toFlip, const Vec3& ref)
     {
         return glm::dot(toFlip, ref) >= 0 ? toFlip : -toFlip;
     }

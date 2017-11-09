@@ -6,7 +6,7 @@
 
 namespace cube
 {
-    const ee::VertBuffer VERTICES =
+    const std::vector<ee::Vertex> VERTICES =
     {
         // front
         ee::Vertex(glm::vec3(-1.f, -1.f,  1.f)),
@@ -20,7 +20,7 @@ namespace cube
         ee::Vertex(glm::vec3(-1.0,  1.0, -1.0)),
     };
 
-    const ee::MeshFaceBuffer INDICES =
+    const std::vector<ee::MeshFace> INDICES =
     {
         // -- winding is counter-clockwise (facing camera)
         {0, 1, 2},                // pos z
@@ -42,24 +42,24 @@ namespace cube
 // Based on information from: https://schneide.wordpress.com/2016/07/15/generating-an-icosphere-in-c/
 namespace icosphere
 {
-    const float t = (1.f + std::sqrtf(5.f)) / 2.f;
+    const ee::Float t = (1.0 + std::sqrt(5.0)) / 2.0;
 
-    const ee::VertBuffer VERTICES =
+    const std::vector<ee::Vertex> VERTICES =
     {
-        ee::Vertex(glm::normalize(glm::vec3(-1.f,    t,  0.f))),
-        ee::Vertex(glm::normalize(glm::vec3( 1.f,    t,  0.f))),
-        ee::Vertex(glm::normalize(glm::vec3(-1.f,   -t,  0.f))),
-        ee::Vertex(glm::normalize(glm::vec3( 1.f,   -t,  0.f))),
+        ee::Vertex(glm::normalize(Vec3(-1.0,    t,  0.0))),
+        ee::Vertex(glm::normalize(Vec3( 1.0,    t,  0.0))),
+        ee::Vertex(glm::normalize(Vec3(-1.0,   -t,  0.0))),
+        ee::Vertex(glm::normalize(Vec3( 1.0,   -t,  0.0))),
 
-        ee::Vertex(glm::normalize(glm::vec3( 0.f, -1.f,    t))),
-        ee::Vertex(glm::normalize(glm::vec3( 0.f,  1.f,    t))),
-        ee::Vertex(glm::normalize(glm::vec3( 0.f, -1.f,   -t))),
-        ee::Vertex(glm::normalize(glm::vec3( 0.f,  1.f,   -t))),
+        ee::Vertex(glm::normalize(Vec3( 0.0, -1.0,    t))),
+        ee::Vertex(glm::normalize(Vec3( 0.0,  1.0,    t))),
+        ee::Vertex(glm::normalize(Vec3( 0.0, -1.0,   -t))),
+        ee::Vertex(glm::normalize(Vec3( 0.0,  1.0,   -t))),
 
-        ee::Vertex(glm::normalize(glm::vec3(   t,  0.f, -1.f))),
-        ee::Vertex(glm::normalize(glm::vec3(   t,  0.f,  1.f))),
-        ee::Vertex(glm::normalize(glm::vec3(  -t,  0.f, -1.f))),
-        ee::Vertex(glm::normalize(glm::vec3(  -t,  0.f,  1.f))),
+        ee::Vertex(glm::normalize(Vec3(   t,  0.0, -1.0))),
+        ee::Vertex(glm::normalize(Vec3(   t,  0.0,  1.0))),
+        ee::Vertex(glm::normalize(Vec3(  -t,  0.0, -1.0))),
+        ee::Vertex(glm::normalize(Vec3(  -t,  0.0,  1.0))),
     };
 
     const std::vector<ee::MeshFace> INDICES =
@@ -94,7 +94,7 @@ namespace icosphere
     ////////////////////
 
     std::unordered_map<uint64_t, GLuint> g_cachedMiddlePoints;
-    GLuint getMiddlePoint(GLuint i0, GLuint i1, ee::VertBuffer* list)
+    GLuint getMiddlePoint(GLuint i0, GLuint i1, std::vector<ee::Vertex>* list)
     {
         uint64_t minInd = std::min(i0, i1);
         uint64_t maxInd = std::max(i0, i1);
@@ -106,9 +106,9 @@ namespace icosphere
             return it->second;
         }
 
-        glm::vec3 p0 = (*list)[i0].m_position;
-        glm::vec3 p1 = (*list)[i1].m_position;
-        glm::vec3 m = glm::normalize((p0 + p1) * 0.5f);
+        ee::Vec3 p0 = (*list)[i0].m_position;
+        ee::Vec3 p1 = (*list)[i1].m_position;
+        ee::Vec3 m = glm::normalize((p0 + p1) * 0.5);
 
         list->push_back(m);
         g_cachedMiddlePoints.insert(std::make_pair(key, list->size() - 1));
@@ -116,119 +116,122 @@ namespace icosphere
     }
 }
 
-void ee::loadIndexedRectangle(VertBuffer* const vertList, MeshFaceBuffer* const indexList)
+ee::Mesh ee::loadIndexedRectangle()
 {
-    vertList->clear();
-    indexList->clear();
+    std::vector<Vertex> vertList;
+    std::vector<MeshFace> indexList;
 
-    vertList->push_back(Vertex(glm::vec3(0.5f, 0.5f, 0.f)));
-    vertList->push_back(Vertex(glm::vec3(0.5f, -0.5f, 0.f)));
-    vertList->push_back(Vertex(glm::vec3(-0.5f, -0.5f, 0.f)));
-    vertList->push_back(Vertex(glm::vec3(-0.5f, 0.5f, 0.0f)));
+    vertList.push_back(Vertex(glm::vec3(0.5f, 0.5f, 0.f)));
+    vertList.push_back(Vertex(glm::vec3(0.5f, -0.5f, 0.f)));
+    vertList.push_back(Vertex(glm::vec3(-0.5f, -0.5f, 0.f)));
+    vertList.push_back(Vertex(glm::vec3(-0.5f, 0.5f, 0.0f)));
 
-    indexList->push_back({0, 1, 3});
-    indexList->push_back({1, 2, 3});
+    indexList.push_back({0, 1, 3});
+    indexList.push_back({1, 2, 3});
+
+    return Mesh(vertList, indexList);
 }
 
-void ee::loadIndexedCube(VertBuffer* vertList, MeshFaceBuffer* indexList)
+ee::Mesh ee::loadIndexedCube()
 {
-    *vertList = cube::VERTICES;
-    *indexList = cube::INDICES;
+    return Mesh(cube::VERTICES, cube::INDICES);
 }
 
-void ee::loadIcosphere(unsigned recursionLevel, VertBuffer* vertList, MeshFaceBuffer* indexList)
+ee::Mesh ee::loadIcosphere(unsigned recursionLevel)
 {
     icosphere::g_cachedMiddlePoints.clear();
-    *vertList = icosphere::VERTICES;
-
-    MeshFaceBuffer tempIndList0 = icosphere::INDICES;
+    std::vector<Vertex> vertList = icosphere::VERTICES;
+    std::vector<MeshFace> indexList = icosphere::INDICES;
 
     for (unsigned i = 0; i < recursionLevel; i++)
     {
-        MeshFaceBuffer tempIndList1;
-        for (const MeshFace& face : tempIndList0)
+        std::vector<MeshFace> tempIndList1;
+        for (const MeshFace& face : indexList)
         {
-            const GLuint* indices = face.m_indices;
+            GLuint i0 = icosphere::getMiddlePoint(face(0), face(1), &vertList);
+            GLuint i1 = icosphere::getMiddlePoint(face(1), face(2), &vertList);
+            GLuint i2 = icosphere::getMiddlePoint(face(2), face(0), &vertList);
 
-            GLuint i0 = icosphere::getMiddlePoint(indices[0], indices[1], vertList);
-            GLuint i1 = icosphere::getMiddlePoint(indices[1], indices[2], vertList);
-            GLuint i2 = icosphere::getMiddlePoint(indices[2], indices[0], vertList);
-
-            tempIndList1.push_back({indices[0], i0, i2});
-            tempIndList1.push_back({indices[1], i1, i0});
-            tempIndList1.push_back({indices[2], i2, i1});
+            tempIndList1.push_back({face(0), i0, i2});
+            tempIndList1.push_back({face(1), i1, i0});
+            tempIndList1.push_back({face(2), i2, i1});
             tempIndList1.push_back({i0, i1, i2});
         }
-        tempIndList0 = tempIndList1;
+        indexList = tempIndList1;
     }
 
-    *indexList = tempIndList0;
+    return Mesh(vertList, indexList);
 }
 
-void ee::loadUVsphere(int nLon, int nLat, VertBuffer* vertList, MeshFaceBuffer* indexList)
+ee::Mesh ee::loadUVsphere(int nLon, int nLat)
 {
     if (nLon <= 0 || nLat <= 0)
     {
         return;
     }
 
+    std::vector<Vertex> vertList;
+    std::vector<MeshFace> indexList;
+
     // Vertices:
-    vertList->resize((nLon) * nLat + 2); // plus 1 is for the extra bits in lon side
-    (*vertList)[0] = Vertex(glm::vec3(0.f, 1.f, 0.f));
+    vertList.resize((nLon) * nLat + 2); // plus 1 is for the extra bits in lon side
+    vertList[0] = Vertex(Vec3(0.0, 1.0, 0.0));
     for (unsigned lat = 0; lat < nLat; lat++)
     {
-        float angleLat = glm::pi<float>() * (float)(lat + 1) / (nLat + 1);
-        float sinLat = std::sin(angleLat);
-        float cosLat = std::cos(angleLat);
+        Float angleLat = glm::pi<Float>() * (Float)(lat + 1) / (nLat + 1);
+        Float sinLat = std::sin(angleLat);
+        Float cosLat = std::cos(angleLat);
 
-        for (unsigned lon = 0; lon < nLon; lon++)
+        for (int lon = 0; lon < nLon; lon++)
         {
-            float angleLon = 2 * glm::pi<float>() * (float)(lon) / nLon; // (float)(lon == nLon ? 0 : lon) / nLon;
-            float sinLon = std::sin(angleLon);
-            float cosLon = std::cos(angleLon);
+            Float angleLon = 2 * glm::pi<Float>() * (Float)(lon) / nLon; // (float)(lon == nLon ? 0 : lon) / nLon;
+            Float sinLon = std::sin(angleLon);
+            Float cosLon = std::cos(angleLon);
 
             std::size_t index = lon + lat * (nLon) + 1;
-            (*vertList)[index] = Vertex(glm::vec3(sinLat * cosLon, cosLat, sinLat * sinLon));
+            vertList[index] = Vertex(Vec3(sinLat * cosLon, cosLat, sinLat * sinLon));
         }
     }
-    (*vertList)[vertList->size() - 1] = Vertex(glm::vec3(0.f, -1.f, 0.f));
+    vertList[vertList.size() - 1] = Vertex(Vec3(0.0, -1.0, 0.0));
 
     // Indices:
-    for (unsigned lon = 0; lon < nLon - 1; lon++)
+    for (int lon = 0; lon < nLon - 1; lon++)
     {
-        indexList->push_back({lon + 2, lon + 1, 0});
+        indexList.push_back({lon + 2, lon + 1, 0});
     }
-    indexList->push_back({1, nLon, 0}); // fix up that seam
+    indexList.push_back({1, nLon, 0}); // fix up that seam
 
-    unsigned size = vertList->size();
-    for (unsigned lat = 0; lat < nLat - 1; lat++)
+    int size = vertList.size();
+    for (int lat = 0; lat < nLat - 1; lat++)
     {
-        for (unsigned lon = 0; lon < nLon - 1; lon++)
+        for (int lon = 0; lon < nLon - 1; lon++)
         {
-            unsigned current = lon + lat * (nLon) + 1;
-            unsigned next = current + nLon;
+            int current = lon + lat * (nLon) + 1;
+            int next = current + nLon;
 
-            indexList->push_back({current, current + 1, next + 1});
-            indexList->push_back({current, next + 1, next});
+            indexList.push_back({current, current + 1, next + 1});
+            indexList.push_back({current, next + 1, next});
         }
     }
 
     // fix up seam
-    for (unsigned lat = 0; lat < nLat - 1; lat++)
+    for (int lat = 0; lat < nLat - 1; lat++)
     {
-        unsigned current = (nLon - 1) + lat * (nLon)+1;
-        unsigned next = current + nLon;
+        int current = (nLon - 1) + lat * (nLon)+1;
+        int next = current + nLon;
 
-        unsigned current1 = lat * (nLon) + 1;
-        unsigned next1 = current1 + nLon;
+        int current1 = lat * (nLon) + 1;
+        int next1 = current1 + nLon;
 
-        indexList->push_back({current, current1, next1});
-        indexList->push_back({current, next1, next});
+        indexList.push_back({current, current1, next1});
+        indexList.push_back({current, next1, next});
     }
 
-    for (unsigned lon = 0; lon < nLon - 1; lon++)
+    for (int lon = 0; lon < nLon - 1; lon++)
     {
-        indexList->push_back({size - 1, size - (lon + 2) - 1, size - (lon + 1) - 1});
+        indexList.push_back({size - 1, size - (lon + 2) - 1, size - (lon + 1) - 1});
     }
-    indexList->push_back({ size - 1, size - 2, size - (nLon)-1 }); // fix up that seam
+    indexList.push_back({ size - 1, size - 2, size - (nLon)-1 }); // fix up that seam
+
+    return Mesh(vertList, indexList);
 }

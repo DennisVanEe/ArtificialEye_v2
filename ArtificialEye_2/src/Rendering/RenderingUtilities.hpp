@@ -1,13 +1,14 @@
 #pragma once
 
 #include <glad/glad.h>
+
 #include "Modeling/Mesh.hpp"
 
 namespace ee
 {
     // loads a basic triangle into the situation
-    void loadIndexedRectangle(VertBuffer* vertList, MeshFaceBuffer* indexList);
-    void loadIndexedCube(VertBuffer* vertList, MeshFaceBuffer* indexList);
-    void loadIcosphere(unsigned recursionLevel, VertBuffer* vertList, MeshFaceBuffer* indexList);
-    void loadUVsphere(int nLong, int nLat, VertBuffer* vertList, MeshFaceBuffer* indexList);
+    Mesh loadIndexedRectangle();
+    Mesh loadIndexedCube();
+    Mesh loadIcosphere(unsigned recursionLevel);
+    Mesh loadUVsphere(int nLong, int nLat);
 }

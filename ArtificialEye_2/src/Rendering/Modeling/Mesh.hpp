@@ -7,89 +7,102 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <array>
 #include <glad/glad.h>
 
 namespace ee
 {
-    struct MeshFace
-    {
-        GLuint m_indices[3];
-    };
-    static_assert(sizeof(MeshFace) == 3 * sizeof(GLuint), "MeshFace can't have anny padding (t0 maintain per vertex access");
-
-    struct Vertex
-    {
-        glm::vec3 m_position;
-        glm::vec3 m_normal;
-        glm::vec3 m_textCoord;
-
-        bool operator==(const Vertex& vert)
-        {
-            return m_position == vert.m_position && m_normal == vert.m_normal && m_textCoord == vert.m_textCoord;
-        }
-
-        Vertex() {}
-        Vertex(glm::vec3 pos) : m_position(pos) {}
-        Vertex(glm::vec3 pos, glm::vec3 textCoord, glm::vec3 normal) : m_position(pos), m_textCoord(textCoord), m_normal(normal) {}
-    };
-
-    using VertBuffer     = std::vector<Vertex>;
-    using MeshFaceBuffer = std::vector<MeshFace>;
-
-    class Mesh : public Drawable
+    class MeshFace
     {
     public:
-        Mesh(std::string textPack, VertBuffer vertices, MeshFaceBuffer faces, int priority = 0, GLenum dataUsage = GL_STATIC_DRAW);
-        Mesh(const Mesh& other);
-        Mesh(Mesh&& other);
-        virtual ~Mesh();
+        GLuint& operator()(int index) { return m_indices[index]; }
+        const GLuint& operator()(int index) const { return m_indices[index]; }
 
-        // this actually changes the individual vertex information
-        void applyTransformation(glm::mat4 mat);
-
-        VertBuffer& getVerticesData();
-        const VertBuffer& getVerticesData() const;
-
-        MeshFaceBuffer& getMeshFaceData();
-        const MeshFaceBuffer& getMeshFaceData() const;
-
-        virtual const Vertex& getVertex(std::size_t vertexID) const;
-        virtual std::size_t getNumVertices() const;
-
-        virtual std::size_t getVertexID(std::size_t indexID) const;
-        virtual std::size_t getNumIndices() const;
-
-        virtual const MeshFace& getMeshFace(std::size_t meshFaceID) const;
-        virtual std::size_t getNumMeshFaces() const;
-
-        virtual const glm::vec3 getNormal(std::size_t meshFaceID) const;
-
-        // used to position the model in the world
-        virtual void draw() override;
-
-        virtual float calcVolume() const;
-        virtual void calcNormals();
-
-        void setModelTrans(glm::mat4 modelTrans);
-        glm::mat4 getModelTrans() const;
-        glm::mat4 getNormalModelTrans() const;
+        MeshFace() {}
+        MeshFace(GLuint in0, GLuint in1, GLuint in2) : m_indices({ in0, in1, in2 }) {}
 
     private:
-        void constructVAO();
-        const GLenum m_type; // for when copying the object
+        std::array<GLuint, 3> m_indices;
+    };
+    static_assert(sizeof(MeshFace) == 3 * sizeof(GLuint), "MeshFace can't have any padding");
 
-        glm::mat4 m_modelTrans;
-        glm::mat4 m_normalModelTrans;
+    template<typename T>
+    struct TVertex
+    {
+        glm::tvec3<T> m_position;
+        glm::tvec3<T> m_normal;
+        glm::tvec3<T> m_textCoord;
+
+        bool operator==(const TVertex& vert)
+        {
+            return m_position == vert.m_position &&
+                m_normal == vert.m_normal && m_textCoord == vert.m_textCoord;
+        }
+        bool operator!=(const TVertex& vert)
+        {
+            return !((*this) == vert);
+        }
+
+        TVertex() {}
+        TVertex(glm::tvec3<T> pos) : m_position(pos) {}
+        TVertex(glm::tvec3<T> pos, glm::tvec3<T> textCoord, glm::tvec3<T> normal) : m_position(pos), m_textCoord(textCoord), m_normal(normal) {}
+    };
+
+    using Vertex = TVertex<Float>;
+    using FloatVertex = TVertex<float>;
+
+    class Mesh
+    {
+    public:
+        Mesh(std::vector<Vertex> vertices, std::vector<MeshFace> faces) :
+            m_vertices(std::move(vertices)), m_faces(std::move(faces)) {}
+
+        // Transforms the points
+        void applyTransformation(Mat4 mat);
+
+        std::vector<Vertex>& getVerticesData() { return m_vertices; }
+        const std::vector<Vertex>& getVerticesData() const { return m_vertices; }
+
+        std::vector<MeshFace>& getMeshFaceData() { return m_faces; }
+        const std::vector<MeshFace>& getMeshFaceData() const { return m_faces; }
+
+        virtual const Vertex& getVertex(int vertexID) const { return m_vertices[vertexID]; }
+        virtual std::size_t getNumVertices() const { return m_vertices.size(); }
+
+        virtual std::size_t getVertexID(int indexID) const { return reinterpret_cast<const GLuint*>(m_faces.data())[indexID]; }
+        virtual std::size_t getNumIndices() const { return m_faces.size() * 3; }
+
+        virtual const MeshFace& getMeshFace(int meshFaceID) const { return m_faces[meshFaceID]; }
+        virtual std::size_t getNumMeshFaces() const { return m_faces.size(); }
+
+        virtual const glm::vec3 getNormal(int meshFaceID) const;
+
+        virtual Float calcVolume() const;
+        virtual void calcNormals(); // due to winding order not being standardized,
+                                    // normals will be calculated based on center position
+
+        void setModelTrans(Mat4 modelTrans) { m_modelTrans = modelTrans; m_normalModelTrans = glm::transpose(glm::inverse(modelTrans)); }
+        Mat4 getModelTrans() const { return m_modelTrans; }
+        Mat4 getNormalModelTrans() const { return m_normalModelTrans; }
+
+        void updateVertex(const Vertex& vertex, std::size_t vertexID) { m_updateCount++; m_vertices[vertexID] = vertex; }
+        void updateVertices(const std::vector<Vertex>& vertices) { m_updateCount++; m_vertices = vertices; }
+        void updateMeshFaces(const std::vector<MeshFace>& faces) { m_updateCount++; m_faces = faces; }
+
+        long long unsigned getUpdateCount() const { return m_updateCount; }
+
+    private:
+        Mat4 m_modelTrans;
+        Mat4 m_normalModelTrans;
+
+        // Number of times the mesh had been updated
+        long long unsigned m_updateCount;
 
     protected:
-        std::vector<glm::vec3> m_tempNormals;
+        // Used with calculating normals
+        std::vector<Vec3> m_tempNormals;
 
-        VertBuffer     m_vertices;
-        MeshFaceBuffer m_faces;
-
-        // if a subclass wants to take care of the models
-        GLuint m_VAO;
-        GLuint m_VBO;
-        GLuint m_EBO;
+        std::vector<Vertex> m_vertices;
+        std::vector<MeshFace> m_faces;
     };
 }

@@ -18,10 +18,11 @@ void ee::Shader::assignTexture(const std::string name, const int textureUnit)
     glUniform1i(glGetUniformLocation(m_programID, name.c_str()), unit);
 }
 
-void ee::Shader::assignMat4f(const std::string name, const glm::mat4& mat)
+void ee::Shader::assignMat4(const std::string name, const Mat4& mat)
 {
+    glm::mat4 mat4(mat);
     GLint loc = glGetUniformLocation(m_programID, name.c_str());
-    glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(mat));
+    glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(mat4));
 }
 
 void ee::Shader::assignBool(const std::string name, const bool value)
@@ -29,21 +30,23 @@ void ee::Shader::assignBool(const std::string name, const bool value)
     glUniform1i(glGetUniformLocation(m_programID, name.c_str()), value);
 }
 
-void ee::Shader::assignColor(const std::string name, const glm::vec3 vec)
+void ee::Shader::assignColor(const std::string name, const Vec3 vec)
 {
-    glUniform3f(glGetUniformLocation(m_programID, name.c_str()), vec.x, vec.y, vec.z);
+    glm::vec3 vec3(vec);
+    glUniform3f(glGetUniformLocation(m_programID, name.c_str()), vec3.x, vec3.y, vec3.z);
 }
 
-void ee::Shader::assignColor(const std::string name, const glm::vec4 vec)
+void ee::Shader::assignColor(const std::string name, const Vec4 vec)
 {
+    glm::vec4 vec4(vec);
     GLint loc = glGetUniformLocation(m_programID, name.c_str());
-    glUniform4f(loc, vec.x, vec.y, vec.z, vec.w);
+    glUniform4f(loc, vec4.x, vec4.y, vec4.z, vec4.w);
 }
 
-void ee::Shader::assignfloat(std::string name, float val)
+void ee::Shader::assignfloat(std::string name, Float val)
 {
     GLint loc = glGetUniformLocation(m_programID, name.c_str());
-    glUniform1f(loc, val);
+    glUniform1f(loc, static_cast<float>(val));
 }
 
 void ee::Shader::bindTexture(GLenum target, GLuint number, GLuint texture)
@@ -57,10 +60,11 @@ void ee::Shader::unbindTexture(GLenum target)
     glBindTexture(target, 0);
 }
 
-void ee::Shader::assignVec3f(std::string name, glm::vec3 vec)
+void ee::Shader::assignVec3(const std::string name, const Vec3 vec)
 {
+    glm::vec3 vec3(vec);
     GLint loc = glGetUniformLocation(m_programID, name.c_str());
-    glUniform3f(loc, vec.x, vec.y, vec.z);
+    glUniform3f(loc, vec3.x, vec3.y, vec3.z);
 }
 
 bool ee::Shader::initialize(const std::string& vtxPath, const std::string& frgPath, const std::string& geomPath)

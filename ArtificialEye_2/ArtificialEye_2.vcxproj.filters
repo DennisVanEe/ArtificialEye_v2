@@ -111,16 +111,10 @@
     <ClCompile Include="..\dependencies\stbi\stb_image.cpp">
       <Filter>Source Files\Dependencies</Filter>
     </ClCompile>
-    <ClCompile Include="src\Rendering\Modeling\DynamicMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Rendering\Modeling\Mesh.cpp">
       <Filter>Source Files\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="src\Rendering\Modeling\SkyBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Types.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SoftBody\Simulation\SBMeshBasedSim.cpp">
@@ -199,6 +193,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Rendering\UVMeshSphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Subdivision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Modeling\DrawableMeshContainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -284,9 +284,6 @@
     <ClInclude Include="src\Rendering\Textures\CubeMap.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Rendering\Modeling\DynamicMesh.hpp">
-      <Filter>Header Files\Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="src\Rendering\Modeling\Mesh.hpp">
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
@@ -368,6 +365,9 @@
     <ClInclude Include="src\Rendering\Subdivision.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Rendering\Modeling\DrawableMeshContainer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\modelUniColor_vert.glsl" />
@@ -386,9 +386,6 @@
     </None>
     <None Include="ArtificialEye_Properties.ini" />
     <None Include="src\Rendering\Renderer.inl">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="src\Rendering\Subdivision.cpp">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>

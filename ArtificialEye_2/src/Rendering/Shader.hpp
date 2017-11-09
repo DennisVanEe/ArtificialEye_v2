@@ -24,12 +24,12 @@ namespace ee
         void use() const;
 
         void assignTexture(std::string name, int textureUnit);
-        void assignMat4f(std::string name, const glm::mat4& mat);
+        void assignMat4(std::string name, const Mat4& mat);
         void assignBool(std::string name, bool value);
-        void assignColor(std::string name, glm::vec3 color);
-        void assignColor(std::string name, glm::vec4 color);
-        void assignVec3f(std::string name, glm::vec3 vec);
-        void assignfloat(std::string name, float val);
+        void assignColor(std::string name, Vec3 color);
+        void assignColor(std::string name, Vec4 color);
+        void assignVec3(std::string name, Vec3 vec);
+        void assignfloat(std::string name, Float val);
 
         void bindTexture(GLenum target, GLuint number, GLuint texture);
         void unbindTexture(GLenum target);
