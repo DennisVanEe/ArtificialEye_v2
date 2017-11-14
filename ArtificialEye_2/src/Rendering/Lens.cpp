@@ -1,16 +1,19 @@
-#include "UVMeshSphere.hpp"
+#include "Lens.hpp"
 
-#include "RenderingUtilities.hpp"
-
-ee::UVMeshSphere::UVMeshSphere(Mesh* mesh, int nLat, int nLon) :
+ee::Lens::Lens(Mesh* mesh, int nLat, int nLon) :
     m_mesh(mesh),
     m_nLatitudes(nLat),
     m_nLongitudes(nLon),
     m_constraintStart(-1),
     m_constraintEnd(-1)
 {
+    if (m_mesh->getMeshType() != MeshType::UVSPHERE)
+    {
+        throw std::logic_error("Lens can only take UVSphere meshes.");
+    }
+
     m_latitudes.reserve(nLat);
-    for (std::size_t i = 0; i < nLat; i++)
+    for (int i = 0; i < nLat; i++)
     {
         std::vector<int> temp;
         int indices = (m_nLongitudes * i) + 1;
@@ -22,7 +25,7 @@ ee::UVMeshSphere::UVMeshSphere(Mesh* mesh, int nLat, int nLon) :
     }
 
     m_longitudes.reserve(nLon);
-    for (std::size_t i = 0; i < nLon; i++)
+    for (int i = 0; i < nLon; i++)
     {
         std::vector<int> temp;
         for (int j = 0, indices = i + 1; j < nLat; j++, indices += m_nLongitudes)
@@ -33,7 +36,7 @@ ee::UVMeshSphere::UVMeshSphere(Mesh* mesh, int nLat, int nLon) :
     }
 }
 
-std::vector<ee::SBPointConstraint*> ee::UVMeshSphere::addConstraints(int thickness, ee::SBSimulation* sim)
+std::vector<ee::SBPointConstraint*> ee::Lens::addConstraints(int thickness, ee::SBSimulation* sim)
 {
     std::vector<ee::SBPointConstraint*> constraints;
 
@@ -58,61 +61,61 @@ std::vector<ee::SBPointConstraint*> ee::UVMeshSphere::addConstraints(int thickne
     return std::move(constraints);
 }
 
-ee::Mesh* ee::UVMeshSphere::getMesh()
+ee::Mesh* ee::Lens::getMesh()
 {
     return m_mesh;
 }
 
-const ee::Mesh* ee::UVMeshSphere::getMesh() const
+const ee::Mesh* ee::Lens::getMesh() const
 {
     return m_mesh;
 }
 
-int ee::UVMeshSphere::getNumLatitudes() const
+int ee::Lens::getNumLatitudes() const
 {
     return m_nLatitudes;
 }
 
-int ee::UVMeshSphere::getNumLongitudes() const
+int ee::Lens::getNumLongitudes() const
 {
     return m_nLongitudes;
 }
 
-int ee::UVMeshSphere::getLatitudeIndex(int index) const
+int ee::Lens::getLatitudeIndex(int index) const
 {
     return (index - 1) / m_nLongitudes;
 }
 
-int ee::UVMeshSphere::getLongitudeIndex(int index) const
+int ee::Lens::getLongitudeIndex(int index) const
 {
     return (index - 1) % m_nLongitudes;
 }
 
-glm::vec3 ee::UVMeshSphere::getNormal(int faceID) const
+glm::vec3 ee::Lens::getNormal(int faceID) const
 {
     glm::vec3 norm = m_mesh->getNormal(faceID);
     MeshFace face = m_mesh->getMeshFace(faceID);
-    glm::vec3 est = glm::normalize(m_mesh->getVertex(face.m_indices[0]).m_position + m_mesh->getVertex(face.m_indices[1]).m_position
-        + m_mesh->getVertex(face.m_indices[2]).m_position);
+    glm::vec3 est = glm::normalize(m_mesh->getVertex(face(0)).m_position + m_mesh->getVertex(face(1)).m_position
+        + m_mesh->getVertex(face(2)).m_position);
     return glm::dot(norm, est) > 0 ? norm : -norm;
 }
 
-const std::vector<int>& ee::UVMeshSphere::getLatitudes(int index) const
+const std::vector<int>& ee::Lens::getLatitudes(int index) const
 {
     return m_latitudes[index];
 }
 
-const std::vector<int>& ee::UVMeshSphere::getLongitudes(int index) const
+const std::vector<int>& ee::Lens::getLongitudes(int index) const
 {
     return m_longitudes[index];
 }
 
-int ee::UVMeshSphere::getConstraintStart() const
+int ee::Lens::getConstraintStart() const
 {
     return m_constraintStart;
 }
 
-int ee::UVMeshSphere::getConstraintEnd() const
+int ee::Lens::getConstraintEnd() const
 {
     return m_constraintEnd;
 }

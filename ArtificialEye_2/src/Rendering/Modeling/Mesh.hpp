@@ -15,16 +15,16 @@ namespace ee
     class MeshFace
     {
     public:
-        GLuint& operator()(int index) { return m_indices[index]; }
-        const GLuint& operator()(int index) const { return m_indices[index]; }
+        int& operator()(int index) { return m_indices[index]; }
+        const int& operator()(int index) const { return m_indices[index]; }
 
         MeshFace() {}
-        MeshFace(GLuint in0, GLuint in1, GLuint in2) : m_indices({ in0, in1, in2 }) {}
+        MeshFace(int in0, int in1, int in2) : m_indices({ in0, in1, in2 }) {}
 
     private:
-        std::array<GLuint, 3> m_indices;
+        std::array<int, 3> m_indices;
     };
-    static_assert(sizeof(MeshFace) == 3 * sizeof(GLuint), "MeshFace can't have any padding");
+    static_assert(sizeof(MeshFace) == 3 * sizeof(int), "MeshFace can't have any padding");
 
     template<typename T>
     struct TVertex
@@ -51,11 +51,15 @@ namespace ee
     using Vertex = TVertex<Float>;
     using FloatVertex = TVertex<float>;
 
+    // This is a check to make sure that certain meshes are made with the correct types.
+    enum class MeshType {INDEXED_RECTANGLE, INDEXED_CUBE, ICOSPHERE, UVSPHERE, UNDEF};
+
     class Mesh
     {
     public:
-        Mesh(std::vector<Vertex> vertices, std::vector<MeshFace> faces) :
-            m_vertices(std::move(vertices)), m_faces(std::move(faces)) {}
+        Mesh(std::vector<Vertex> vertices, std::vector<MeshFace> faces, MeshType type = MeshType::UNDEF) :
+            m_vertices(std::move(vertices)), m_faces(std::move(faces)),
+            m_meshType(type) {}
 
         // Transforms the points
         void applyTransformation(Mat4 mat);
@@ -91,7 +95,12 @@ namespace ee
 
         long long unsigned getUpdateCount() const { return m_updateCount; }
 
+        MeshType getMeshType() const { return m_meshType; }
+        void setMeshType(MeshType type) { m_meshType = type; }
+
     private:
+        MeshType m_meshType;
+
         Mat4 m_modelTrans;
         Mat4 m_normalModelTrans;
 

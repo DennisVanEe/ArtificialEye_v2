@@ -2,7 +2,7 @@
 
 #include <glm/gtx/norm.hpp>
 
-ee::SBLengthConstraint::SBLengthConstraint(const float length, SBObject* const objA, SBObject* objB, float factor) :
+ee::SBLengthConstraint::SBLengthConstraint(const Float length, SBObject* const objA, SBObject* objB, Float factor) :
     m_length(length),
     m_factor(factor),
     m_objA(objA),
@@ -12,19 +12,14 @@ ee::SBLengthConstraint::SBLengthConstraint(const float length, SBObject* const o
 
 void ee::SBLengthConstraint::satisfyConstraint()
 {
-    glm::vec3 direction = m_objB->m_currPosition - m_objA->m_currPosition;
-    const float currLength = glm::length(direction);
+    Vec3 direction = m_objB->m_currPosition - m_objA->m_currPosition;
+    const Float currLength = glm::length(direction);
     direction = glm::normalize(direction);
 
-    if (direction != glm::vec3())
+    if (direction != Vec3())
     {
-        glm::vec3 moveVec = m_factor * (currLength - m_length) * direction;
+        Vec3 moveVec = m_factor * (currLength - m_length) * direction;
         m_objA->m_currPosition += moveVec;
         m_objB->m_currPosition -= moveVec;
     }
-}
-
-ee::SBConstraint* ee::SBLengthConstraint::getCopy() const
-{
-    return new SBLengthConstraint(*this);
 }

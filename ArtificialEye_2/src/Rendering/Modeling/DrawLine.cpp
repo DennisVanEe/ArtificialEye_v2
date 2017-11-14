@@ -61,7 +61,7 @@ void ee::DrawLine::setPoint1(glm::vec3 p1)
 void ee::DrawLine::setRay(Ray ray, float length)
 {
     setPoint0(ray.m_origin);
-    glm::vec3 p1 = ray.m_dir * length + ray.m_origin;
+    glm::vec3 p1 = glm::vec3(ray.m_dir) * length + glm::vec3(ray.m_origin);
     setPoint1(p1);
 }
 
@@ -103,8 +103,8 @@ void ee::DrawLine::draw()
     glm::mat4 trans = perspective * lookAt;
 
     // all shaders need this:
-    Drawable::m_shader->assignMat4f("u_posTrans", trans);
-    Drawable::m_shader->assignMat4f("u_model", glm::mat4()); // in case this is needed
+    Drawable::m_shader->assignMat4("u_posTrans", trans);
+    Drawable::m_shader->assignMat4("u_model", glm::mat4()); // in case this is needed
 
     glDrawArrays(GL_LINES, 0, 2);
     glBindVertexArray(0);

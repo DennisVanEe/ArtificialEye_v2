@@ -6,10 +6,10 @@
 
 namespace ee
 {
-    class UVMeshSphere
+    class Lens
     {
     public:
-        UVMeshSphere(Mesh* mesh, int nLat, int nLon);
+        Lens(Mesh* mesh, int nLat, int nLon);
 
         std::vector<ee::SBPointConstraint*> addConstraints(int thickness, ee::SBSimulation* sim);
 

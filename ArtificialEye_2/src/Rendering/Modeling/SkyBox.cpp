@@ -96,8 +96,8 @@ void ee::SkyBox::draw()
     glm::mat4 trans = perspective * lookAt;
 
     // all shaders need this:
-    m_shader->assignMat4f("u_posTrans", trans);
-    m_shader->assignMat4f("u_model", glm::mat4()); // in case this is needed
+    m_shader->assignMat4("u_posTrans", trans);
+    m_shader->assignMat4("u_model", glm::mat4()); // in case this is needed
 
     glDrawArrays(GL_TRIANGLES, 0, 36);
     m_texturePack->postDraw();

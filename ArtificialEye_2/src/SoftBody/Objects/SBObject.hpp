@@ -10,19 +10,21 @@ namespace ee
     class SBObject
     {
     public:
-        SBObject(float mass, SBObjectType type);
+        SBObject(Float mass, SBObjectType type) :
+            m_type(type),
+            m_mass(mass) {}
 
-        void resetForces();
+        void resetForces() { m_resultantForce = Vec3(); }
 
-        virtual void update(float time) = 0;
+        virtual void update(Float time) = 0;
         virtual SBObject* getCopy() const = 0;
 
     public:
-        glm::vec3 m_currPosition;
-        glm::vec3 m_prevPosition;
-        glm::vec3 m_currVelocity;
-        glm::vec3 m_resultantForce;
-        float m_mass;
+        Vec3 m_currPosition;
+        Vec3 m_prevPosition;
+        Vec3 m_currVelocity;
+        Vec3 m_resultantForce;
+        Float m_mass;
 
         SBObjectType m_type;
     };

@@ -7,10 +7,10 @@ namespace ee
     class SBFixedPoint : public SBObject
     {
     public:
-        SBFixedPoint(glm::vec3 position);
-        SBFixedPoint();
+        SBFixedPoint(Vec3 position) : SBObject(1.0, SBObjectType::PASSIVE) { m_currPosition = position; }
+        SBFixedPoint() : SBObject(1.0, SBObjectType::PASSIVE) {}
 
-        void update(float timeStep) override;
-        SBObject* getCopy() const override;
+        void update(Float timeStep) override {}
+        SBObject* getCopy() const override { return new SBFixedPoint(*this); }
     };
 }

@@ -20,16 +20,16 @@ namespace ee
         std::size_t     longitude;
         std::size_t     iterations;
 
-        float           mass;
-        float           intspring_coeff;
-        float           intspring_drag;
-        float           extspring_coeff;
-        float           extspring_drag;
+        Float           mass;
+        Float           intspring_coeff;
+        Float           intspring_drag;
+        Float           extspring_coeff;
+        Float           extspring_drag;
 
-        float           pressure;
+        Float           pressure;
         unsigned        muscle_thickness;
-        float           refractive_index;
-        float           lens_thickness;
+        Float           refractive_index;
+        Float           lens_thickness;
 
         unsigned        subdiv_level;
     };

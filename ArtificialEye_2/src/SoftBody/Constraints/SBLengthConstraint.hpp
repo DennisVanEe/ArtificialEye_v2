@@ -9,10 +9,10 @@ namespace ee
     class SBLengthConstraint : public SBConstraint
     {
     public:
-        SBLengthConstraint(float length, SBObject* objA, SBObject* objB, float factor = 0.5);
+        SBLengthConstraint(Float length, SBObject* objA, SBObject* objB, Float factor = 0.5);
 
         void satisfyConstraint() override;
-        SBConstraint* getCopy() const override;
+        SBConstraint* getCopy() const override { return new SBLengthConstraint(*this); }
 
     public:
         float m_length;

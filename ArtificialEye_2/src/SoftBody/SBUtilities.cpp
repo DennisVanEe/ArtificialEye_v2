@@ -1,6 +1,6 @@
 #include "SBUtilities.hpp"
 
-void ee::addInteriorSpringsUVSphere(SBClosedBodySim* const sim, const unsigned nLat, const unsigned nLon, const float stiffness, const float dampening)
+void ee::addInteriorSpringsUVSphere(SBClosedBodySim* const sim, const unsigned nLat, const unsigned nLon, const Float stiffness, const Float dampening)
 {
     // This is important, this is only gauranteed to work flawlessly with UV spheres, any other closed body sim is not gauranteed to work.
     // Going in rings is incremental, so adding those is easy
@@ -19,7 +19,7 @@ void ee::addInteriorSpringsUVSphere(SBClosedBodySim* const sim, const unsigned n
 
             sim->addSpring(stiffness, dampening, sim->getVertexObject(index0), sim->getVertexObject(index1));
             float length = glm::length(sim->getVertexObject(index0)->m_currPosition - sim->getVertexObject(index1)->m_currPosition);
-            sim->addConstraint(new SBLengthConstraint(length, sim->getVertexObject(index0), sim->getVertexObject(index1), 0.9f));
+            sim->addConstraint(new SBLengthConstraint(length, sim->getVertexObject(index0), sim->getVertexObject(index1), 0.9));
         }
     }
 }

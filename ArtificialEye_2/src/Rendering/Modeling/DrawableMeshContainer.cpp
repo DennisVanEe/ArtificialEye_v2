@@ -70,8 +70,8 @@ void ee::DrawableMeshContainer::draw()
         Mat4 trans = perspective * lookAt * modelTrans;
 
         // all shaders need this:
-        Drawable::m_shader->assignMat4f("u_posTrans", trans);
-        Drawable::m_shader->assignMat4f("u_model", modelTrans); // in case this is needed
+        Drawable::m_shader->assignMat4("u_posTrans", trans);
+        Drawable::m_shader->assignMat4("u_model", modelTrans); // in case this is needed
 
         glDrawElements(GL_TRIANGLES, m_mesh->getNumIndices(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);

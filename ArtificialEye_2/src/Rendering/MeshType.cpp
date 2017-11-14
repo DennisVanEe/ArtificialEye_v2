@@ -1,4 +1,4 @@
-#include "RenderingUtilities.hpp"
+#include "MeshTypes.hpp"
 
 #include <cmath>
 #include <algorithm>
@@ -9,15 +9,15 @@ namespace cube
     const std::vector<ee::Vertex> VERTICES =
     {
         // front
-        ee::Vertex(glm::vec3(-1.f, -1.f,  1.f)),
-        ee::Vertex(glm::vec3( 1.f, -1.f,  1.f)),
-        ee::Vertex(glm::vec3( 1.0,  1.0,  1.0)),
-        ee::Vertex(glm::vec3(-1.0,  1.0,  1.0)),
+        ee::Vertex(ee::Vec3(-1.0, -1.0,  1.0)),
+        ee::Vertex(ee::Vec3( 1.0, -1.0,  1.0)),
+        ee::Vertex(ee::Vec3( 1.0,  1.0,  1.0)),
+        ee::Vertex(ee::Vec3(-1.0,  1.0,  1.0)),
         // back
-        ee::Vertex(glm::vec3(-1.0, -1.0, -1.0)),
-        ee::Vertex(glm::vec3( 1.0, -1.0, -1.0)),
-        ee::Vertex(glm::vec3( 1.0,  1.0, -1.0)),
-        ee::Vertex(glm::vec3(-1.0,  1.0, -1.0)),
+        ee::Vertex(ee::Vec3(-1.0, -1.0, -1.0)),
+        ee::Vertex(ee::Vec3( 1.0, -1.0, -1.0)),
+        ee::Vertex(ee::Vec3( 1.0,  1.0, -1.0)),
+        ee::Vertex(ee::Vec3(-1.0,  1.0, -1.0)),
     };
 
     const std::vector<ee::MeshFace> INDICES =
@@ -46,20 +46,20 @@ namespace icosphere
 
     const std::vector<ee::Vertex> VERTICES =
     {
-        ee::Vertex(glm::normalize(Vec3(-1.0,    t,  0.0))),
-        ee::Vertex(glm::normalize(Vec3( 1.0,    t,  0.0))),
-        ee::Vertex(glm::normalize(Vec3(-1.0,   -t,  0.0))),
-        ee::Vertex(glm::normalize(Vec3( 1.0,   -t,  0.0))),
+        ee::Vertex(glm::normalize(ee::Vec3(-1.0,    t,  0.0))),
+        ee::Vertex(glm::normalize(ee::Vec3( 1.0,    t,  0.0))),
+        ee::Vertex(glm::normalize(ee::Vec3(-1.0,   -t,  0.0))),
+        ee::Vertex(glm::normalize(ee::Vec3( 1.0,   -t,  0.0))),
 
-        ee::Vertex(glm::normalize(Vec3( 0.0, -1.0,    t))),
-        ee::Vertex(glm::normalize(Vec3( 0.0,  1.0,    t))),
-        ee::Vertex(glm::normalize(Vec3( 0.0, -1.0,   -t))),
-        ee::Vertex(glm::normalize(Vec3( 0.0,  1.0,   -t))),
+        ee::Vertex(glm::normalize(ee::Vec3( 0.0, -1.0,    t))),
+        ee::Vertex(glm::normalize(ee::Vec3( 0.0,  1.0,    t))),
+        ee::Vertex(glm::normalize(ee::Vec3( 0.0, -1.0,   -t))),
+        ee::Vertex(glm::normalize(ee::Vec3( 0.0,  1.0,   -t))),
 
-        ee::Vertex(glm::normalize(Vec3(   t,  0.0, -1.0))),
-        ee::Vertex(glm::normalize(Vec3(   t,  0.0,  1.0))),
-        ee::Vertex(glm::normalize(Vec3(  -t,  0.0, -1.0))),
-        ee::Vertex(glm::normalize(Vec3(  -t,  0.0,  1.0))),
+        ee::Vertex(glm::normalize(ee::Vec3(   t,  0.0, -1.0))),
+        ee::Vertex(glm::normalize(ee::Vec3(   t,  0.0,  1.0))),
+        ee::Vertex(glm::normalize(ee::Vec3(  -t,  0.0, -1.0))),
+        ee::Vertex(glm::normalize(ee::Vec3(  -t,  0.0,  1.0))),
     };
 
     const std::vector<ee::MeshFace> INDICES =
@@ -94,10 +94,10 @@ namespace icosphere
     ////////////////////
 
     std::unordered_map<uint64_t, GLuint> g_cachedMiddlePoints;
-    GLuint getMiddlePoint(GLuint i0, GLuint i1, std::vector<ee::Vertex>* list)
+    int getMiddlePoint(int i0, int i1, std::vector<ee::Vertex>* list)
     {
-        uint64_t minInd = std::min(i0, i1);
-        uint64_t maxInd = std::max(i0, i1);
+        uint64_t minInd = static_cast<uint64_t>(std::min(i0, i1));
+        uint64_t maxInd = static_cast<uint64_t>(std::max(i0, i1));
         uint64_t key = (minInd << 32) + maxInd;
 
         auto it = g_cachedMiddlePoints.find(key);
@@ -121,20 +121,20 @@ ee::Mesh ee::loadIndexedRectangle()
     std::vector<Vertex> vertList;
     std::vector<MeshFace> indexList;
 
-    vertList.push_back(Vertex(glm::vec3(0.5f, 0.5f, 0.f)));
-    vertList.push_back(Vertex(glm::vec3(0.5f, -0.5f, 0.f)));
-    vertList.push_back(Vertex(glm::vec3(-0.5f, -0.5f, 0.f)));
-    vertList.push_back(Vertex(glm::vec3(-0.5f, 0.5f, 0.0f)));
+    vertList.push_back(Vertex(ee::Vec3( 0.5,  0.5, 0.0)));
+    vertList.push_back(Vertex(ee::Vec3( 0.5, -0.5, 0.0)));
+    vertList.push_back(Vertex(ee::Vec3(-0.5, -0.5, 0.0)));
+    vertList.push_back(Vertex(ee::Vec3(-0.5,  0.5, 0.0)));
 
     indexList.push_back({0, 1, 3});
     indexList.push_back({1, 2, 3});
 
-    return Mesh(vertList, indexList);
+    return Mesh(vertList, indexList, MeshType::INDEXED_RECTANGLE);
 }
 
 ee::Mesh ee::loadIndexedCube()
 {
-    return Mesh(cube::VERTICES, cube::INDICES);
+    return Mesh(cube::VERTICES, cube::INDICES, MeshType::INDEXED_CUBE);
 }
 
 ee::Mesh ee::loadIcosphere(unsigned recursionLevel)
@@ -143,14 +143,14 @@ ee::Mesh ee::loadIcosphere(unsigned recursionLevel)
     std::vector<Vertex> vertList = icosphere::VERTICES;
     std::vector<MeshFace> indexList = icosphere::INDICES;
 
-    for (unsigned i = 0; i < recursionLevel; i++)
+    for (int i = 0; i < recursionLevel; i++)
     {
         std::vector<MeshFace> tempIndList1;
         for (const MeshFace& face : indexList)
         {
-            GLuint i0 = icosphere::getMiddlePoint(face(0), face(1), &vertList);
-            GLuint i1 = icosphere::getMiddlePoint(face(1), face(2), &vertList);
-            GLuint i2 = icosphere::getMiddlePoint(face(2), face(0), &vertList);
+            int i0 = icosphere::getMiddlePoint(face(0), face(1), &vertList);
+            int i1 = icosphere::getMiddlePoint(face(1), face(2), &vertList);
+            int i2 = icosphere::getMiddlePoint(face(2), face(0), &vertList);
 
             tempIndList1.push_back({face(0), i0, i2});
             tempIndList1.push_back({face(1), i1, i0});
@@ -160,14 +160,14 @@ ee::Mesh ee::loadIcosphere(unsigned recursionLevel)
         indexList = tempIndList1;
     }
 
-    return Mesh(vertList, indexList);
+    return Mesh(vertList, indexList, MeshType::ICOSPHERE);
 }
 
 ee::Mesh ee::loadUVsphere(int nLon, int nLat)
 {
     if (nLon <= 0 || nLat <= 0)
     {
-        return;
+        throw std::logic_error("The number of longitudinal and latitudinal rings has to be greater than 0");
     }
 
     std::vector<Vertex> vertList;
@@ -175,7 +175,7 @@ ee::Mesh ee::loadUVsphere(int nLon, int nLat)
 
     // Vertices:
     vertList.resize((nLon) * nLat + 2); // plus 1 is for the extra bits in lon side
-    vertList[0] = Vertex(Vec3(0.0, 1.0, 0.0));
+    vertList[0] = Vertex(ee::Vec3(0.0, 1.0, 0.0));
     for (unsigned lat = 0; lat < nLat; lat++)
     {
         Float angleLat = glm::pi<Float>() * (Float)(lat + 1) / (nLat + 1);
@@ -189,10 +189,10 @@ ee::Mesh ee::loadUVsphere(int nLon, int nLat)
             Float cosLon = std::cos(angleLon);
 
             std::size_t index = lon + lat * (nLon) + 1;
-            vertList[index] = Vertex(Vec3(sinLat * cosLon, cosLat, sinLat * sinLon));
+            vertList[index] = Vertex(ee::Vec3(sinLat * cosLon, cosLat, sinLat * sinLon));
         }
     }
-    vertList[vertList.size() - 1] = Vertex(Vec3(0.0, -1.0, 0.0));
+    vertList[vertList.size() - 1] = Vertex(ee::Vec3(0.0, -1.0, 0.0));
 
     // Indices:
     for (int lon = 0; lon < nLon - 1; lon++)
@@ -233,5 +233,5 @@ ee::Mesh ee::loadUVsphere(int nLon, int nLat)
     }
     indexList.push_back({ size - 1, size - 2, size - (nLon)-1 }); // fix up that seam
 
-    return Mesh(vertList, indexList);
+    return Mesh(vertList, indexList, MeshType::UVSPHERE);
 }

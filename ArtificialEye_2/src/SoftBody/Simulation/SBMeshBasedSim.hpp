@@ -2,7 +2,7 @@
 
 #include "SBSimulation.hpp"
 #include "../Objects/SBVertex.hpp"
-#include "../../Rendering/Modeling/DynamicMesh.hpp"
+#include "../../Rendering/Modeling/Mesh.hpp"
 
 #include <vector>
 
@@ -11,16 +11,16 @@ namespace ee
     class SBMeshBasedSim : public SBSimulation
     {
     public:
-        SBMeshBasedSim(DynamicMesh* model, float mass, float structStiffness, float structDampening);
+        SBMeshBasedSim(Mesh* model, Float mass, Float structStiffness, Float structDampening);
 
-        virtual void update(float timeStep) override;
+        virtual void update(Float timeStep) override;
 
-        void addCustomLengthConstraint(float length, std::size_t vertexID0, std::size_t vertexID1);
+        void addCustomLengthConstraint(Float length, std::size_t vertexID0, std::size_t vertexID1);
 
     protected:
-        DynamicMesh* m_model;
+        Mesh* m_model;
 
-        void createSimVertices(float mass);
-        void connectSprings(float structStiffness, float structDampening);
+        void createSimVertices(Float mass);
+        void connectSprings(Float structStiffness, Float structDampening);
     };
 }

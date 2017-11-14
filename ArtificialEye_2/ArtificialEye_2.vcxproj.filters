@@ -60,9 +60,6 @@
     <ClCompile Include="src\Rendering\Drawable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Rendering\RenderingUtilities.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Rendering\shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -72,28 +69,13 @@
     <ClCompile Include="src\SoftBody\Objects\SBVertex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SoftBody\Objects\SBObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SoftBody\ForceGens\SBGravity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SoftBody\ForceGens\SBMedium.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\SoftBody\Constraints\SBLengthConstraint.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SoftBody\Constraints\SBPointConstraint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SoftBody\Integrators\SBForwardEuler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SoftBody\Integrators\SBVerletIntegrator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SoftBody\Integrators\SBIntegrator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SoftBody\SBSpring.cpp">
@@ -124,9 +106,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SoftBody\SBUtilities.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SoftBody\Objects\SBFixedPoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Initialization.cpp">
@@ -192,13 +171,16 @@
     <ClCompile Include="src\RayTracing\RTUtility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Rendering\UVMeshSphere.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Rendering\Subdivision.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Rendering\Modeling\DrawableMeshContainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\MeshType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Lens.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -246,9 +228,6 @@
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="src\Rendering\Camera.hpp">
-      <Filter>Header Files\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Rendering\RenderingUtilities.hpp">
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="src\Rendering\shader.hpp">
@@ -359,13 +338,16 @@
     <ClInclude Include="src\RayTracing\RTUtility.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Rendering\UVMeshSphere.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Rendering\Subdivision.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Rendering\Modeling\DrawableMeshContainer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\MeshTypes.hpp">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\Lens.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

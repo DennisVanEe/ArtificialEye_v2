@@ -8,10 +8,10 @@ namespace ee
     class SBIntegrator
     {
     public:
-        SBIntegrator(float constTimeStep);
-        float getTimeStep() const;
+        SBIntegrator(Float constTimeStep) : m_constTimeStep(constTimeStep) {}
+        Float getTimeStep() const { return m_constTimeStep; }
 
-        virtual void integrate(glm::vec3 acceleration, SBObject* object) = 0;
+        virtual void integrate(Vec3 acceleration, SBObject* object) = 0;
 
         virtual SBIntegrator* getCopy() const = 0;
 

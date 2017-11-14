@@ -1,7 +1,7 @@
 #include "SBVertex.hpp"
 #include "SBFixedPoint.hpp"
 
-ee::SBVertex::SBVertex(const float mass, const SBObjectType type, DynamicMesh* const model, const std::size_t vertexID) :
+ee::SBVertex::SBVertex(const Float mass, const SBObjectType type, Mesh* const model, const std::size_t vertexID) :
     SBObject(mass, type),
     m_model(model),
     m_vertexID(vertexID)
@@ -10,15 +10,15 @@ ee::SBVertex::SBVertex(const float mass, const SBObjectType type, DynamicMesh* c
     m_prevPosition = m_currPosition;
 }
 
-void ee::SBVertex::update(float timeStep)
+void ee::SBVertex::update(Float timeStep)
 {
     if (m_model != nullptr)
     {
-        m_model->setVertex(m_currPosition, m_vertexID);
+        m_model->updateVertex(m_currPosition, m_vertexID);
     }
 }
 
-ee::SBObject * ee::SBVertex::getCopy() const
+ee::SBObject* ee::SBVertex::getCopy() const
 {
     return new SBVertex(*this);
 }

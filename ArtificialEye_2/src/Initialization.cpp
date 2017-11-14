@@ -10,7 +10,7 @@
 char g_writeBuffer[1024];
 char g_currDirBuffer[1024];
 
-float getFloat(const std::string& section, const std::string& name, const std::string& file)
+ee::Float getFloat(const std::string& section, const std::string& name, const std::string& file)
 {
     DWORD bytes = GetModuleFileName(NULL, g_currDirBuffer, 1024);
     std::string dir(g_currDirBuffer);
@@ -24,10 +24,10 @@ float getFloat(const std::string& section, const std::string& name, const std::s
         throw std::runtime_error(str.str());
     }
     
-    float value;
+    ee::Float value;
     try
     {
-        value = std::stof(g_writeBuffer, nullptr);
+        value = static_cast<ee::Float>(std::stold(g_writeBuffer, nullptr));
     }
     catch (...)
     {
