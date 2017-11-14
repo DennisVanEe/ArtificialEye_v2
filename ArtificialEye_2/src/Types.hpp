@@ -38,7 +38,7 @@ namespace ee
     };
 
     // Zeros the vector if it is close enough to zero
-    Vec3 zeroVector(Vec3 vec)
+    inline Vec3 zeroIfCloseVector(Vec3 vec)
     {
         int result = !(glm::epsilonEqual(vec, Vec3(), glm::epsilon<Float>()) != glm::bvec3(true, true, true));
         vec *= result;
@@ -46,19 +46,19 @@ namespace ee
     }
 
     // Translates a point direction
-    Vec3 transPoint3(const Mat4& mat, const Vec3& vec)
+    inline Vec3 transPoint3(const Mat4& mat, const Vec3& vec)
     {
-        return Vec3(mat * Vec4(vec, 1.f));
+        return Vec3(mat * Vec4(vec, 1.0));
     }
 
     // Translates a vector direction
-    Vec3 transVector3(const Mat4& mat, Vec3 vec)
+    inline Vec3 transVector3(const Mat4& mat, Vec3 vec)
     {
-        return Vec3(mat * Vec4(vec, 0.f));
+        return Vec3(mat * Vec4(vec, 0.0));
     }
 
     // Flips the vector if it doesn't face the same direction
-    Vec3 flipSameDir(const Vec3& toFlip, const Vec3& ref)
+    inline Vec3 flipSameDir(const Vec3& toFlip, const Vec3& ref)
     {
         return glm::dot(toFlip, ref) >= 0 ? toFlip : -toFlip;
     }

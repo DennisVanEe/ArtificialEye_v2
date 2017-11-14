@@ -29,7 +29,7 @@ void ee::SBSpring::applySpringForce()
         Vec3 force = -m_stiffness * ((currLength - m_restLength) * direction); // -kx * dir 
         force += -m_dampening * glm::dot(m_objectA->m_currVelocity - m_objectB->m_currVelocity, direction) * direction; // -yv (v is projected onto the "spring")
 
-        force = zeroVector(force); // helps maintain stability in the simulation
+        force = zeroIfCloseVector(force); // helps maintain stability in the simulation
 
         m_objectA->m_resultantForce = m_objectA->m_resultantForce + force;
         m_objectB->m_resultantForce = m_objectB->m_resultantForce - force;

@@ -5,7 +5,7 @@ ee::UniColorTextPack::UniColorTextPack(glm::vec4 color) :
 {
 }
 
-void ee::UniColorTextPack::preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera) 
+void ee::UniColorTextPack::preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera, const std::vector<Texture>* textures)
 { 
     shader->assignColor("u_modelColor", m_color); 
 }

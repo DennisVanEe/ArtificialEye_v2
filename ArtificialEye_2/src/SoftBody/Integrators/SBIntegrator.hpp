@@ -16,6 +16,6 @@ namespace ee
         virtual SBIntegrator* getCopy() const = 0;
 
     protected:
-        const float m_constTimeStep;
+        const Float m_constTimeStep;
     };
 }

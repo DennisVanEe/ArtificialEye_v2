@@ -7,20 +7,19 @@
 
 namespace ee
 {
-    class LineUniColorTextPack : public TexturePack
+    class EyeballTextPack : public TexturePack
     {
     public:
-        LineUniColorTextPack(glm::vec3 color);
-        LineUniColorTextPack();
-
         void preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera, const std::vector<Texture>* textures = nullptr) override;
 
-        void postDraw() override;
+        void postDraw() override {}
 
-        std::string getVShaderName() const override;
-        std::string getFShaderName() const override;
+        std::string getVShaderName() const override { return "eyeball_vert"; }
+        std::string getFShaderName() const override { return "eyeball_frag"; }
 
     public:
+        glm::vec3 m_lightPosition;
         glm::vec3 m_color;
+        ShaderMaterial m_material;
     };
 }

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <numeric>
+
 #include "TexturePacks/TexturePack.hpp"
 #include "Renderer.hpp"
 #include "TexturePacks/ShaderMaterial.hpp"

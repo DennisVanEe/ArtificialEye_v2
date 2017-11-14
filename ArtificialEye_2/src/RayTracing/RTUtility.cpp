@@ -45,6 +45,21 @@ std::pair<bool, ee::Vec3> ee::intersectTriangle(Ray ray, Vec3 p0, Vec3 p1, Vec3 
     }
 }
 
+void ee::baryCentric(Vec3 p, Vec3 a, Vec3 b, Vec3 c, Float &u, Float &v, Float &w)
+{
+    Vec3 v0 = b - a, v1 = c - a, v2 = p - a;
+    Float d00 = glm::dot(v0, v0);
+    Float d01 = glm::dot(v0, v1);
+    Float d11 = glm::dot(v1, v1);
+    Float d20 = glm::dot(v2, v0);
+    Float d21 = glm::dot(v2, v1);
+    Float denom = d00 * d11 - d01 * d01;
+    v = (d11 * d20 - d01 * d21) / denom;
+    w = (d00 * d21 - d01 * d20) / denom;
+    u = 1.0 - v - w;
+}
+
+// The resulting intersection point is transformed
 std::pair<std::size_t, ee::Vec3> ee::nearestIntersectionMesh(const Mesh* mesh, Ray ray, std::size_t ignore)
 {
     std::size_t minFace = mesh->getNumMeshFaces();

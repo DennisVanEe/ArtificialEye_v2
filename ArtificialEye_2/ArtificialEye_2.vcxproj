@@ -74,22 +74,22 @@
     <IncludePath>$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\stbi\include;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)output/$(Platform)/$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)interm/$(Platform)/$(Configuration)/</IntDir>
-    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(SolutionDir)dependencies\assimp\lib\x64\release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <SourcePath>$(VC_SourcePath)src;</SourcePath>
-    <IncludePath>$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\stbi\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\stbi\include;$(SolutionDir)dependencies\assimp\include;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)output/$(Platform)/$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)interm/$(Platform)/$(Configuration)/</IntDir>
-    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(SolutionDir)dependencies\assimp\lib\x64\release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\stbi\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(SolutionDir)dependencies\assimp\lib\x64\release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\stbi\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(SolutionDir)dependencies\assimp\lib\x64\release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -97,6 +97,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <FloatingPointModel>Precise</FloatingPointModel>
+      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -109,6 +110,7 @@
       <SDLCheck>true</SDLCheck>
       <FloatingPointModel>Precise</FloatingPointModel>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -123,6 +125,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <FloatingPointModel>Precise</FloatingPointModel>
+      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -140,11 +143,12 @@
       <FloatingPointModel>Precise</FloatingPointModel>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc120-mt.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -170,6 +174,7 @@
     <ClCompile Include="src\Rendering\Modeling\DrawableMeshContainer.cpp" />
     <ClCompile Include="src\Rendering\Lens.cpp" />
     <ClCompile Include="src\Rendering\Modeling\DrawLine.cpp" />
+    <ClCompile Include="src\Rendering\Modeling\LoadableModel.cpp" />
     <ClCompile Include="src\Rendering\Modeling\Mesh.cpp" />
     <ClCompile Include="src\Rendering\Modeling\SkyBox.cpp" />
     <ClCompile Include="src\RayTracing\RTUtility.cpp" />
@@ -177,6 +182,7 @@
     <ClCompile Include="src\Rendering\Renderer.cpp" />
     <ClCompile Include="src\Rendering\MeshType.cpp" />
     <ClCompile Include="src\Rendering\shader.cpp" />
+    <ClCompile Include="src\Rendering\TexturePacks\EyeballTextPack.cpp" />
     <ClCompile Include="src\Rendering\TexturePacks\LightUniColorTextPack.cpp" />
     <ClCompile Include="src\Rendering\TexturePacks\LineUniColorTextPack.cpp" />
     <ClCompile Include="src\Rendering\TexturePacks\RefractTextPack.cpp" />
@@ -186,13 +192,13 @@
     <ClCompile Include="src\Rendering\Textures\Texture.cpp" />
     <ClCompile Include="src\SoftBody\Constraints\SBLengthConstraint.cpp" />
     <ClCompile Include="src\SoftBody\SBSpring.cpp" />
-    <ClCompile Include="src\SoftBody\Integrators\SBForwardEuler.cpp" />
     <ClCompile Include="src\SoftBody\Integrators\SBVerletIntegrator.cpp" />
     <ClCompile Include="src\SoftBody\Objects\SBVertex.cpp" />
     <ClCompile Include="src\SoftBody\SBUtilities.cpp" />
     <ClCompile Include="src\SoftBody\Simulation\SBClosedBodySim.cpp" />
     <ClCompile Include="src\SoftBody\Simulation\SBMeshBasedSim.cpp" />
     <ClCompile Include="src\SoftBody\Simulation\SBSimulation.cpp" />
+    <ClCompile Include="src\STBI\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\alglib\alglibinternal.h" />
@@ -211,6 +217,7 @@
     <ClInclude Include="src\Initialization.hpp" />
     <ClInclude Include="src\Rendering\Camera.hpp" />
     <ClInclude Include="src\Rendering\Drawable.hpp" />
+    <ClInclude Include="src\Rendering\Modeling\LoadableModel.hpp" />
     <ClInclude Include="src\Rendering\Modeling\DrawableMeshContainer.hpp" />
     <ClInclude Include="src\Rendering\Subdivision.hpp" />
     <ClInclude Include="src\Rendering\Lens.hpp" />
@@ -222,6 +229,7 @@
     <ClInclude Include="src\Rendering\Renderer.hpp" />
     <ClInclude Include="src\Rendering\MeshTypes.hpp" />
     <ClInclude Include="src\Rendering\shader.hpp" />
+    <ClInclude Include="src\Rendering\TexturePacks\EyeballTextPack.hpp" />
     <ClInclude Include="src\Rendering\TexturePacks\LightUniColorTextpack.hpp" />
     <ClInclude Include="src\Rendering\TexturePacks\LineUniColorTextPack.hpp" />
     <ClInclude Include="src\Rendering\TexturePacks\RefractTextPack.hpp" />
@@ -249,6 +257,7 @@
     <ClInclude Include="src\SoftBody\Simulation\SBClosedBodySim.hpp" />
     <ClInclude Include="src\SoftBody\Simulation\SBMeshBasedSim.hpp" />
     <ClInclude Include="src\SoftBody\Simulation\SBSimulation.hpp" />
+    <ClInclude Include="src\STBI\stb_image.hpp" />
     <ClInclude Include="src\Types.hpp" />
   </ItemGroup>
   <ItemGroup>

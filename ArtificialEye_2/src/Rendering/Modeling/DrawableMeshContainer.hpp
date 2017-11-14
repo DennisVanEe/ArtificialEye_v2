@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Drawable.hpp"
+#include "../Textures/Texture.hpp"
 #include "Mesh.hpp"
 
 namespace ee
@@ -16,6 +17,8 @@ namespace ee
             glDeleteBuffers(1, &m_VBO);
         }
 
+        void setTexture(std::vector<Texture> texture) { m_textures = texture; }
+
         void draw() override;
 
     private:
@@ -23,8 +26,12 @@ namespace ee
 
         std::vector<FloatVertex> m_cachedVertices;
         std::vector<MeshFace> m_cachedMeshFaces;
+        std::vector<Texture> m_textures;
 
         long long unsigned m_updateCount;
+
+        void castVertexBuffer(const std::vector<Vertex>& vertices);
+
 
         GLenum m_type;
         GLuint m_VAO;

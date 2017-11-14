@@ -10,7 +10,7 @@ ee::LineUniColorTextPack::LineUniColorTextPack() :
 {
 }
 
-void ee::LineUniColorTextPack::preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera)
+void ee::LineUniColorTextPack::preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera, const std::vector<Texture>* textures)
 {
     shader->assignColor("u_color", m_color);
 }

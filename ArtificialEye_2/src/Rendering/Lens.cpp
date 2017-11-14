@@ -7,10 +7,10 @@ ee::Lens::Lens(Mesh* mesh, int nLat, int nLon) :
     m_constraintStart(-1),
     m_constraintEnd(-1)
 {
-    if (m_mesh->getMeshType() != MeshType::UVSPHERE)
-    {
-        throw std::logic_error("Lens can only take UVSphere meshes.");
-    }
+    //if (m_mesh->getMeshType() != MeshType::UVSPHERE)
+    //{
+    //    throw std::logic_error("Lens can only take UVSphere meshes.");
+    //}
 
     m_latitudes.reserve(nLat);
     for (int i = 0; i < nLat; i++)

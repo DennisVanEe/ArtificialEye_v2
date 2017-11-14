@@ -18,6 +18,7 @@
 #include "SoftBody/SBUtilities.hpp"
 #include "Rendering/Subdivision.hpp"
 #include "Rendering/Modeling/DrawableMeshContainer.hpp"
+#include "Rendering/Modeling/LoadableModel.hpp"
 
 #include "Alglib/interpolation.h"
 
@@ -131,9 +132,12 @@ int main()
         void* res = Renderer::addTexturePack("refractTextPack", RefractTextPack(glm::vec3(), g_textureDir + g_cubeMapDir, g_cubeMapFaces, ARTIFICIAL_EYE_PROP.refractive_index)); assert(res);
         res =       Renderer::addTexturePack("skyBoxTextPack", SkyBoxTextPack(g_textureDir + g_cubeMapDir, g_cubeMapFaces)); assert(res);
 
+        LoadableModel eyeballModel("Models/eyeball/eyebal_fbx.fbx", 1);
+        eyeballModel.load();
+
         // generate the UV Sphere lens (not super efficient)
         Mesh uvSphereMesh = loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude);
-        Mesh uvSubDivSphereMesh = loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level);
+        Mesh uvSubDivSphereMesh = uvSphereMesh; // loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level);
         Lens lensSphere(&uvSubDivSphereMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
         DrawableMeshContainer lensDrawable(&uvSubDivSphereMesh, "refractTextPack", true);
         Renderer::addDrawable(&lensDrawable);
@@ -145,11 +149,11 @@ int main()
 
         // update the positons of the lens
         const Mat4 lensModelTrans = glm::scale(glm::rotate(Mat4(), glm::radians(90.0), Vec3(1.0, 0.0, 0.0)), Vec3(1.0, ARTIFICIAL_EYE_PROP.lens_thickness, 1.0));
-        uvSubDivSphereMesh.setModelTrans(lensModelTrans);
+        uvSphereMesh.setModelTrans(lensModelTrans);
         uvSubDivSphereMesh.setModelTrans(lensModelTrans);
 
         // prepare the simulation
-        SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &uvSubDivSphereMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
+        SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &uvSphereMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
         lensSim.m_constIterations = ARTIFICIAL_EYE_PROP.iterations;
         addInteriorSpringsUVSphere(&lensSim, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.intspring_coeff, ARTIFICIAL_EYE_PROP.intspring_drag);
         //addConstraints(5, &lensSim, &lensMesh);
@@ -166,6 +170,7 @@ int main()
         g_constraints = lensSphere.addConstraints(5, &lensSim);
         g_tracer = &ee::RayTracer::initialize(pos, lensSphere, param);
 
+        uvSubDivSphereMesh.calcNormals();
         g_tracer->raytrace();
         while (ee::Renderer::isInitialized())
         {
@@ -190,17 +195,14 @@ int main()
             ee::Renderer::clearBuffers();
 
             float time = Renderer::timeElapsed();
-            //if (g_startSoftBody)
-            //{
-            //    lensSim.update(time);
-            //    VertBuffer subDividedVertBuff;
-            //    MeshFaceBuffer subDividedFaceBuff;
-            //    loopSubdiv(dynLensMesh.getVerticesData(), dynLensMesh.getMeshFaceData(), subDividedVertBuff, subDividedFaceBuff, ARTIFICIAL_EYE_PROP.subdiv_level);
-            //    subLensMesh.setVertices(subDividedVertBuff);
-            //    subLensMesh.setMeshFace(subDividedFaceBuff);
-            //}
-
-            //g_tracer->raytrace();
+            if (g_startSoftBody)
+            {
+                lensSim.update(time);
+                Mesh tempMesh = loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level);
+                uvSubDivSphereMesh.updateVertices(std::move(tempMesh.getVerticesData()));
+                uvSubDivSphereMesh.updateMeshFaces(std::move(tempMesh.getMeshFaceData()));
+                g_tracer->raytrace();
+            }
 
             Renderer::drawAll();
             Renderer::update(time);

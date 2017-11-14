@@ -1,6 +1,7 @@
 #include <unordered_map>
 #include <memory>
 #include <set>
+#include <iostream>
 
 #include "Renderer.hpp"
 #include "Drawable.hpp"

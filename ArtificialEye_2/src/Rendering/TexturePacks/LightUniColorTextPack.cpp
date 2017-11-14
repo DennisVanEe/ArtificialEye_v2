@@ -14,7 +14,7 @@ ee::LightUniColorTextPack::LightUniColorTextPack() :
 {
 }
 
-void ee::LightUniColorTextPack::preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera)
+void ee::LightUniColorTextPack::preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera, const std::vector<Texture>* textures)
 {
     shader->assignColor("u_modelColor", m_color);
     shader->assignVec3("u_modelMaterial.m_ambient", m_material.m_ambient);

@@ -14,7 +14,7 @@ ee::RefractTextPack::RefractTextPack(RefractTextPack&& other) :
 {
 }
 
-void ee::RefractTextPack::preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera)
+void ee::RefractTextPack::preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera, const std::vector<Texture>* textures)
 {
     // shader->assignColor("u_modelColor", m_color); // assign the color
     glm::vec3 camPos = camera->getPosition();

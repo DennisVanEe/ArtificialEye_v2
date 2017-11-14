@@ -13,7 +13,7 @@ namespace ee
         LightUniColorTextPack();
         LightUniColorTextPack(glm::vec3 lightPosition, glm::vec3 color, ShaderMaterial material);
 
-        void preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera) override;
+        void preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera, const std::vector<Texture>* textures = nullptr) override;
         void postDraw() override {}
 
         std::string getVShaderName() const override;

@@ -113,10 +113,8 @@ ee::Mesh ee::loopSubdiv(const Mesh& mesh, int recursion)
     std::unordered_map<Edge, EdgePair, EdgePairHash> edgeList; // stores edges and corresponding "pairs"
     std::vector<std::set<int>> vertexList; // stores neighboring points of points
 
-    const std::vector<Vertex>& iVertices = mesh.getVerticesData();
-    const std::vector<MeshFace>& iVertices = mesh.getMeshFaceData();
-    std::vector<Vertex> oVertices;
-    std::vector<MeshFace> oFaces;
+    const std::vector<Vertex>& oVertices = mesh.getVerticesData();
+    const std::vector<MeshFace>& oFaces = mesh.getMeshFaceData();
 
     vertexList.resize(oVertices.size());
 

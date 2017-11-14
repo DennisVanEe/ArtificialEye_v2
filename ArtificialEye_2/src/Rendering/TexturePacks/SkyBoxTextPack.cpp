@@ -10,7 +10,7 @@ ee::SkyBoxTextPack::SkyBoxTextPack(SkyBoxTextPack && other) :
 {
 }
 
-void ee::SkyBoxTextPack::preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera) 
+void ee::SkyBoxTextPack::preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera, const std::vector<Texture>* textures)
 { 
     shader->bindTexture(GL_TEXTURE_CUBE_MAP, 0, m_skyBox.getTexture()); 
 }

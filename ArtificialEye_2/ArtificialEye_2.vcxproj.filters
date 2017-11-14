@@ -72,9 +72,6 @@
     <ClCompile Include="src\SoftBody\Constraints\SBLengthConstraint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SoftBody\Integrators\SBForwardEuler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\SoftBody\Integrators\SBVerletIntegrator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -181,6 +178,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Rendering\Lens.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Modeling\LoadableModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\STBI\stb_image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\TexturePacks\EyeballTextPack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -348,6 +354,15 @@
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="src\Rendering\Lens.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\Modeling\LoadableModel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\STBI\stb_image.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\TexturePacks\EyeballTextPack.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

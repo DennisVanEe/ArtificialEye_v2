@@ -14,7 +14,7 @@ namespace ee
         RefractTextPack(const RefractTextPack& other) = default;
         RefractTextPack(RefractTextPack&& other);
 
-        void preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera) override;
+        void preDraw(Shader* shader, const ShaderMaterial* material, const Camera* camera, const std::vector<Texture>* textures = nullptr) override;
         void postDraw() override {}
 
         std::string getVShaderName() const override;

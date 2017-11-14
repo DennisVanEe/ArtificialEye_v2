@@ -31,7 +31,7 @@ namespace ee
     {
         glm::tvec3<T> m_position;
         glm::tvec3<T> m_normal;
-        glm::tvec3<T> m_textCoord;
+        glm::tvec2<T> m_textCoord;
 
         bool operator==(const TVertex& vert)
         {
@@ -57,6 +57,7 @@ namespace ee
     class Mesh
     {
     public:
+        Mesh() : m_meshType(MeshType::UNDEF) {}
         Mesh(std::vector<Vertex> vertices, std::vector<MeshFace> faces, MeshType type = MeshType::UNDEF) :
             m_vertices(std::move(vertices)), m_faces(std::move(faces)),
             m_meshType(type) {}
@@ -71,6 +72,15 @@ namespace ee
         const std::vector<MeshFace>& getMeshFaceData() const { return m_faces; }
 
         virtual const Vertex& getVertex(int vertexID) const { return m_vertices[vertexID]; }
+        const Vertex getTransformedVertex(int vertexID)  const
+        {
+            Vertex result;
+            result.m_normal = transVector3(getNormalModelTrans(), getVertex(vertexID).m_normal);
+            result.m_position = transPoint3(getModelTrans(), getVertex(vertexID).m_position);
+            result.m_textCoord = getVertex(vertexID).m_textCoord;
+            return result;
+        }
+
         virtual std::size_t getNumVertices() const { return m_vertices.size(); }
 
         virtual std::size_t getVertexID(int indexID) const { return reinterpret_cast<const GLuint*>(m_faces.data())[indexID]; }

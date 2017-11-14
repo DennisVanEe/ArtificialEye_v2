@@ -1,5 +1,7 @@
 #include "DrawableMeshContainer.hpp"
 
+#include <iostream>
+
 ee::DrawableMeshContainer::DrawableMeshContainer(const Mesh* const mesh, const std::string& textPack, const bool dynamic, const int priority) :
     Drawable(textPack, priority), 
     m_mesh(mesh),
@@ -8,7 +10,7 @@ ee::DrawableMeshContainer::DrawableMeshContainer(const Mesh* const mesh, const s
 {
     const std::vector<Vertex>& updatedVertices = m_mesh->getVerticesData();
     const std::vector<MeshFace>& updatedMeshFaces = m_mesh->getMeshFaceData();
-    m_cachedVertices.insert(m_cachedVertices.end(), updatedVertices.begin(), updatedVertices.end());
+    castVertexBuffer(updatedVertices);
     m_cachedMeshFaces.insert(m_cachedMeshFaces.end(), updatedMeshFaces.begin(), updatedMeshFaces.end());
 
     glGenVertexArrays(1, &m_VAO);
@@ -18,17 +20,17 @@ ee::DrawableMeshContainer::DrawableMeshContainer(const Mesh* const mesh, const s
     glBindVertexArray(m_VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * m_cachedVertices.size(), m_cachedVertices.data(), m_type);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(FloatVertex) * m_cachedVertices.size(), m_cachedVertices.data(), m_type);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(MeshFace) * m_cachedMeshFaces.size(), m_cachedMeshFaces.data(), m_type);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_position));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(FloatVertex), (void*)offsetof(FloatVertex, m_position));
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_normal));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(FloatVertex), (void*)offsetof(FloatVertex, m_normal));
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_textCoord));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(FloatVertex), (void*)offsetof(FloatVertex, m_textCoord));
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -44,38 +46,59 @@ void ee::DrawableMeshContainer::draw()
 
         const std::vector<Vertex>& updatedVertices = m_mesh->getVerticesData();
         const std::vector<MeshFace>& updatedMeshFaces = m_mesh->getMeshFaceData();
-        m_cachedVertices.insert(m_cachedVertices.end(), updatedVertices.begin(), updatedVertices.end());
-        m_cachedMeshFaces.insert(m_cachedMeshFaces.end(), updatedMeshFaces.begin(), updatedMeshFaces.end());
+        castVertexBuffer(updatedVertices);
+
+        // No point in updating this because it is likely not to be updated
+        // m_cachedMeshFaces.insert(m_cachedMeshFaces.end(), updatedMeshFaces.begin(), updatedMeshFaces.end());
 
         // update the vertices
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, m_cachedVertices.size() * sizeof(FloatVertex), m_cachedVertices.data());
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+        /*glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
         glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, m_cachedMeshFaces.size() * sizeof(MeshFace), m_cachedMeshFaces.data());
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);*/
+    }
 
-        glBindVertexArray(m_VAO);
+    glBindVertexArray(m_VAO);
 
-        const Camera* camera = Renderer::getCamera();
+    const Camera* camera = Renderer::getCamera();
 
-        Drawable::m_shader->use();
-        m_texturePack->preDraw(Drawable::m_shader, &m_shaderMaterial, camera); // sets whatever values it may want to set
+    Drawable::m_shader->use();
 
-        Mat4 modelTrans = m_mesh->getModelTrans();
+    std::vector<Texture>* passedTextures = nullptr;
+    if (m_textures.size() != 0)
+    {
+        passedTextures = &m_textures;
+    }
+    m_texturePack->preDraw(Drawable::m_shader, &m_shaderMaterial, camera, passedTextures); // sets whatever values it may want to set
 
-        Mat4 lookAt = camera->viewMatrix();
-        Mat4 perspective = Renderer::getPerspective();
-        Mat4 trans = perspective * lookAt * modelTrans;
+    Mat4 modelTrans = m_mesh->getModelTrans();
 
-        // all shaders need this:
-        Drawable::m_shader->assignMat4("u_posTrans", trans);
-        Drawable::m_shader->assignMat4("u_model", modelTrans); // in case this is needed
+    Mat4 lookAt = camera->viewMatrix();
+    Mat4 perspective = Renderer::getPerspective();
+    Mat4 trans = perspective * lookAt * modelTrans;
 
-        glDrawElements(GL_TRIANGLES, m_mesh->getNumIndices(), GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
+    // all shaders need this:
+    Drawable::m_shader->assignMat4("u_posTrans", trans);
+    Drawable::m_shader->assignMat4("u_model", modelTrans); // in case this is needed
 
-        m_texturePack->postDraw();
+    glDrawElements(GL_TRIANGLES, m_mesh->getNumIndices(), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+
+    m_texturePack->postDraw();
+}
+
+void ee::DrawableMeshContainer::castVertexBuffer(const std::vector<Vertex>& vertices)
+{
+    m_cachedVertices.clear();
+    for (auto vert : vertices)
+    {
+        FloatVertex vertex;
+        vertex.m_normal = glm::vec3(vert.m_normal);
+        vertex.m_position = glm::vec3(vert.m_position);
+        vertex.m_textCoord = glm::vec2(vert.m_textCoord);
+        m_cachedVertices.push_back(vertex);
     }
 }
