@@ -20,7 +20,7 @@ void main()
 {    
 	if (p_worldPosition.x < 0)
 	{
-		discard;
+		//discard;
 	}
 	
     Color = vec4(0.f, 0.f, 0.f, 1.f);
@@ -34,12 +34,12 @@ void main()
 		Color = texture(textDiffuse3, p_textCoord);
 
 	if (noText)
-		Color = vec4(0.f, 0.f, 0.f, 1.f);
+		Color = vec4(1.f, 1.f, 1.f, 1.f);
 	else
 	{
 		if (Color.x > 0.99f && Color.y > 0.99f && Color.z > 0.99f)
 		{
-			discard;
+			//discard;
 		}
 	}
 }

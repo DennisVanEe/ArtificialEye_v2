@@ -51,8 +51,8 @@ std::vector<ee::Texture> ee::LoadableModel::loadTexture(const aiMaterial* mat, a
     {
         aiString str;
         mat->GetTexture(type, i, &str);
-  
         Texture texture(str.C_Str(), m_dir);
+
         if (texture.getTexture() == 0 && check)
         {
             *check = false;
@@ -81,7 +81,7 @@ void ee::LoadableModel::processMesh(const aiMesh* mesh, const aiScene* scene, bo
         vertex.m_position.z = mesh->mVertices[i].z;
 
         vertex.m_normal.x = mesh->mNormals[i].x;
-        vertex.m_normal.z = mesh->mNormals[i].y;
+        vertex.m_normal.y = mesh->mNormals[i].y;
         vertex.m_normal.z = mesh->mNormals[i].z;
 
         if (mesh->mTextureCoords[0])
@@ -91,7 +91,7 @@ void ee::LoadableModel::processMesh(const aiMesh* mesh, const aiScene* scene, bo
         }
         else
         {
-            vertex.m_textCoord = ee::Vec2(0.f, 0.f);
+            vertex.m_textCoord = ee::Vec2(0.0, 0.0);
         }
 
         tempVert.push_back(vertex);
@@ -100,8 +100,9 @@ void ee::LoadableModel::processMesh(const aiMesh* mesh, const aiScene* scene, bo
     for (int i = 0; i < mesh->mNumFaces; i++)
     {
         aiFace* face = &mesh->mFaces[i];
-        for (int k = 0; k < face->mNumIndices / 3;)
+        for (int k = 0; k < face->mNumIndices;)
         {
+            // this SHOULD be safe because there should be at a multiple of 3 vertices
             MeshFace newFace({ static_cast<int>(face->mIndices[k++]),
                 static_cast<int>(face->mIndices[k++]), static_cast<int>(face->mIndices[k++]) });
             tempInd.push_back(newFace);

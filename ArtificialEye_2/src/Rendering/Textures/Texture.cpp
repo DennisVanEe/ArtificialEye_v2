@@ -1,5 +1,7 @@
 #include "Texture.hpp"
 
+#include <iostream>
+
 ee::Texture::Texture(const std::string& name, const std::string& path)
 {
     int width, height, nChannels;
@@ -8,13 +10,13 @@ ee::Texture::Texture(const std::string& name, const std::string& path)
 
     if (data == nullptr)
     {
+        m_texture = 0;
         throw std::runtime_error("Issue loading texture" + name);
     }
 
-    GLuint texture;
-    glGenTextures(1, &texture);
+    glGenTextures(1, &m_texture);
 
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(GL_TEXTURE_2D, m_texture);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -27,7 +29,6 @@ ee::Texture::Texture(const std::string& name, const std::string& path)
     glBindTexture(GL_TEXTURE_2D, 0);
 
     stbi_image_free(data);
-    m_texture = texture;
 }
 
 ee::Texture::Texture(Texture&& other) :

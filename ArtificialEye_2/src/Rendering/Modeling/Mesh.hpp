@@ -57,9 +57,9 @@ namespace ee
     class Mesh
     {
     public:
-        Mesh() : m_meshType(MeshType::UNDEF) {}
+        Mesh() : m_meshType(MeshType::UNDEF), m_updateCount(0) {}
         Mesh(std::vector<Vertex> vertices, std::vector<MeshFace> faces, MeshType type = MeshType::UNDEF) :
-            m_vertices(std::move(vertices)), m_faces(std::move(faces)),
+            m_vertices(std::move(vertices)), m_faces(std::move(faces)), m_updateCount(0),
             m_meshType(type) {}
 
         // Transforms the points

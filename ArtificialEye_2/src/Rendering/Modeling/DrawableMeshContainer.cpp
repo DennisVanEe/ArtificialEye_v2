@@ -42,6 +42,8 @@ void ee::DrawableMeshContainer::draw()
     // Only update this if the mesh wasn't update
     if (m_updateCount != m_mesh->getUpdateCount())
     {
+        std::cout << "Do we enter here?\n";
+
         m_updateCount = m_mesh->getUpdateCount();
 
         const std::vector<Vertex>& updatedVertices = m_mesh->getVerticesData();
@@ -67,12 +69,7 @@ void ee::DrawableMeshContainer::draw()
 
     Drawable::m_shader->use();
 
-    std::vector<Texture>* passedTextures = nullptr;
-    if (m_textures.size() != 0)
-    {
-        passedTextures = &m_textures;
-    }
-    m_texturePack->preDraw(Drawable::m_shader, &m_shaderMaterial, camera, passedTextures); // sets whatever values it may want to set
+    m_texturePack->preDraw(Drawable::m_shader, &m_shaderMaterial, camera, &m_textures); // sets whatever values it may want to set
 
     Mat4 modelTrans = m_mesh->getModelTrans();
 

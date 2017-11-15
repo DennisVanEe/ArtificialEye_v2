@@ -140,12 +140,10 @@ int main()
         Mesh uvSubDivSphereMesh = uvSphereMesh; // loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level);
         Lens lensSphere(&uvSubDivSphereMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
         DrawableMeshContainer lensDrawable(&uvSubDivSphereMesh, "refractTextPack", true);
-        Renderer::addDrawable(&lensDrawable);
+        //Renderer::addDrawable(&lensDrawable);
 
         SkyBox skyBox("skyBoxTextPack");
         Renderer::addDrawable(&skyBox);
-
-        // link with -lpthread flag (LDLIBS target)
 
         // update the positons of the lens
         const Mat4 lensModelTrans = glm::scale(glm::rotate(Mat4(), glm::radians(90.0), Vec3(1.0, 0.0, 0.0)), Vec3(1.0, ARTIFICIAL_EYE_PROP.lens_thickness, 1.0));
