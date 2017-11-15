@@ -51,7 +51,7 @@ void ee::Shader::assignfloat(std::string name, Float val)
 
 void ee::Shader::bindTexture(GLenum target, GLuint number, GLuint texture)
 {
-    glActiveTexture(GL_TEXTURE0 + target);
+    glActiveTexture(GL_TEXTURE0 + number);
     glBindTexture(target, texture);
 }
 

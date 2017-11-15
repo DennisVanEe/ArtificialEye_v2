@@ -87,8 +87,17 @@ int lsdCalcEdgeList(Edge edge, std::unordered_map<Edge, EdgePair, EdgePairHash>&
     }
 
     const std::vector<int>& pairs = it->second.m_edgePairs;
-    ee::Vec3 edgePoint = 3.0 / 8.0 * (oldVerts[edge.p0()].m_position + oldVerts[edge.p1()].m_position) +
-        1.0 / 8.0 * (oldVerts[pairs[0]].m_position + oldVerts[pairs[1]].m_position);
+    ee::Vec3 edgePoint;
+    if (pairs.size() == 2)
+    {
+        edgePoint = 3.0 / 8.0 * (oldVerts[edge.p0()].m_position + oldVerts[edge.p1()].m_position) +
+            1.0 / 8.0 * (oldVerts[pairs[0]].m_position + oldVerts[pairs[1]].m_position);
+    }
+    else
+    {
+        // if there is a boundary case
+        edgePoint = 0.5 * (oldVerts[edge.p0()].m_position + oldVerts[edge.p1()].m_position);
+    }
 
     vertices.push_back(ee::Vertex(edgePoint));
     it->second.m_edgePoint = vertices.size() - 1;
@@ -150,7 +159,7 @@ ee::Mesh ee::loopSubdiv(const Mesh& mesh, int recursion)
 
         // calculate the edge points for this face:
         int edgePoints[3];
-        for (int i = 0; i < 3; i++) edgePoints[i] = lsdCalcEdgeList(edges[i], edgeList, oVertices, tempVerts);
+        for (int i = 0; i < 3; i++) { edgePoints[i] = lsdCalcEdgeList(edges[i], edgeList, oVertices, tempVerts); }
 
         MeshFace middleFace;
         middleFace(0) = edgePoints[0];
@@ -176,7 +185,7 @@ ee::Mesh ee::loopSubdiv(const Mesh& mesh, int recursion)
                 }
 
                 int n = vertexList[vertID].size();
-                Float beta = lsdBetaConst(n);
+                const Float beta = lsdBetaConst(n);
 
                 Vec3 newPoint = (1 - beta * n) * oldPoint + beta * sumPoint;
                 tempVerts[vertID] = newPoint;

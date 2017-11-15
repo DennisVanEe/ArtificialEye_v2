@@ -30,6 +30,14 @@ namespace ee
             }
         }
 
+        void setTransform(const Mat4& transform)
+        {
+            for (auto& mesh : m_meshes)
+            {
+                mesh->setModelTrans(transform);
+            }
+        }
+
         void load();
 
     private:
@@ -39,8 +47,8 @@ namespace ee
 
         // The mesh data
         std::vector<std::vector<Texture>> m_textures;
-        std::vector<Mesh> m_meshes;
-        std::vector<DrawableMeshContainer> m_drawables;
+        std::vector<std::unique_ptr<Mesh>> m_meshes;
+        std::vector<std::unique_ptr<DrawableMeshContainer>> m_drawables;
         std::string m_dir;
         std::string m_textPack;
         int m_priority;

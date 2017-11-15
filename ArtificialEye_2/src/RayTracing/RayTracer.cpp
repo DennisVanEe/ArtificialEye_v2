@@ -11,8 +11,8 @@ ee::RayTracer& ee::RayTracer::initialize(std::vector<Vec3> positions, Lens spher
 
 void ee::RayTracer::raytrace()
 {
-    const Float radialInc = 1.0 / m_heightResolution;
-    const Float circInc = (PI2 * radialInc) / m_widthResolution; // this is the base that defines difference between points
+    const Float radialInc = 1.0 / m_parameters.m_heightResolution;
+    const Float circInc = (PI2 * radialInc) / m_parameters.m_widthResolution; // this is the base that defines difference between points
                                                                                                // this is to maintain equal distribution
     // this can easily be parallized if it becomes too hard:
     for (int i = 0; i < m_rayOrigins.size(); i++) // because there will be 3 different rays
@@ -27,17 +27,14 @@ const std::vector<ee::Vec3>& ee::RayTracer::getResultColors() const
 }
 
 ee::RayTracer::RayTracer(std::vector<Vec3> positions, Lens sphere, RayTracerParam param) :
-    m_ETA(param.m_enviRefractiveIndex / param.m_lensRefractiveIndex),
-    m_invETA(param.m_lensRefractiveIndex / param.m_enviRefractiveIndex),
-    m_widthResolution(param.m_widthResolution),
-    m_heightResolution(param.m_heightResolution),
+    m_parameters(param),
     m_lens(sphere),
     m_rayOrigins(positions)    
 {    
     m_resultColors.resize(m_rayOrigins.size());
 
-    assert(m_heightResolution > 0);
-    assert(m_widthResolution > 0);
+    assert(m_parameters.m_heightResolution > 0);
+    assert(m_parameters.m_widthResolution > 0);
 
     if ((sphere.getNumLongitudes() & 1) == 1)
     {
@@ -46,8 +43,8 @@ ee::RayTracer::RayTracer(std::vector<Vec3> positions, Lens sphere, RayTracerPara
 
     // Calcualte the positions where the rays will intersect
     // the lens:
-    const Float rInc = 1.0 / m_heightResolution;
-    const Float cInc = (2 * rInc * PI) / m_widthResolution;
+    const Float rInc = 1.0 / m_parameters.m_heightResolution;
+    const Float cInc = (2 * rInc * PI) / m_parameters.m_widthResolution;
 
     for (Float r = rInc; r < 1.0; r += rInc)
     {
@@ -88,31 +85,48 @@ bool ee::RayTracer::lensRefract(const Ray startRay, LensRayPath* o_rayPath, unsi
 {
     LensRayPath result;
 
-    const Mesh* const lensMesh = m_lens.getMesh();
-    const Ray entryRay(startRay.m_origin, glm::normalize(startRay.m_dir));
+    // intersect the ray with the cornea initially:
+    const Ray airToCornea(startRay.m_origin, glm::normalize(startRay.m_dir));
+    auto corneaInternsection = intersectCorneaSphere(airToCornea, 1.0);
+    const Vec3 corneaIntersection = (corneaInternsection.first * airToCornea.m_dir) + airToCornea.m_origin;
+    result.m_airToCornea = Line(airToCornea.m_origin, corneaIntersection);
 
-    const std::pair<std::size_t, Vec3> entryIntersection = nearestIntersectionMesh(lensMesh, entryRay);
+    const Vec3 airToCorneaRefraction = glm::normalize(cust::refract(airToCornea.m_dir, corneaInternsection.second, 
+        m_parameters.m_enviRefractiveIndex / m_parameters.m_eyeballRefractiveIndex));
+
+    // now intersect this with the lens itself
+    const Mesh* const lensMesh = m_lens.getMesh();
+    const Ray corneaToLens(corneaIntersection, airToCorneaRefraction);
+
+    const std::pair<std::size_t, Vec3> entryLensIntersection = nearestIntersectionMesh(lensMesh, corneaToLens);
     // assert(entryIntersection.first < lensMesh->getNumMeshFaces());
-    if (entryIntersection.first >= lensMesh->getNumMeshFaces())
+    if (entryLensIntersection.first >= lensMesh->getNumMeshFaces())
     {
         return false;
     }
 
     // get point of intersection:
-    const MeshFace& entryFace = lensMesh->getMeshFace(entryIntersection.first);
+    const MeshFace& entryFace = lensMesh->getMeshFace(entryLensIntersection.first);
 
-    result.m_entry = Line(entryRay.m_origin, entryIntersection.second);
+    result.m_corneaToLens = Line(corneaToLens.m_origin, entryLensIntersection.second);
 
-    const Vec3 entryNormal = getNormal(entryIntersection.first, entryIntersection.second, id);
-    const Vec3 entryRefraction = glm::normalize(cust::refract(entryRay.m_dir, entryNormal, m_ETA));
+    const Vec3 entryLensNormal = getNormal(entryLensIntersection.first, entryLensIntersection.second, id);
+    
+    Float radiusOfIntersection = glm::length(Vec2(entryLensIntersection.second.x, entryLensIntersection.second.y));
+    Float actualLensRefrective = m_parameters.m_lensRefractiveIndex_end * (radiusOfIntersection)+m_parameters.m_lensRefractiveIndex_middle * (1.0 - radiusOfIntersection);
+
+    const Vec3 entryLensRefraction = glm::normalize(cust::refract(corneaToLens.m_dir, entryLensNormal,
+        m_parameters.m_eyeballRefractiveIndex / actualLensRefrective));
 
     // now let's find the next intersection:
     const std::pair<std::size_t, Vec3> passIntersection = nearestIntersectionMesh(lensMesh, 
-        Ray(entryIntersection.second, entryRefraction), entryIntersection.first);
+        Ray(entryLensIntersection.second, entryLensRefraction), entryLensIntersection.first);
     if (passIntersection.first >= lensMesh->getNumMeshFaces()) { return false; }
 
     // assign the line:
-    result.m_pass = Line(entryIntersection.second, passIntersection.second);
+    result.m_inLens = Line(entryLensIntersection.second, passIntersection.second);
+
+
 
     // now calulcate the next part:
     const MeshFace& passFace = lensMesh->getMeshFace(passIntersection.first);

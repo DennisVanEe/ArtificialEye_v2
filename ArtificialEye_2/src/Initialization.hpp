@@ -31,7 +31,8 @@ namespace ee
         Float           refractive_index;
         Float           lens_thickness;
 
-        unsigned        subdiv_level;
+        unsigned        subdiv_level_lens;
+        unsigned        subdiv_level_cornea;
     };
 
     ArtificialEyeProp initializeArtificialEyeProp(const std::string& dir);

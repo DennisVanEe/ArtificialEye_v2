@@ -35,5 +35,5 @@ ee::Texture::Texture(Texture&& other) :
     m_texture(other.m_texture),
     m_type(other.m_type)
 {
-    m_texture = 0;
+    // m_texture = 0;
 }

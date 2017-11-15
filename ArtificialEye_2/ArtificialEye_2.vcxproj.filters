@@ -87,9 +87,6 @@
     <ClCompile Include="src\Rendering\Textures\CubeMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\dependencies\stbi\stb_image.cpp">
-      <Filter>Source Files\Dependencies</Filter>
-    </ClCompile>
     <ClCompile Include="src\Rendering\Modeling\Mesh.cpp">
       <Filter>Source Files\Rendering</Filter>
     </ClCompile>

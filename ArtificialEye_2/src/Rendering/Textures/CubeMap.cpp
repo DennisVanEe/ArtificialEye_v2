@@ -2,7 +2,7 @@
 
 #include "../Renderer.hpp"
 
-#include <stb_image.hpp>
+#include "../../STBI/stb_image.hpp"
 #include <sstream>
 
 ee::CubeMap ee::loadCubeMap(std::string rootDir, std::vector<std::string> mapFaces)

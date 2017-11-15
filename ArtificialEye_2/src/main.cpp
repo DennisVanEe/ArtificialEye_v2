@@ -135,12 +135,16 @@ int main()
         LoadableModel eyeballModel("Models/eyeball/eyebal_fbx.fbx", 1);
         eyeballModel.load();
 
+        Mat4 mat = glm::translate(Mat4(), Vec3(0.f, 0.f, -2.0f));
+        mat = glm::scale(mat, Vec3(1.55f, 1.55f, 1.55f));
+        eyeballModel.setTransform(mat);
+
         // generate the UV Sphere lens (not super efficient)
         Mesh uvSphereMesh = loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude);
         Mesh uvSubDivSphereMesh = uvSphereMesh; // loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level);
         Lens lensSphere(&uvSubDivSphereMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
         DrawableMeshContainer lensDrawable(&uvSubDivSphereMesh, "refractTextPack", true);
-        //Renderer::addDrawable(&lensDrawable);
+        Renderer::addDrawable(&lensDrawable);
 
         SkyBox skyBox("skyBoxTextPack");
         Renderer::addDrawable(&skyBox);
@@ -172,6 +176,8 @@ int main()
         g_tracer->raytrace();
         while (ee::Renderer::isInitialized())
         {
+            assert(glGetError() == 0);
+
             if (g_enableWireFram)
             {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -196,7 +202,7 @@ int main()
             if (g_startSoftBody)
             {
                 lensSim.update(time);
-                Mesh tempMesh = loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level);
+                Mesh tempMesh = loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level_lens);
                 uvSubDivSphereMesh.updateVertices(std::move(tempMesh.getVerticesData()));
                 uvSubDivSphereMesh.updateMeshFaces(std::move(tempMesh.getMeshFaceData()));
                 g_tracer->raytrace();

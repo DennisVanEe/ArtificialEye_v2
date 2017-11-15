@@ -109,7 +109,8 @@ ee::ArtificialEyeProp ee::initializeArtificialEyeProp(const std::string& dir)
         result.muscle_thickness =               getUInt ("lens",     "muscle_thickness", dir);
         result.refractive_index =               getFloat("lens",     "refractive_index", dir);
         result.lens_thickness =                 getFloat("lens",     "lens_thickness",   dir);
-        result.subdiv_level =                   getUInt ("lens",     "subdiv_level",     dir);
+        result.subdiv_level_lens =              getUInt ("lens",     "subdiv_level",     dir);
+        result.subdiv_level_cornea =            getUInt ("cornea",   "subdiv_level",     dir);
     }
     catch (const std::exception& e)
     {

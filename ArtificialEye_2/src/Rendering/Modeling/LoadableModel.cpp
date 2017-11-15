@@ -2,7 +2,17 @@
 
 #include <iostream>
 
+#include "../Subdivision.hpp"
+#include "../../Initialization.hpp"
+
 int ee::LoadableModel::m_numModel = 0;
+
+const int corneaVertexCount = 352;
+const int pupilVertexCount = 224;
+// 224 pupil
+// 128 iris
+// 352 cornea
+// 1632
 
 void ee::LoadableModel::load()
 {
@@ -34,13 +44,14 @@ void ee::LoadableModel::load()
 
     for (int i = 0; i < m_meshes.size(); i++)
     {
-        m_drawables.push_back(DrawableMeshContainer(&m_meshes[i], m_textPack, false));
-        m_drawables[i].setTexture(m_textures[i]);
+        if (pupilVertexCount == m_meshes[i]->getNumVertices()) { continue; }
+        m_drawables.push_back(std::unique_ptr<DrawableMeshContainer>(new DrawableMeshContainer(m_meshes[i].get(), m_textPack, false)));
+        m_drawables.back()->setTexture(m_textures[i]);
     }
 
     for (auto& drawable : m_drawables)
     {
-        Renderer::addDrawable(&drawable);
+        Renderer::addDrawable(drawable.get());
     }
 }
 
@@ -128,7 +139,16 @@ void ee::LoadableModel::processMesh(const aiMesh* mesh, const aiScene* scene, bo
         tempTexts.insert(tempTexts.end(), specular.begin(), specular.end());
     }
 
-    m_meshes.push_back(Mesh(tempVert, tempInd));
+    // A hack, but I got to get this done now
+    if (tempVert.size() == corneaVertexCount)
+    {
+        Mesh temp(tempVert, tempInd);
+        temp = loopSubdiv(temp, ARTIFICIAL_EYE_PROP.subdiv_level_cornea);
+        tempVert = std::move(temp.getVerticesData());
+        tempInd = std::move(temp.getMeshFaceData());
+    }
+
+    m_meshes.push_back(std::unique_ptr<Mesh>(new Mesh(tempVert, tempInd)));
     m_textures.push_back(std::move(tempTexts));
 
     *check = true;
