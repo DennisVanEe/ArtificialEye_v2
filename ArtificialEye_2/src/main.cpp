@@ -127,6 +127,7 @@ int main()
         // prepare the renderer:
         Renderer::initialize(ARTIFICIAL_EYE_PROP.shader_dir, ARTIFICIAL_EYE_PROP.render_param, cameraParams);
         Renderer::setCustomKeyboardCallback(setSpaceCallback);
+        Renderer::setClearColor(Vec3(0, 0, 0));
 
         // loaded cubemap twice, not efficient, but not important right now:
         void* res = Renderer::addTexturePack("refractTextPack", RefractTextPack(glm::vec3(), g_textureDir + g_cubeMapDir, g_cubeMapFaces, ARTIFICIAL_EYE_PROP.refractive_index)); assert(res);
@@ -135,19 +136,21 @@ int main()
         LoadableModel eyeballModel("Models/eyeball/eyebal_fbx.fbx", 1);
         eyeballModel.load();
 
-        Mat4 mat = glm::translate(Mat4(), Vec3(0.f, 0.f, -2.0f));
-        mat = glm::scale(mat, Vec3(1.55f, 1.55f, 1.55f));
-        eyeballModel.setTransform(mat);
+        Mat4 eyeballTransform = glm::translate(Mat4(), Vec3(0.0, 0.0, -2.0));
+        eyeballTransform = glm::scale(eyeballTransform, Vec3(1.55, 1.55, 1.55));
+        eyeballModel.setTransform(eyeballTransform);
+        Mat4 eyeballIntersectionTransform = glm::translate(Mat4(), Vec3(0.0, 0.0, -2.0));
+        eyeballIntersectionTransform = glm::scale(eyeballIntersectionTransform, Vec3(2 * 1.55, 2 * 1.55, 2 * 1.55));
 
         // generate the UV Sphere lens (not super efficient)
         Mesh uvSphereMesh = loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude);
-        Mesh uvSubDivSphereMesh = uvSphereMesh; // loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level);
+        Mesh uvSubDivSphereMesh = loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level_lens);
         Lens lensSphere(&uvSubDivSphereMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
         DrawableMeshContainer lensDrawable(&uvSubDivSphereMesh, "refractTextPack", true);
         Renderer::addDrawable(&lensDrawable);
 
         SkyBox skyBox("skyBoxTextPack");
-        Renderer::addDrawable(&skyBox);
+        // Renderer::addDrawable(&skyBox);
 
         // update the positons of the lens
         const Mat4 lensModelTrans = glm::scale(glm::rotate(Mat4(), glm::radians(90.0), Vec3(1.0, 0.0, 0.0)), Vec3(1.0, ARTIFICIAL_EYE_PROP.lens_thickness, 1.0));
@@ -162,22 +165,23 @@ int main()
         lensSim.addIntegrator(&ee::SBVerletIntegrator(1.0 / 20.0, ARTIFICIAL_EYE_PROP.extspring_drag));
 
         // test stuff:
-        const std::vector<Vec3> pos = {Vec3(0.0, 0.0, -2.0)};
+        const std::vector<Vec3> pos = { Vec3(0.0, 0.0, 5.0) };
         RayTracerParam param;
-        param.m_widthResolution = 5;
-        param.m_heightResolution = 5;
-        param.m_lensRefractiveIndex = 1.406;
+        param.m_widthResolution = 7;
+        param.m_heightResolution = 7;
         param.m_enviRefractiveIndex = 1.0;
-        param.m_rayColor = Vec3(1.0, 0.0, 0.0);
+        param.m_eyeballRefractiveIndex = 1.44;
+        param.m_lensRefractiveIndex_middle = 1.71;
+        param.m_lensRefractiveIndex_end = 1.60;
+        param.m_rayColor = Vec3(130.0 / 255.0, 201.0 / 255.0, 247.0 / 255.0);
         g_constraints = lensSphere.addConstraints(5, &lensSim);
         g_tracer = &ee::RayTracer::initialize(pos, lensSphere, param);
+        g_tracer->setCorneaSphere(eyeballIntersectionTransform);
 
         uvSubDivSphereMesh.calcNormals();
         g_tracer->raytrace();
         while (ee::Renderer::isInitialized())
         {
-            assert(glGetError() == 0);
-
             if (g_enableWireFram)
             {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -205,7 +209,7 @@ int main()
                 Mesh tempMesh = loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level_lens);
                 uvSubDivSphereMesh.updateVertices(std::move(tempMesh.getVerticesData()));
                 uvSubDivSphereMesh.updateMeshFaces(std::move(tempMesh.getMeshFaceData()));
-                g_tracer->raytrace();
+                //g_tracer->raytrace();
             }
 
             Renderer::drawAll();

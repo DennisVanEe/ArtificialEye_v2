@@ -42,6 +42,7 @@ void ee::LoadableModel::load()
         throw std::runtime_error("Issue when parsing and setting up nodes.");
     }
 
+    std::cout << m_meshes.size() << std::endl;
     for (int i = 0; i < m_meshes.size(); i++)
     {
         if (pupilVertexCount == m_meshes[i]->getNumVertices()) { continue; }

@@ -60,7 +60,6 @@ void ee::DrawableMeshContainer::draw()
         glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, m_cachedMeshFaces.size() * sizeof(MeshFace), m_cachedMeshFaces.data());
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);*/
     }
-
     glBindVertexArray(m_VAO);
 
     const Camera* camera = Renderer::getCamera();

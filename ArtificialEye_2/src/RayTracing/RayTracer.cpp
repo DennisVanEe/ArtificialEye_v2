@@ -43,10 +43,12 @@ ee::RayTracer::RayTracer(std::vector<Vec3> positions, Lens sphere, RayTracerPara
 
     // Calcualte the positions where the rays will intersect
     // the lens:
-    const Float rInc = 1.0 / m_parameters.m_heightResolution;
+    const Float maxRadius = 0.57;
+
+    const Float rInc = maxRadius / m_parameters.m_heightResolution;
     const Float cInc = (2 * rInc * PI) / m_parameters.m_widthResolution;
 
-    for (Float r = rInc; r < 1.0; r += rInc)
+    for (Float r = rInc; r < maxRadius; r += rInc)
     {
         const Float cIncAngle = PI2 * (cInc / (PI2 * r));
         for (Float c = 0; c < PI2; c += cIncAngle)
@@ -58,22 +60,22 @@ ee::RayTracer::RayTracer(std::vector<Vec3> positions, Lens sphere, RayTracerPara
 
     // Set up the drawable rays:
     ee::Renderer::addTexturePack("lineTextPack", ee::LineUniColorTextPack(param.m_rayColor));
-    //ee::Renderer::addTexturePack("lineTextPack2", ee::LineUniColorTextPack(Vec3(0.0, 1.0, 0.0)));
-    //ee::Renderer::addTexturePack("lineTextPack3", ee::LineUniColorTextPack(Vec3(0.0, 0.0, 1.0)));
+    ee::Renderer::addTexturePack("lineTextPack2", ee::LineUniColorTextPack(Vec3(0.0, 1.0, 0.0)));
+    ee::Renderer::addTexturePack("lineTextPack3", ee::LineUniColorTextPack(Vec3(0.0, 0.0, 1.0)));
     for (int i = 0; i < m_rayOrigins.size() * m_cachedPoints.size(); i++)
     {
         m_drawableLines.push_back(DrawLensRayPath("lineTextPack"));
     }
 
-    //for (int i = 0; i < 2 * m_cachedPoints.size(); i++)
-    //{
-    //    testNormals.push_back(new DrawLine("lineTextPack3", glm::vec3(), glm::vec3()));
-    //}
+    for (int i = 0; i < 2 * m_cachedPoints.size(); i++)
+    {
+        testNormals.push_back(new DrawLine("lineTextPack3", glm::vec3(), glm::vec3()));
+    }
 
-    //for (int i = 0; i < testNormals.size(); i++)
-    //{
-    //    ee::Renderer::addDrawable(testNormals[i]);
-    //}
+    for (int i = 0; i < testNormals.size(); i++)
+    {
+        ee::Renderer::addDrawable(testNormals[i]);
+    }
 
     for (DrawLensRayPath& rayPack : m_drawableLines)
     {
@@ -84,61 +86,50 @@ ee::RayTracer::RayTracer(std::vector<Vec3> positions, Lens sphere, RayTracerPara
 bool ee::RayTracer::lensRefract(const Ray startRay, LensRayPath* o_rayPath, unsigned id)
 {
     LensRayPath result;
+    const Mesh* const lensMesh = m_lens.getMesh();
 
-    // intersect the ray with the cornea initially:
+    // RAY FROM AIR TO CORNEA
     const Ray airToCornea(startRay.m_origin, glm::normalize(startRay.m_dir));
     auto corneaInternsection = intersectCorneaSphere(airToCornea, 1.0);
     const Vec3 corneaIntersection = (corneaInternsection.first * airToCornea.m_dir) + airToCornea.m_origin;
-    result.m_airToCornea = Line(airToCornea.m_origin, corneaIntersection);
-
     const Vec3 airToCorneaRefraction = glm::normalize(cust::refract(airToCornea.m_dir, corneaInternsection.second, 
         m_parameters.m_enviRefractiveIndex / m_parameters.m_eyeballRefractiveIndex));
+    result.m_airToCornea = Line(airToCornea.m_origin, corneaIntersection);
 
-    // now intersect this with the lens itself
-    const Mesh* const lensMesh = m_lens.getMesh();
+    // CORNEA TO LENS
     const Ray corneaToLens(corneaIntersection, airToCorneaRefraction);
-
     const std::pair<std::size_t, Vec3> entryLensIntersection = nearestIntersectionMesh(lensMesh, corneaToLens);
-    // assert(entryIntersection.first < lensMesh->getNumMeshFaces());
-    if (entryLensIntersection.first >= lensMesh->getNumMeshFaces())
-    {
-        return false;
-    }
-
-    // get point of intersection:
-    const MeshFace& entryFace = lensMesh->getMeshFace(entryLensIntersection.first);
-
+    if (entryLensIntersection.first >= lensMesh->getNumMeshFaces()) { return false; }
+    // const MeshFace& entryFace = lensMesh->getMeshFace(entryLensIntersection.first);
     result.m_corneaToLens = Line(corneaToLens.m_origin, entryLensIntersection.second);
 
+    // IN LENS
     const Vec3 entryLensNormal = getNormal(entryLensIntersection.first, entryLensIntersection.second, id);
-    
+    // caluclate the refraction index for the lens via a linear interpolation:
     Float radiusOfIntersection = glm::length(Vec2(entryLensIntersection.second.x, entryLensIntersection.second.y));
-    Float actualLensRefrective = m_parameters.m_lensRefractiveIndex_end * (radiusOfIntersection)+m_parameters.m_lensRefractiveIndex_middle * (1.0 - radiusOfIntersection);
-
+    Float actualLensRefrective = m_parameters.m_lensRefractiveIndex_end * (radiusOfIntersection) + m_parameters.m_lensRefractiveIndex_middle * (1.0 - radiusOfIntersection);
     const Vec3 entryLensRefraction = glm::normalize(cust::refract(corneaToLens.m_dir, entryLensNormal,
         m_parameters.m_eyeballRefractiveIndex / actualLensRefrective));
-
-    // now let's find the next intersection:
-    const std::pair<std::size_t, Vec3> passIntersection = nearestIntersectionMesh(lensMesh, 
+    const std::pair<std::size_t, Vec3> exitLensIntersection = nearestIntersectionMesh(lensMesh,
         Ray(entryLensIntersection.second, entryLensRefraction), entryLensIntersection.first);
-    if (passIntersection.first >= lensMesh->getNumMeshFaces()) { return false; }
+    if (exitLensIntersection.first >= lensMesh->getNumMeshFaces()) { return false; }
+    result.m_inLens = Line(entryLensIntersection.second, exitLensIntersection.second);
 
-    // assign the line:
-    result.m_inLens = Line(entryLensIntersection.second, passIntersection.second);
-
-
-
-    // now calulcate the next part:
-    const MeshFace& passFace = lensMesh->getMeshFace(passIntersection.first);
-    const Vec3 passNormal = -getNormal(passIntersection.first, passIntersection.second, UINT_MAX);
-    
-    const Vec3 passRefraction = glm::normalize(cust::refract(entryRefraction, passNormal, 1.f));
-
-    // now set the last part:
-    result.m_end = Ray(passIntersection.second, passRefraction);
+    // LENS TO CORNEA
+    //const MeshFace& passFace = lensMesh->getMeshFace(passIntersection.first);
+    const Vec3 exitLensNormal = -getNormal(exitLensIntersection.first, exitLensIntersection.second, UINT_MAX);
+    // caluclate the refraction index for the lens via a linear interpolation:
+    radiusOfIntersection = glm::length(Vec2(exitLensIntersection.second.x, exitLensIntersection.second.y));
+    actualLensRefrective = m_parameters.m_lensRefractiveIndex_end * (radiusOfIntersection)+m_parameters.m_lensRefractiveIndex_middle * (1.0 - radiusOfIntersection);
+    const Vec3 exitLensRefraction = glm::normalize(cust::refract(entryLensRefraction, exitLensNormal, actualLensRefrective / m_parameters.m_eyeballRefractiveIndex));
+    const Ray exitLensRay(exitLensIntersection.second, exitLensRefraction);
+    // intersect with back of eyeball
+    corneaInternsection = intersectCorneaSphere(exitLensRay, 1.0);
+    const Vec3 backOfEyeIntersection = (corneaInternsection.first * exitLensRay.m_dir) + exitLensRay.m_origin;
+    result.m_lensToCornea = Line(exitLensIntersection.second, backOfEyeIntersection);
 
     *o_rayPath = result;
-    return result.m_end.m_dir != Vec3();
+    return true;
 }
 
 ee::Vec3 ee::RayTracer::getNormal(int triangle, Vec3 interPoint, unsigned id)
@@ -165,14 +156,15 @@ ee::Vec3 ee::RayTracer::raytrace(int pos, const Float rInc, const Float cInc)
     {
         for (std::size_t j = 0; j < m_cachedPoints.size(); j++)
         {
-            const Ray currRay(Vec3(m_cachedPoints[j].x, m_cachedPoints[j].y, m_rayOrigins[i].z), Vec3(0.0, 0.0, 1.0)); // m_cachedPoints[j] - m_rayOrigins[i]);
+            const Ray currRay(Vec3(m_cachedPoints[j].x, m_cachedPoints[j].y, m_rayOrigins[i].z), Vec3(0.0, 0.0, -1.0)); // m_cachedPoints[j] - m_rayOrigins[i]);
             LensRayPath path;
             if (lensRefract(currRay, &path, j))
             {
                 std::size_t index = i * m_cachedPoints.size() + j;
-                m_drawableLines[index].m_begin.setLine(path.m_entry);
-                m_drawableLines[index].m_middle.setLine(path.m_pass);
-                m_drawableLines[index].m_end.setRay(path.m_end, 10.f);
+                m_drawableLines[index].m_airToCornea.setLine(path.m_airToCornea);
+                m_drawableLines[index].m_corneaToLens.setLine(path.m_corneaToLens);
+                m_drawableLines[index].m_inLens.setLine(path.m_inLens);
+                m_drawableLines[index].m_lensToCornea.setLine(path.m_lensToCornea);
             }
         }
     }

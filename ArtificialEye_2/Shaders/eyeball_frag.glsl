@@ -18,7 +18,7 @@ uniform sampler2D textSpec3;
 
 void main()
 {    
-	if (p_worldPosition.x < 0)
+	if (p_worldPosition.x < -0.1)
 	{
 		discard;
 	}
@@ -39,7 +39,7 @@ void main()
 	{
 		if (Color.x > 0.99f && Color.y > 0.99f && Color.z > 0.99f)
 		{
-			Color = vec4(135.f/255.f, 206.f/255.f, 250.f/255.f, 0.5f);
+			Color = vec4(199.f/255.f, 199.f/255.f, 199.f/255.f, 0.5f);
 		}
 	}
 }
