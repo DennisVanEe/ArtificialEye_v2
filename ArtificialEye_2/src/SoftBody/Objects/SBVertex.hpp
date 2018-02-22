@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SBObject.hpp"
-#include "../../Rendering/Modeling/Mesh.hpp"
+#include "../../Mesh/Mesh.hpp"
 
 namespace ee
 {

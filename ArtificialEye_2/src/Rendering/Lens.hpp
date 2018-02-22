@@ -2,7 +2,7 @@
 
 #include "../SoftBody/Simulation/SBSimulation.hpp"
 #include "../SoftBody/Constraints/SBPointConstraint.hpp"
-#include "Modeling/Mesh.hpp"
+#include "../Mesh/Mesh.hpp"
 
 namespace ee
 {

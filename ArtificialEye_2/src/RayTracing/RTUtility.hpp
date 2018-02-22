@@ -2,22 +2,26 @@
 
 #include <limits>
 #include <utility>
+#include <random>
+#include <ctime>
 
 #include "../Types.hpp"
-#include "../Rendering/Modeling/Mesh.hpp"
+#include "../Mesh/Mesh.hpp"
 
 namespace ee
 {
     // returns whether or not there is an intersection and where (point)
-    std::pair<bool, Vec3> intersectTriangle(Ray ray, Vec3 p0, Vec3 p1, Vec3 p2);
+    bool intersectTriangle(Ray ray, glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3* intpoint);
     // returns the nearest intersection (point) and which triangle in the mesh (if any)
-    std::pair<std::size_t, Vec3> nearestIntersectionMesh(const Mesh* mesh, Ray ray, std::size_t ignore = ULONG_MAX);
+    int nearestIntersectionMesh(const Mesh* mesh, Ray ray, int ignore, glm::vec3* intpoint);
 
-    void baryCentric(Vec3 p, Vec3 a, Vec3 b, Vec3 c, Float &u, Float &v, Float &w);
+    void baryCentric(glm::vec3 p, glm::vec3 a, glm::vec3 b, glm::vec3 c, float* u, float* v, float* w);
 
-    namespace cust
-    {
-        // custom refract function (glm's acts weirdly)
-        Vec3 refract(const Vec3& I, const Vec3& N, Float eta);
-    }
+	glm::vec3 getNormal(const Mesh* mesh, std::size_t triangle, glm::vec3 interPoint);
+
+	// generate a random number generator
+	glm::vec2 randomSampleUnit();
+
+    // custom refract function (glm's acts weirdly)
+    glm::vec3 refract(const glm::vec3& I, const glm::vec3& N, float eta);
 }

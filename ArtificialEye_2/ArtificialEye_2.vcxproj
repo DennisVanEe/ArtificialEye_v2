@@ -41,13 +41,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -151,35 +151,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\dependencies\glad\src\glad.c" />
-    <ClCompile Include="src\alglib\alglibinternal.cpp" />
-    <ClCompile Include="src\alglib\alglibmisc.cpp" />
-    <ClCompile Include="src\alglib\ap.cpp" />
-    <ClCompile Include="src\alglib\dataanalysis.cpp" />
-    <ClCompile Include="src\alglib\diffequations.cpp" />
-    <ClCompile Include="src\alglib\fasttransforms.cpp" />
-    <ClCompile Include="src\alglib\integration.cpp" />
-    <ClCompile Include="src\alglib\interpolation.cpp" />
-    <ClCompile Include="src\alglib\linalg.cpp" />
-    <ClCompile Include="src\alglib\optimization.cpp" />
-    <ClCompile Include="src\alglib\solvers.cpp" />
-    <ClCompile Include="src\alglib\specialfunctions.cpp" />
-    <ClCompile Include="src\alglib\statistics.cpp" />
+    <None Include="ArtificialEye_Properties.ini" />
+    <None Include="Shaders\lineUniColor_frag.glsl" />
+    <None Include="Shaders\lineUniColor_vert.glsl" />
+    <None Include="Shaders\modelLightUniColor_frag.glsl" />
+    <None Include="Shaders\modelLightUniColor_vert.glsl" />
+    <None Include="Shaders\modelRefract_frag.glsl" />
+    <None Include="Shaders\modelRefract_geom.glsl" />
+    <None Include="Shaders\modelRefract_vert.glsl" />
+    <None Include="Shaders\modelUniColor_frag.glsl" />
+    <None Include="Shaders\modelUniColor_vert.glsl" />
+    <None Include="Shaders\skyBox_frag.glsl" />
+    <None Include="Shaders\skyBox_vert.glsl" />
+    <None Include="src\SoftBody\Simulation\SBSimulation.inl" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="src\Initialization.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Mesh\Mesh.cpp" />
+    <ClCompile Include="src\Mesh\MeshGenerator.cpp" />
+    <ClCompile Include="src\Mesh\Subdivision.cpp" />
+    <ClCompile Include="src\RayTracing\RayTracer.cpp" />
+    <ClCompile Include="src\RayTracing\RTObjectMesh.cpp" />
+    <ClCompile Include="src\RayTracing\RTObjectSphere.cpp" />
+    <ClCompile Include="src\RayTracing\RTUtility.cpp" />
     <ClCompile Include="src\Rendering\Camera.cpp" />
     <ClCompile Include="src\Rendering\Drawable.cpp" />
-    <ClCompile Include="src\Rendering\Modeling\DrawableMeshContainer.cpp" />
+    <ClCompile Include="src\Rendering\DrawableMeshContainer.cpp" />
+    <ClCompile Include="src\Rendering\DrawLine.cpp" />
     <ClCompile Include="src\Rendering\Lens.cpp" />
-    <ClCompile Include="src\Rendering\Modeling\DrawLine.cpp" />
-    <ClCompile Include="src\Rendering\Modeling\LoadableModel.cpp" />
-    <ClCompile Include="src\Rendering\Modeling\Mesh.cpp" />
-    <ClCompile Include="src\Rendering\Modeling\SkyBox.cpp" />
-    <ClCompile Include="src\RayTracing\RTUtility.cpp" />
-    <ClCompile Include="src\RayTracing\RayTracer.cpp" />
     <ClCompile Include="src\Rendering\Renderer.cpp" />
-    <ClCompile Include="src\Rendering\MeshType.cpp" />
     <ClCompile Include="src\Rendering\shader.cpp" />
+    <ClCompile Include="src\Rendering\SkyBox.cpp" />
     <ClCompile Include="src\Rendering\TexturePacks\EyeballTextPack.cpp" />
     <ClCompile Include="src\Rendering\TexturePacks\LightUniColorTextPack.cpp" />
     <ClCompile Include="src\Rendering\TexturePacks\LineUniColorTextPack.cpp" />
@@ -189,9 +192,9 @@
     <ClCompile Include="src\Rendering\Textures\CubeMap.cpp" />
     <ClCompile Include="src\Rendering\Textures\Texture.cpp" />
     <ClCompile Include="src\SoftBody\Constraints\SBLengthConstraint.cpp" />
-    <ClCompile Include="src\SoftBody\SBSpring.cpp" />
     <ClCompile Include="src\SoftBody\Integrators\SBVerletIntegrator.cpp" />
     <ClCompile Include="src\SoftBody\Objects\SBVertex.cpp" />
+    <ClCompile Include="src\SoftBody\SBSpring.cpp" />
     <ClCompile Include="src\SoftBody\SBUtilities.cpp" />
     <ClCompile Include="src\SoftBody\Simulation\SBClosedBodySim.cpp" />
     <ClCompile Include="src\SoftBody\Simulation\SBMeshBasedSim.cpp" />
@@ -199,34 +202,28 @@
     <ClCompile Include="src\STBI\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\alglib\alglibinternal.h" />
-    <ClInclude Include="src\alglib\alglibmisc.h" />
-    <ClInclude Include="src\alglib\ap.h" />
-    <ClInclude Include="src\alglib\dataanalysis.h" />
-    <ClInclude Include="src\alglib\diffequations.h" />
-    <ClInclude Include="src\alglib\fasttransforms.h" />
-    <ClInclude Include="src\alglib\integration.h" />
-    <ClInclude Include="src\alglib\interpolation.h" />
-    <ClInclude Include="src\alglib\linalg.h" />
-    <ClInclude Include="src\alglib\optimization.h" />
-    <ClInclude Include="src\alglib\solvers.h" />
-    <ClInclude Include="src\alglib\specialfunctions.h" />
-    <ClInclude Include="src\alglib\statistics.h" />
     <ClInclude Include="src\Initialization.hpp" />
+    <ClInclude Include="src\Mesh\Mesh.hpp" />
+    <ClInclude Include="src\Mesh\MeshGenerator.hpp" />
+    <ClInclude Include="src\Mesh\MeshPool.hpp" />
+    <ClInclude Include="src\Mesh\PerfectSphere.hpp" />
+    <ClInclude Include="src\Mesh\Subdivision.hpp" />
+    <ClInclude Include="src\RayTracing\EyeBall.hpp" />
+    <ClInclude Include="src\RayTracing\RayTracer.hpp" />
+    <ClInclude Include="src\RayTracing\RTObject.hpp" />
+    <ClInclude Include="src\RayTracing\RTObjectMesh.hpp" />
+    <ClInclude Include="src\RayTracing\RTObjectSphere.hpp" />
+    <ClInclude Include="src\RayTracing\RTRay.hpp" />
+    <ClInclude Include="src\RayTracing\RTUtility.hpp" />
+    <ClInclude Include="src\RayTracing\Scene.hpp" />
     <ClInclude Include="src\Rendering\Camera.hpp" />
     <ClInclude Include="src\Rendering\Drawable.hpp" />
-    <ClInclude Include="src\Rendering\Modeling\LoadableModel.hpp" />
-    <ClInclude Include="src\Rendering\Modeling\DrawableMeshContainer.hpp" />
-    <ClInclude Include="src\Rendering\Subdivision.hpp" />
+    <ClInclude Include="src\Rendering\DrawableMeshContainer.hpp" />
+    <ClInclude Include="src\Rendering\DrawLine.hpp" />
     <ClInclude Include="src\Rendering\Lens.hpp" />
-    <ClInclude Include="src\Rendering\Modeling\DrawLine.hpp" />
-    <ClInclude Include="src\Rendering\Modeling\Mesh.hpp" />
-    <ClInclude Include="src\Rendering\Modeling\SkyBox.hpp" />
-    <ClInclude Include="src\RayTracing\RTUtility.hpp" />
-    <ClInclude Include="src\RayTracing\RayTracer.hpp" />
     <ClInclude Include="src\Rendering\Renderer.hpp" />
-    <ClInclude Include="src\Rendering\MeshTypes.hpp" />
     <ClInclude Include="src\Rendering\shader.hpp" />
+    <ClInclude Include="src\Rendering\SkyBox.hpp" />
     <ClInclude Include="src\Rendering\TexturePacks\EyeballTextPack.hpp" />
     <ClInclude Include="src\Rendering\TexturePacks\LightUniColorTextpack.hpp" />
     <ClInclude Include="src\Rendering\TexturePacks\LineUniColorTextPack.hpp" />
@@ -249,31 +246,14 @@
     <ClInclude Include="src\SoftBody\Integrators\SBVerletIntegrator.hpp" />
     <ClInclude Include="src\SoftBody\Objects\SBFixedPoint.hpp" />
     <ClInclude Include="src\SoftBody\Objects\SBObject.hpp" />
-    <ClInclude Include="src\SoftBody\SBSpring.hpp" />
     <ClInclude Include="src\SoftBody\Objects\SBVertex.hpp" />
+    <ClInclude Include="src\SoftBody\SBSpring.hpp" />
     <ClInclude Include="src\SoftBody\SBUtilities.hpp" />
     <ClInclude Include="src\SoftBody\Simulation\SBClosedBodySim.hpp" />
     <ClInclude Include="src\SoftBody\Simulation\SBMeshBasedSim.hpp" />
     <ClInclude Include="src\SoftBody\Simulation\SBSimulation.hpp" />
     <ClInclude Include="src\STBI\stb_image.hpp" />
     <ClInclude Include="src\Types.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ArtificialEye_Properties.ini" />
-    <None Include="Shaders\lineUniColor_frag.glsl" />
-    <None Include="Shaders\lineUniColor_vert.glsl" />
-    <None Include="Shaders\modelLightUniColor_frag.glsl" />
-    <None Include="Shaders\modelLightUniColor_vert.glsl" />
-    <None Include="Shaders\modelRefract_frag.glsl" />
-    <None Include="Shaders\modelRefract_geom.glsl" />
-    <None Include="Shaders\modelRefract_vert.glsl" />
-    <None Include="Shaders\modelUniColor_frag.glsl" />
-    <None Include="Shaders\modelUniColor_vert.glsl" />
-    <None Include="Shaders\skyBox_frag.glsl" />
-    <None Include="Shaders\skyBox_vert.glsl" />
-    <None Include="src\Rendering\Renderer.inl" />
-    <ClCompile Include="src\Rendering\Subdivision.cpp" />
-    <None Include="src\SoftBody\Simulation\SBSimulation.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

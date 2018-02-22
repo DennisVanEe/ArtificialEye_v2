@@ -2,7 +2,7 @@
 
 #include "SBSimulation.hpp"
 #include "../Objects/SBVertex.hpp"
-#include "../../Rendering/Modeling/Mesh.hpp"
+#include "../../Mesh/Mesh.hpp"
 
 #include <vector>
 

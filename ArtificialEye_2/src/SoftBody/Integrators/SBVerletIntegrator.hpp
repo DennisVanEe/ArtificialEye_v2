@@ -11,7 +11,7 @@ namespace ee
         SBVerletIntegrator(Float timeStep) : SBIntegrator(timeStep) {}
         SBVerletIntegrator(Float timeStep, Float drag) :
             SBIntegrator(timeStep),
-            m_drag(glm::clamp(drag, 0.0, 1.0)) {}
+            m_drag(glm::clamp(drag, 0.f, 1.f)) {}
 
         Float getDrag() const { return m_drag; }
         void setDrag(Float drag) { m_drag = drag; }

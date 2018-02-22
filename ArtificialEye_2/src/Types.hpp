@@ -10,7 +10,7 @@ namespace ee
 {
     const char PROJ_NAME[] = "ArtificalEye";
 
-    using Float = double;
+    using Float = float;
     using Vec4 = glm::tvec4<Float>;
     using Vec3 = glm::tvec3<Float>;
     using Vec2 = glm::tvec2<Float>;
@@ -21,20 +21,20 @@ namespace ee
 
     struct Ray
     {
-        Vec3 m_origin;
-        Vec3 m_dir;
+        Vec3 origin;
+        Vec3 dir;
 
         Ray() {}
-        Ray(Vec3 origin, Vec3 dir) : m_origin(origin), m_dir(dir) {}
+        Ray(Vec3 origin, Vec3 dir) : origin(origin), dir(dir) {}
     };
 
     struct Line
     {
-        Vec3 m_start;
-        Vec3 m_end;
+        Vec3 start;
+        Vec3 end;
 
         Line() {}
-        Line(Vec3 start, Vec3 end) : m_start(start), m_end(end) {}
+        Line(Vec3 start, Vec3 end) : start(start), end(end) {}
     };
 
     // Zeros the vector if it is close enough to zero
@@ -61,5 +61,10 @@ namespace ee
     inline Vec3 flipSameDir(const Vec3& toFlip, const Vec3& ref)
     {
         return glm::dot(toFlip, ref) >= 0 ? toFlip : -toFlip;
+    }
+
+    inline glm::vec3 alignDir(const glm::vec3& ref, const glm::vec3& change)
+    {
+        return glm::dot(ref, change) < 0 ? -change : change;
     }
 }

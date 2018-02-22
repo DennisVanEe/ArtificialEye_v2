@@ -3,12 +3,16 @@
 #include "Rendering/Renderer.hpp"
 #include "Rendering/TexturePacks/UniColorTextPack.hpp"
 #include "Rendering/TexturePacks/LightUniColorTextpack.hpp"
-#include "Rendering/Modeling/SkyBox.hpp"
-#include "Rendering/MeshTypes.hpp"
+#include "Rendering/SkyBox.hpp"
 #include "Rendering/TexturePacks/SkyBoxTextPack.hpp"
 #include "Rendering/TexturePacks/RefractTextPack.hpp"
 #include "Rendering/TexturePacks/LineUniColorTextPack.hpp"
+#include "Rendering/DrawableMeshContainer.hpp"
 #include "RayTracing/RayTracer.hpp"
+#include "RayTracing/Scene.hpp"
+#include "RayTracing/EyeBall.hpp"
+#include "RayTracing/RTObjectMesh.hpp"
+#include "RayTracing/RTObjectSphere.hpp"
 #include "Rendering/Lens.hpp"
 #include "SoftBody/Simulation/SBClosedBodySim.hpp"
 #include "SoftBody/ForceGens/SBGravity.hpp"
@@ -16,15 +20,13 @@
 #include "SoftBody/Integrators/SBVerletIntegrator.hpp"
 #include "SoftBody/Objects/SBFixedPoint.hpp"
 #include "SoftBody/SBUtilities.hpp"
-#include "Rendering/Subdivision.hpp"
-#include "Rendering/Modeling/DrawableMeshContainer.hpp"
-#include "Rendering/Modeling/LoadableModel.hpp"
-
-#include "Alglib/interpolation.h"
+#include "Mesh/MeshGenerator.hpp"
+#include "Mesh/Subdivision.hpp"
 
 #include <string>
 #include <iostream>
 #include <vector>
+#include <glm/matrix.hpp>
 
 using namespace ee;
 
@@ -58,7 +60,7 @@ void addConstraints(const std::size_t thickness, ee::SBSimulation* sim, const ee
 
         for (std::size_t j = index; j < end; j++)
         {
-            auto ptr = sim->addConstraint(&ee::SBPointConstraint(mesh->getVertex(j).m_position, sim->getVertexObject(j)));
+            auto ptr = sim->addConstraint(&ee::SBPointConstraint(mesh->getVertex(j), sim->getVertexObject(j)));
             g_constraints.push_back(ptr);
         }
     }
@@ -133,27 +135,45 @@ int main()
         void* res = Renderer::addTexturePack("refractTextPack", RefractTextPack(glm::vec3(), g_textureDir + g_cubeMapDir, g_cubeMapFaces, ARTIFICIAL_EYE_PROP.refractive_index)); assert(res);
         res =       Renderer::addTexturePack("skyBoxTextPack", SkyBoxTextPack(g_textureDir + g_cubeMapDir, g_cubeMapFaces)); assert(res);
 
-        LoadableModel eyeballModel("Models/eyeball/eyebal_fbx.fbx", 1);
-        eyeballModel.load();
+        // not drawing the eyeball for now
+        // LoadableModel eyeballModel("Models/eyeball/eyebal_fbx.fbx", 1);
+        // eyeballModel.load();
 
+        Scene scene;
+
+        // this is for the eyeball model I am using
         Mat4 eyeballTransform = glm::translate(Mat4(), Vec3(0.0, 0.0, -2.0));
         eyeballTransform = glm::scale(eyeballTransform, Vec3(1.55, 1.55, 1.55));
-        eyeballModel.setTransform(eyeballTransform);
+
+        //eyeballModel.setTransform(eyeballTransform);
+
+        //
+        //  Lens System:
+        //
+
         Mat4 eyeballIntersectionTransform = glm::translate(Mat4(), Vec3(0.0, 0.0, -2.0));
         eyeballIntersectionTransform = glm::scale(eyeballIntersectionTransform, Vec3(2 * 1.55, 2 * 1.55, 2 * 1.55));
-
-        // generate the UV Sphere lens (not super efficient)
         Mesh uvSphereMesh = loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude);
         Mesh uvSubDivSphereMesh = loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level_lens);
         Lens lensSphere(&uvSubDivSphereMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
         DrawableMeshContainer lensDrawable(&uvSubDivSphereMesh, "refractTextPack", true);
         Renderer::addDrawable(&lensDrawable);
 
+        EyeBall eyeball(eyeballIntersectionTransform, &uvSubDivSphereMesh);
+        RTObjectMesh rtObjectMesh("lens", &uvSubDivSphereMesh, ARTIFICIAL_EYE_PROP.refractive_index);
+        RTObjectSphere rtObjectSphere("cornea", eyeballIntersectionTransform, 1.67f);
+        scene.addObject(&rtObjectMesh);
+        scene.addObject(&rtObjectSphere);
+
+        //
+        // Superficial Stuff:
+        //
+
         SkyBox skyBox("skyBoxTextPack");
-        // Renderer::addDrawable(&skyBox);
+        Renderer::addDrawable(&skyBox);
 
         // update the positons of the lens
-        const Mat4 lensModelTrans = glm::scale(glm::rotate(Mat4(), glm::radians(90.0), Vec3(1.0, 0.0, 0.0)), Vec3(1.0, ARTIFICIAL_EYE_PROP.lens_thickness, 1.0));
+        const glm::mat4 lensModelTrans = glm::scale(glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f)), glm::vec3(1.f, ARTIFICIAL_EYE_PROP.lens_thickness, 1.f));
         uvSphereMesh.setModelTrans(lensModelTrans);
         uvSubDivSphereMesh.setModelTrans(lensModelTrans);
 
@@ -162,24 +182,31 @@ int main()
         lensSim.m_constIterations = ARTIFICIAL_EYE_PROP.iterations;
         addInteriorSpringsUVSphere(&lensSim, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.intspring_coeff, ARTIFICIAL_EYE_PROP.intspring_drag);
         //addConstraints(5, &lensSim, &lensMesh);
-        lensSim.addIntegrator(&ee::SBVerletIntegrator(1.0 / 20.0, ARTIFICIAL_EYE_PROP.extspring_drag));
+        lensSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 20.f, ARTIFICIAL_EYE_PROP.extspring_drag));
 
         // test stuff:
-        const std::vector<Vec3> pos = { Vec3(0.0, 0.0, 5.0) };
-        RayTracerParam param;
-        param.m_widthResolution = 7;
-        param.m_heightResolution = 7;
-        param.m_enviRefractiveIndex = 1.0;
-        param.m_eyeballRefractiveIndex = 1.44;
-        param.m_lensRefractiveIndex_middle = 1.71;
-        param.m_lensRefractiveIndex_end = 1.60;
-        param.m_rayColor = Vec3(130.0 / 255.0, 201.0 / 255.0, 247.0 / 255.0);
+        std::vector<glm::vec3> pos = { glm::vec3(0.f, 0.f, -1.f) };
+
         g_constraints = lensSphere.addConstraints(5, &lensSim);
-        g_tracer = &ee::RayTracer::initialize(pos, lensSphere, param);
-        g_tracer->setCorneaSphere(eyeballIntersectionTransform);
+        g_tracer = &ee::RayTracer::initialize(pos, &eyeball, &scene, 100, 1, 12);
 
         uvSubDivSphereMesh.calcNormals();
-        g_tracer->raytrace();
+        g_tracer->raytraceAll();
+
+        std::vector<DrawLine> drawpaths;
+
+        ee::Renderer::addTexturePack("lineTextPack", ee::LineUniColorTextPack(Vec3(0.0, 1.0, 0.0)));
+        auto& paths = g_tracer->getRayPaths();
+        for (auto& p : paths)
+        {
+            drawpaths.push_back(DrawLine("lineTextPack", p));
+        }
+
+        for (auto& p : drawpaths)
+        {
+            ee::Renderer::addDrawable(&p);
+        }
+
         while (ee::Renderer::isInitialized())
         {
             if (g_enableWireFram)
@@ -207,8 +234,8 @@ int main()
             {
                 lensSim.update(time);
                 Mesh tempMesh = loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level_lens);
-                uvSubDivSphereMesh.updateVertices(std::move(tempMesh.getVerticesData()));
-                uvSubDivSphereMesh.updateMeshFaces(std::move(tempMesh.getMeshFaceData()));
+                // uvSubDivSphereMesh.updateVertices(tempMesh.vertexBuffer()));
+                // uvSubDivSphereMesh.updateMeshFaces(tempMesh.vertexBuffer()));
                 //g_tracer->raytrace();
             }
 

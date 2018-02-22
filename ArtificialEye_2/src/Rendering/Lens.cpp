@@ -50,7 +50,7 @@ std::vector<ee::SBPointConstraint*> ee::Lens::addConstraints(int thickness, ee::
 
         for (int j = index; j < end; j++)
         {
-            auto ptr = sim->addConstraint(&ee::SBPointConstraint(m_mesh->getVertex(j).m_position, sim->getVertexObject(j)));
+            auto ptr = sim->addConstraint(&ee::SBPointConstraint(m_mesh->getVertex(j), sim->getVertexObject(j)));
             constraints.push_back(ptr);
         }
     }
@@ -93,10 +93,10 @@ int ee::Lens::getLongitudeIndex(int index) const
 
 glm::vec3 ee::Lens::getNormal(int faceID) const
 {
-    glm::vec3 norm = m_mesh->getNormal(faceID);
-    MeshFace face = m_mesh->getMeshFace(faceID);
-    glm::vec3 est = glm::normalize(m_mesh->getVertex(face(0)).m_position + m_mesh->getVertex(face(1)).m_position
-        + m_mesh->getVertex(face(2)).m_position);
+    glm::vec3 norm = m_mesh->getVertexNormal(faceID);
+    MeshFace face = m_mesh->getFace(faceID);
+    glm::vec3 est = glm::normalize(m_mesh->getVertex(face[0]) + m_mesh->getVertex(face[1])
+        + m_mesh->getVertex(face[2]));
     return glm::dot(norm, est) > 0 ? norm : -norm;
 }
 

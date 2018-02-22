@@ -26,14 +26,14 @@ void ee::SBClosedBodySim::SBPressure::applyForces()
     Float invV = 1.0 / V;
 
     // for each face:
-    for (std::size_t i = 0; i < m_model->getNumMeshFaces(); i++)
+    for (std::size_t i = 0; i < m_model->getNumFaces(); i++)
     {
         // get triangle indices:
-        MeshFace f = m_model->getMeshFace(i);
+        MeshFace f = m_model->getFace(i);
 
-        Vec3 v0 = m_model->getVertex(f(0)).m_position;
-        Vec3 v1 = m_model->getVertex(f(1)).m_position;
-        Vec3 v2 = m_model->getVertex(f(2)).m_position;
+        Vec3 v0 = m_model->getVertex(f[0]);
+        Vec3 v1 = m_model->getVertex(f[1]);
+        Vec3 v2 = m_model->getVertex(f[2]);
 
         // get current face's area:
         Vec3 e0 = v1 - v0;
@@ -41,22 +41,22 @@ void ee::SBClosedBodySim::SBPressure::applyForces()
         Float A = glm::length(glm::cross(e0, e1)) * 0.5;
 
         // get the normal:
-        Vec3 norm = m_model->getNormal(i);
+        Vec3 norm = m_model->getVertexNormal(i);
 
         Vec3 pForce = invV * A * m_P * norm;
 
         // apply the forces thusly:
-        if (m_simulation->getVertexObject(f(0))->m_type == SBObjectType::ACTIVE)
+        if (m_simulation->getVertexObject(f[0])->m_type == SBObjectType::ACTIVE)
         {
-            m_simulation->getVertexObject(f(0))->m_resultantForce += pForce;
+            m_simulation->getVertexObject(f[0])->m_resultantForce += pForce;
         }
-        if (m_simulation->getVertexObject(f(1))->m_type == SBObjectType::ACTIVE)
+        if (m_simulation->getVertexObject(f[1])->m_type == SBObjectType::ACTIVE)
         {
-            m_simulation->getVertexObject(f(1))->m_resultantForce += pForce;
+            m_simulation->getVertexObject(f[1])->m_resultantForce += pForce;
         }
-        if (m_simulation->getVertexObject(f(2))->m_type == SBObjectType::ACTIVE)
+        if (m_simulation->getVertexObject(f[2])->m_type == SBObjectType::ACTIVE)
         {
-            m_simulation->getVertexObject(f(2))->m_resultantForce += pForce;
+            m_simulation->getVertexObject(f[2])->m_resultantForce += pForce;
         }
     }
 }

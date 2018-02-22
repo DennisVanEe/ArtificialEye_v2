@@ -6,7 +6,7 @@ ee::SBVertex::SBVertex(const Float mass, const SBObjectType type, Mesh* const mo
     m_model(model),
     m_vertexID(vertexID)
 {
-    m_currPosition = m_model->getVertex(m_vertexID).m_position;
+    m_currPosition = m_model->getVertex(m_vertexID);
     m_prevPosition = m_currPosition;
 }
 
