@@ -177,14 +177,6 @@ int main()
 
 		Mesh* m = &uvSubDivSphereMesh;
 
-		for (int i = 0; i < list.size(); i++)
-		{
-			if (list[i][0] < 0 || list[i][1] < 0 || list[i][2] < 0)
-			{
-				assert(false);
-			}
-		}
-
         //
         // Superficial Stuff:
         //
@@ -212,7 +204,7 @@ int main()
 
         uvSubDivSphereMesh.calcNormals();
 
-		scene.getObject(0)->
+		// scene.getObject(0)->
 
         g_tracer->raytraceAll();
 

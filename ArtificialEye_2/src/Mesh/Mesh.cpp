@@ -53,7 +53,7 @@ void ee::Mesh::calcNormals()
 
     for (int i = 0; i < m_faces.size(); i++)
     {
-		MeshFace f = m_faces[i];
+		const MeshFace f = m_faces[i];
 
         const glm::vec3 v0 = m_vertices[f[0]];
         const glm::vec3 v1 = m_vertices[f[1]];
