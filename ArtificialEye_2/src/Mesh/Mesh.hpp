@@ -185,7 +185,7 @@ namespace ee
             return m_updated;
         }
 
-        bool resetUpdated() const
+        void resetUpdated() const
         {
             m_updated = false;
         }

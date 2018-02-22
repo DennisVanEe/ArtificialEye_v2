@@ -1,75 +1,21 @@
 #include "Initialization.hpp"
 
-#include <fstream>
-#include <windows.h>
+#include <INIReader.hpp>
 #include <sstream>
 #include <iostream>
 
 // helper functions
 
-char g_writeBuffer[1024];
-char g_currDirBuffer[1024];
-
-ee::Float getFloat(const std::string& section, const std::string& name, const std::string& file)
+float F(double f)
 {
-    DWORD bytes = GetModuleFileName(NULL, g_currDirBuffer, 1024);
-    std::string dir(g_currDirBuffer);
-    dir = dir.substr(0, dir.find_last_of('\\') + 1);
-    DWORD size = GetPrivateProfileString(section.c_str(), name.c_str(), nullptr, g_writeBuffer, 1024, (dir + file).c_str()); // does not include null char
-    if (size == 0)
-    {
-        std::stringstream str;
-        str << "Could not find " << name << " under " << section << " from .ini file at: " << file << "." << std::endl;
-        str << "The following error was returned (WINAPI): " << GetLastError();
-        throw std::runtime_error(str.str());
-    }
-    
-    ee::Float value;
-    try
-    {
-        value = static_cast<ee::Float>(std::stold(g_writeBuffer, nullptr));
-    }
-    catch (...)
-    {
-        std::stringstream str;
-        str << "Could not convert " << name << " under " << section << " from .ini file at: " << file << " to float." << std::endl;
-        throw std::runtime_error(str.str());
-    }
-    return value;
+	return static_cast<float>(f);
 }
 
-std::string getStr(const std::string& section, const std::string& name, const std::string& file)
+template<class T>
+void errorLessThanZero(T val, bool* success)
 {
-    DWORD bytes = GetModuleFileName(NULL, g_currDirBuffer, 1024);
-    std::string dir(g_currDirBuffer);
-    dir = dir.substr(0, dir.find_last_of('\\') + 1);
-    DWORD size = GetPrivateProfileString(section.c_str(), name.c_str(), nullptr, g_writeBuffer, 1024, (dir + file).c_str()); // does not include null char
-    if (size == 0)
-    {
-        std::stringstream str;
-        str << "Could not find string value at " << name << " under " << section << " from .ini file at: " << file << "." << std::endl;
-        str << "The following error was returned (WINAPI): " << GetLastError();
-        throw std::runtime_error(str.str());
-    }
-
-    return std::string(g_writeBuffer);
-}
-
-std::size_t getUInt(const std::string& section, const std::string& name, const std::string& file)
-{
-    // outdated API, so I have to do this
-    DWORD bytes = GetModuleFileName(NULL, g_currDirBuffer, 1024);
-    std::string dir(g_currDirBuffer);
-    dir = dir.substr(0, dir.find_last_of('\\') + 1);
-    UINT result = GetPrivateProfileInt(section.c_str(), name.c_str(), -1, (dir + file).c_str());
-    if (result < 0)
-    {
-        std::stringstream str;
-        str << "Could not find unsigned value at " << name << " under " << section << " from .ini file at: " << file << "." << std::endl;
-        str << "The following error was returned (WINAPI): " << GetLastError();
-        throw std::runtime_error(str.str());
-    }
-    return result;
+	T zero = static_cast<T>(0);
+	*success = val >= zero;
 }
 
 ee::ArtificialEyeProp ee::initializeArtificialEyeProp(const std::string& dir)
@@ -81,36 +27,67 @@ ee::ArtificialEyeProp ee::initializeArtificialEyeProp(const std::string& dir)
 
     try
     {
-        std::ifstream file(dir);
-        if (!file.is_open())
+		INIReader reader(dir);
+        if (reader.ParseError() < 0)
         {
-            file.close();
             throw std::runtime_error("Could not open file " + dir);
         }
-        file.close();
 
-        result.shader_dir =                     getStr  ("graphics", "shader_dir",       dir);
-        result.render_param.m_screenWidth =     getUInt ("graphics", "screen_width",     dir);
-        result.render_param.m_screenHeight =    getUInt ("graphics", "screen_height",    dir);
-        result.render_param.m_fov =             getFloat("graphics", "fov",              dir);
-        result.render_param.m_far =             getFloat("graphics", "far_plane",        dir);
-        result.render_param.m_near =            getFloat("graphics", "near_plane",       dir);
-        result.render_param.m_aspect = static_cast<float>(result.render_param.m_screenWidth) / result.render_param.m_screenHeight;
+        result.latitude = reader.GetInteger("lens", "latitude", -1);
+		errorLessThanZero(result.latitude, &result.success);
 
-        result.latitude =                       getUInt ("lens",     "latitude",         dir);
-        result.longitude =                      getUInt ("lens",     "longitude",        dir);
-        result.iterations =                     getUInt ("lens",     "iterations",       dir);
-        result.mass =                           getFloat("lens",     "mass",             dir);
-        result.intspring_coeff =                getFloat("lens",     "intspring_coeff",  dir);
-        result.intspring_drag =                 getFloat("lens",     "intspring_drag",   dir);
-        result.extspring_coeff =                getFloat("lens",     "extspring_coeff",  dir);
-        result.extspring_drag =                 getFloat("lens",     "extspring_drag",   dir);
-        result.pressure =                       getFloat("lens",     "pressure",         dir);
-        result.muscle_thickness =               getUInt ("lens",     "muscle_thickness", dir);
-        result.refractive_index =               getFloat("lens",     "refractive_index", dir);
-        result.lens_thickness =                 getFloat("lens",     "lens_thickness",   dir);
-        result.subdiv_level_lens =              getUInt ("lens",     "subdiv_level",     dir);
-        result.subdiv_level_cornea =            getUInt ("cornea",   "subdiv_level",     dir);
+        result.longitude = reader.GetInteger("lens", "longitude", -1);
+		errorLessThanZero(result.longitude, &result.success);
+
+        result.iterations =	reader.GetInteger("lens", "iterations", -1);
+		errorLessThanZero(result.iterations, &result.success);
+
+		result.mass = F(reader.GetReal("lens", "mass", -1.0));
+		errorLessThanZero(result.mass, &result.success);
+
+		result.intspring_coeff = F(reader.GetReal("lens", "intspring_coeff", -1.0));
+		errorLessThanZero(result.intspring_coeff, &result.success);
+
+		result.intspring_drag = F(reader.GetReal("lens", "intspring_drag", -1.0));
+		errorLessThanZero(result.intspring_drag, &result.success);
+
+		result.extspring_coeff = F(reader.GetReal("lens", "extspring_coeff", -1.0));
+		errorLessThanZero(result.extspring_coeff, &result.success);
+
+		result.extspring_drag = F(reader.GetReal("lens", "extspring_drag", -1.0));
+		errorLessThanZero(result.extspring_drag, &result.success);
+
+		result.pressure = F(reader.GetReal("lens", "pressure", -1.0));
+		errorLessThanZero(result.pressure, &result.success);
+
+        result.muscle_thickness = reader.GetInteger ("lens", "muscle_thickness", -1);
+		errorLessThanZero(result.muscle_thickness, &result.success);
+
+		result.lens_refr_index = F(reader.GetReal("lens", "refractive_index", -1.0));
+		errorLessThanZero(result.lens_refr_index, &result.success);
+
+		result.lens_thickness = F(reader.GetReal("lens", "lens_thickness", -1.0));
+		errorLessThanZero(result.lens_thickness, &result.success);
+
+        result.subdiv_level_lens = reader.GetInteger("lens", "subdiv_level", -1);
+		errorLessThanZero(result.subdiv_level_lens, &result.success);
+
+		result.lens_dist_from_center = F(reader.GetReal("lens", "distance_from_center", -1.0));
+		errorLessThanZero(result.lens_dist_from_center, &result.success);
+
+
+		result.eyeball_radius = F(reader.GetReal("eyeball", "radius", -1.0));
+		errorLessThanZero(result.eyeball_radius, &result.success);
+
+		result.eyeball_refr_index = F(reader.GetReal("eyeball", "refractive_index", -1.0));
+		errorLessThanZero(result.eyeball_refr_index, &result.success);
+
+
+		result.time_step = F(reader.GetReal("simulation", "time_step", -1.0));
+		errorLessThanZero(result.time_step, &result.success);
+
+		result.shader_dir = reader.Get("graphics", "shader_dir", "");
+		result.success = result.shader_dir != "";
     }
     catch (const std::exception& e)
     {
@@ -125,4 +102,4 @@ ee::ArtificialEyeProp ee::initializeArtificialEyeProp(const std::string& dir)
     return result;
 }
 
-const ee::ArtificialEyeProp ee::ARTIFICIAL_EYE_PROP = ee::initializeArtificialEyeProp(ARTIFICIAL_EYE_PROP_DIR);
+ee::ArtificialEyeProp ee::ARTIFICIAL_EYE_PROP = ee::initializeArtificialEyeProp("prop.ini");

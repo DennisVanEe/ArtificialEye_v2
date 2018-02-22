@@ -23,7 +23,7 @@ namespace ee
 			m_objects.push_back(std::unique_ptr<RTObject>(newObject));
 		}
 
-		size_t getNumObjects() const 
+		size_t getNumObjects() const
 		{
 			return static_cast<size_t>(m_objects.size());
 		}

@@ -117,6 +117,14 @@ int main()
         return -1;
     }
 
+	RendererParam renderParamTemp;
+	renderParamTemp.m_screenWidth = 1400;
+	renderParamTemp.m_screenHeight = 900;
+	renderParamTemp.m_fov = 90.f;
+	renderParamTemp.m_aspect = 1400.f / 900.f;
+	renderParamTemp.m_near = 0.1f;
+	renderParamTemp.m_far = 100.f;
+
     try
     {
         // The default camera parameters:
@@ -127,12 +135,12 @@ int main()
         cameraParams.m_pitch = 0.f;
 
         // prepare the renderer:
-        Renderer::initialize(ARTIFICIAL_EYE_PROP.shader_dir, ARTIFICIAL_EYE_PROP.render_param, cameraParams);
+        Renderer::initialize(ARTIFICIAL_EYE_PROP.shader_dir, renderParamTemp, cameraParams);
         Renderer::setCustomKeyboardCallback(setSpaceCallback);
-        Renderer::setClearColor(Vec3(0, 0, 0));
+        Renderer::setClearColor(glm::vec3(0, 0, 0));
 
         // loaded cubemap twice, not efficient, but not important right now:
-        void* res = Renderer::addTexturePack("refractTextPack", RefractTextPack(glm::vec3(), g_textureDir + g_cubeMapDir, g_cubeMapFaces, ARTIFICIAL_EYE_PROP.refractive_index)); assert(res);
+        void* res = Renderer::addTexturePack("refractTextPack", RefractTextPack(glm::vec3(0.f, 0.f, 0.f), g_textureDir + g_cubeMapDir, g_cubeMapFaces, ARTIFICIAL_EYE_PROP.lens_refr_index)); assert(res);
         res =       Renderer::addTexturePack("skyBoxTextPack", SkyBoxTextPack(g_textureDir + g_cubeMapDir, g_cubeMapFaces)); assert(res);
 
         // not drawing the eyeball for now
@@ -142,8 +150,8 @@ int main()
         Scene scene;
 
         // this is for the eyeball model I am using
-        Mat4 eyeballTransform = glm::translate(Mat4(), Vec3(0.0, 0.0, -2.0));
-        eyeballTransform = glm::scale(eyeballTransform, Vec3(1.55, 1.55, 1.55));
+        glm::mat4 eyeballTransform = glm::translate(glm::mat4(1), glm::vec3(0.0, 0.0, -2.0));
+        eyeballTransform = glm::scale(eyeballTransform, glm::vec3(1.55, 1.55, 1.55));
 
         //eyeballModel.setTransform(eyeballTransform);
 
@@ -151,8 +159,8 @@ int main()
         //  Lens System:
         //
 
-        Mat4 eyeballIntersectionTransform = glm::translate(Mat4(), Vec3(0.0, 0.0, -2.0));
-        eyeballIntersectionTransform = glm::scale(eyeballIntersectionTransform, Vec3(2 * 1.55, 2 * 1.55, 2 * 1.55));
+        glm::mat4 eyeballIntersectionTransform = glm::translate(glm::mat4(1), glm::vec3(0.0, 0.0, -2.0));
+        eyeballIntersectionTransform = glm::scale(eyeballIntersectionTransform, glm::vec3(2 * 1.55, 2 * 1.55, 2 * 1.55));
         Mesh uvSphereMesh = loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude);
         Mesh uvSubDivSphereMesh = loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level_lens);
         Lens lensSphere(&uvSubDivSphereMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
@@ -160,10 +168,22 @@ int main()
         Renderer::addDrawable(&lensDrawable);
 
         EyeBall eyeball(eyeballIntersectionTransform, &uvSubDivSphereMesh);
-        RTObjectMesh rtObjectMesh("lens", &uvSubDivSphereMesh, ARTIFICIAL_EYE_PROP.refractive_index);
-        RTObjectSphere rtObjectSphere("cornea", eyeballIntersectionTransform, 1.67f);
+        RTObjectMesh rtObjectMesh("lens", &uvSubDivSphereMesh, ARTIFICIAL_EYE_PROP.lens_refr_index);
+        RTObjectSphere rtObjectSphere("cornea", eyeballIntersectionTransform, ARTIFICIAL_EYE_PROP.eyeball_refr_index);
         scene.addObject(&rtObjectMesh);
         scene.addObject(&rtObjectSphere);
+
+		const auto& list = rtObjectMesh.getMesh()->faceBuffer();
+
+		Mesh* m = &uvSubDivSphereMesh;
+
+		for (int i = 0; i < list.size(); i++)
+		{
+			if (list[i][0] < 0 || list[i][1] < 0 || list[i][2] < 0)
+			{
+				assert(false);
+			}
+		}
 
         //
         // Superficial Stuff:
@@ -191,6 +211,9 @@ int main()
         g_tracer = &ee::RayTracer::initialize(pos, &eyeball, &scene, 100, 1, 12);
 
         uvSubDivSphereMesh.calcNormals();
+
+		scene.getObject(0)->
+
         g_tracer->raytraceAll();
 
         std::vector<DrawLine> drawpaths;
