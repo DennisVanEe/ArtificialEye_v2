@@ -35,11 +35,7 @@ namespace ee
     private:
         std::array<int, 3> m_indices;
     };
-    //static_assert(sizeof(MeshFace) == 3 * sizeof(int) && alignof(MeshFace) == alignof(int), "MeshFace can't have any padding");
-
-	using NormalBuffer = std::vector<glm::vec3>;
-	using VertexBuffer = std::vector<glm::vec3>;
-	using FaceBuffer = std::vector<MeshFace>;
+    static_assert(sizeof(MeshFace) == 3 * sizeof(int), "MeshFace can't have any padding");
 
 	//
 	// The format is designed to be easily converted to MFnMesh for interfacing with the Maya API
@@ -51,7 +47,7 @@ namespace ee
         {
         }
 
-		void create(VertexBuffer vertices, FaceBuffer faces, bool defaultNormals = true)
+		void create(std::vector<glm::vec3> vertices, std::vector<MeshFace> faces, bool defaultNormals = true)
 		{
 			m_vertices = vertices;
 			m_faces = faces;
@@ -61,7 +57,7 @@ namespace ee
 			}
 		}
 
-		void create(VertexBuffer vertices, FaceBuffer faces, NormalBuffer normals)
+		void create(std::vector<glm::vec3> vertices, std::vector<MeshFace> faces, std::vector<glm::vec3> normals)
 		{
 			m_vertices = vertices;
 			m_faces = faces;
@@ -74,13 +70,13 @@ namespace ee
 		//
 		// Modify underlying data directly:
 
-		NormalBuffer& normalBuffer() 
+		std::vector<glm::vec3>& normalBuffer() 
 		{
             m_updated = true;
 			return m_normals;
 		}
 
-		const NormalBuffer& normalBuffer() const 
+		const std::vector<glm::vec3>& normalBuffer() const 
 		{ 
             m_updated = true;
 			return m_normals;
@@ -98,13 +94,13 @@ namespace ee
 			return reinterpret_cast<const float*>(m_normals.data());
 		}
 
-		VertexBuffer& vertexBuffer()
+		std::vector<glm::vec3>& vertexBuffer()
 		{
             m_updated = true;
 			return m_vertices; 
 		}
 
-        const VertexBuffer& vertexBuffer() const
+        const std::vector<glm::vec3>& vertexBuffer() const
 		{
             m_updated = true;
 			return m_vertices; 
@@ -122,13 +118,13 @@ namespace ee
 			return reinterpret_cast<const Float*>(m_vertices.data()); 
 		}
 
-		FaceBuffer& faceBuffer() 
+		std::vector<MeshFace>& faceBuffer() 
 		{
             m_updated = true;
 			return m_faces; 
 		}
 
-        const FaceBuffer& faceBuffer() const 
+        const std::vector<MeshFace>& faceBuffer() const 
 		{
             m_updated = true;
 			return m_faces; 
@@ -177,8 +173,8 @@ namespace ee
         Mat4 getNormalModelTrans() const { return m_normalModelTrans; }
 
         void updateVertex(const Vec3& vertex, std::size_t vertexID) { m_updated = true;  m_vertices[vertexID] = vertex; }
-        void updateVertices(const VertexBuffer& vertices) { m_updated = true; m_vertices = vertices; }
-        void updateMeshFaces(const FaceBuffer& faces) { m_updated = true; m_faces = faces; }
+        void updateVertices(const std::vector<glm::vec3>& vertices) { m_updated = true; m_vertices = vertices; }
+        void updateMeshFaces(const std::vector<MeshFace>& faces) { m_updated = true; m_faces = faces; }
 
         bool wasUpdated() const
         {
@@ -196,9 +192,9 @@ namespace ee
         Mat4 m_normalModelTrans;
 
         // Used with calculating normals
-		VertexBuffer m_normals;
-        VertexBuffer m_vertices;
-        FaceBuffer	 m_faces;
+		std::vector<glm::vec3> m_normals;
+        std::vector<glm::vec3> m_vertices;
+        std::vector<MeshFace>	 m_faces;
 
         mutable bool m_updated;
     };

@@ -17,7 +17,6 @@ namespace ee
 		int intFace() const override;
 
 		glm::mat4 getPosition() const override;
-		void setPosition(glm::mat4 pos) override;
 
 		const Mesh* getMesh() const;
 

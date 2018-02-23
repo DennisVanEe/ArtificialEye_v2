@@ -30,11 +30,6 @@ glm::mat4 ee::RTObjectMesh::getPosition() const
     return m_mesh->getModelTrans();
 }
 
-void ee::RTObjectMesh::setPosition(glm::mat4 pos)
-{
-    m_mesh->setModelTrans(pos);
-}
-
 ee::RTObject* ee::RTObjectMesh::getCopy() const
 {
     return new RTObjectMesh(*this);

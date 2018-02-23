@@ -19,27 +19,6 @@ ee::RayTracer::RayTracer(const std::vector<glm::vec3>& pos, const EyeBall* eyeba
     }
 }
 
-//void ee::RayTracer::generateUDP()
-//{
-//	static const char pathname[] = "raypath";
-//
-//	// All the objects in the scene:
-//	for (int i = 0; i < m_scene->getNumObjects(); i++)
-//	{
-//		m_udp.push_back(m_scene->getObject(i)->getUDP());
-//	}
-//
-//	// All the lines in the scene:
-//	for (const auto &paths : m_raypaths)
-//	{
-//		for (const auto &line : paths)
-//		{
-//			const float *rawdata = &line.start.x;
-//			m_udp.push_back(UDP(pathname, UDP_TYPE_LINE, Mat4(), rawdata, 6));
-//		}
-//	}
-//}
-
 void ee::RayTracer::raytraceAll()
 {
 	int numThreads = m_photoReceptors.size() / m_threads.size();
@@ -47,13 +26,14 @@ void ee::RayTracer::raytraceAll()
 
     for (int i = 0, pos = 0; i < m_photoReceptors.size(); i++, pos += numThreads)
     {
-        m_threads.push_back(std::thread(&RayTracer::raytraceSelect, this, pos, numThreads));
+        //m_threads.push_back(std::thread(&RayTracer::raytraceSelect, this, pos, numThreads));
+		raytraceSelect(pos, numThreads);
     }
 
-    for (auto& thread : m_threads)
-    {
-        thread.join();
-    }
+    //for (auto& thread : m_threads)
+    //{
+    //    thread.join();
+    //}
 }
 
 void ee::RayTracer::raytraceSelect(int pos, int numrays)
@@ -107,12 +87,12 @@ const ee::RTObject* ee::RayTracer::intersectRay(RTRay ray, const RTObject* objIg
     {
         const RTObject* obj = m_scene->getObject(i);
 
-        int ignore = obj == objIgnore ? triangleIgnore : -1;
+        const int ignore = obj == objIgnore ? triangleIgnore : -1;
         if (obj->calcIntersection(ray, ignore))
         {
             // get the distance:
-            glm::vec3 distRay = ray.origin - obj->intPoint();
-            float distance = glm::dot(distRay, distRay);
+            const glm::vec3 distRay = ray.origin - obj->intPoint();
+            const float distance = glm::dot(distRay, distRay);
             if (distance < minInt.distance)
             {
                 minInt.distance = distance;
@@ -166,10 +146,10 @@ const ee::RTObject* ee::RayTracer::raytrace(RTRay ray)
         }
         else
         {
-            float currEnvRefraction = ray.objects.size() == 0 ? 1 : ray.objects.top()->refracIndex;
+            const float currEnvRefraction = ray.objects.size() == 0 ? 1 : ray.objects.top()->refracIndex;
 
-            float entEnvRefraction = intersectedObject->refracIndex;
-            float ratio = currEnvRefraction / entEnvRefraction;
+            const float entEnvRefraction = intersectedObject->refracIndex;
+            const float ratio = currEnvRefraction / entEnvRefraction;
             ray.dir = ee::refract(ray.dir, intersectedObject->intNormalInterpolated(), ratio);
             line.end = intersectedObject->intPoint();
             m_raypaths.push_back(line);

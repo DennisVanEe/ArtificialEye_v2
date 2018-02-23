@@ -29,7 +29,6 @@ namespace ee
 		virtual int  intFace() const = 0;
 
 		virtual glm::mat4 getPosition() const = 0;
-		virtual void setPosition(glm::mat4 pos) = 0;
 
 		virtual RTObject* getCopy() const = 0;
 

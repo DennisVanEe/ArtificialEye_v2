@@ -6,21 +6,21 @@
 
 namespace cube
 {
-    const ee::VertexBuffer VERTICES =
+    const std::vector<glm::vec3> VERTICES =
     {
         // front
-        ee::Vec3(-1.0, -1.0,  1.0),
-        ee::Vec3( 1.0, -1.0,  1.0),
-        ee::Vec3( 1.0,  1.0,  1.0),
-        ee::Vec3(-1.0,  1.0,  1.0),
+        glm::vec3(-1.0, -1.0,  1.0),
+        glm::vec3( 1.0, -1.0,  1.0),
+        glm::vec3( 1.0,  1.0,  1.0),
+        glm::vec3(-1.0,  1.0,  1.0),
         // back
-        ee::Vec3(-1.0, -1.0, -1.0),
-        ee::Vec3( 1.0, -1.0, -1.0),
-        ee::Vec3( 1.0,  1.0, -1.0),
-        ee::Vec3(-1.0,  1.0, -1.0),
+        glm::vec3(-1.0, -1.0, -1.0),
+        glm::vec3( 1.0, -1.0, -1.0),
+        glm::vec3( 1.0,  1.0, -1.0),
+        glm::vec3(-1.0,  1.0, -1.0),
     };
 
-    const ee::FaceBuffer INDICES =
+    const std::vector<ee::MeshFace> INDICES =
     {
         // -- winding is counter-clockwise (facing camera)
         {0, 1, 2},                // pos z
@@ -42,27 +42,27 @@ namespace cube
 // Based on information from: https://schneide.wordpress.com/2016/07/15/generating-an-icosphere-in-c/
 namespace icosphere
 {
-    const ee::Float t = (1.0 + std::sqrt(5.0)) / 2.0;
+    const float t = (1.0 + std::sqrt(5.0)) / 2.0;
 
-    const ee::VertexBuffer VERTICES =
+    const std::vector<glm::vec3> VERTICES =
     {
-        glm::normalize(ee::Vec3(-1.0,    t,  0.0)),
-        glm::normalize(ee::Vec3( 1.0,    t,  0.0)),
-        glm::normalize(ee::Vec3(-1.0,   -t,  0.0)),
-        glm::normalize(ee::Vec3( 1.0,   -t,  0.0)),
+        glm::normalize(glm::vec3(-1.0,    t,  0.0)),
+        glm::normalize(glm::vec3( 1.0,    t,  0.0)),
+        glm::normalize(glm::vec3(-1.0,   -t,  0.0)),
+        glm::normalize(glm::vec3( 1.0,   -t,  0.0)),
 
-        glm::normalize(ee::Vec3( 0.0, -1.0,    t)),
-        glm::normalize(ee::Vec3( 0.0,  1.0,    t)),
-        glm::normalize(ee::Vec3( 0.0, -1.0,   -t)),
-        glm::normalize(ee::Vec3( 0.0,  1.0,   -t)),
+        glm::normalize(glm::vec3( 0.0, -1.0,    t)),
+        glm::normalize(glm::vec3( 0.0,  1.0,    t)),
+        glm::normalize(glm::vec3( 0.0, -1.0,   -t)),
+        glm::normalize(glm::vec3( 0.0,  1.0,   -t)),
 
-        glm::normalize(ee::Vec3(   t,  0.0, -1.0)),
-        glm::normalize(ee::Vec3(   t,  0.0,  1.0)),
-        glm::normalize(ee::Vec3(  -t,  0.0, -1.0)),
-        glm::normalize(ee::Vec3(  -t,  0.0,  1.0)),
+        glm::normalize(glm::vec3(   t,  0.0, -1.0)),
+        glm::normalize(glm::vec3(   t,  0.0,  1.0)),
+        glm::normalize(glm::vec3(  -t,  0.0, -1.0)),
+        glm::normalize(glm::vec3(  -t,  0.0,  1.0)),
     };
 
-    const ee::FaceBuffer INDICES =
+    const std::vector<ee::MeshFace> INDICES =
     {
         { 0, 11,  5},
         { 0,  5,  1},
@@ -94,7 +94,7 @@ namespace icosphere
     ////////////////////
 
     std::unordered_map<uint64_t, int> g_cachedMiddlePoints;
-    int getMiddlePoint(int i0, int i1, ee::VertexBuffer* list)
+    int getMiddlePoint(int i0, int i1, std::vector<glm::vec3>* list)
     {
         uint64_t minInd = static_cast<uint64_t>(std::min(i0, i1));
         uint64_t maxInd = static_cast<uint64_t>(std::max(i0, i1));
@@ -106,9 +106,9 @@ namespace icosphere
             return it->second;
         }
 
-        ee::Vec3 p0 = (*list)[i0];
-        ee::Vec3 p1 = (*list)[i1];
-        ee::Vec3 m = glm::normalize((p0 + p1) * 0.5f);
+        glm::vec3 p0 = (*list)[i0];
+        glm::vec3 p1 = (*list)[i1];
+        glm::vec3 m = glm::normalize((p0 + p1) * 0.5f);
 
         list->push_back(m);
         g_cachedMiddlePoints.insert(std::make_pair(key, list->size() - 1));
@@ -118,13 +118,13 @@ namespace icosphere
 
 ee::Mesh ee::loadIndexedRectangle()
 {
-    VertexBuffer vertList;
-    FaceBuffer indexList;
+    std::vector<glm::vec3> vertList;
+    std::vector<MeshFace> indexList;
 
-    vertList.push_back(Vec3( 0.5,  0.5, 0.0));
-    vertList.push_back(Vec3( 0.5, -0.5, 0.0));
-    vertList.push_back(Vec3(-0.5, -0.5, 0.0));
-    vertList.push_back(Vec3(-0.5,  0.5, 0.0));
+    vertList.push_back(glm::vec3( 0.5,  0.5, 0.0));
+    vertList.push_back(glm::vec3( 0.5, -0.5, 0.0));
+    vertList.push_back(glm::vec3(-0.5, -0.5, 0.0));
+    vertList.push_back(glm::vec3(-0.5,  0.5, 0.0));
 
     indexList.push_back({0, 1, 3});
     indexList.push_back({1, 2, 3});
@@ -144,12 +144,12 @@ ee::Mesh ee::loadIndexedCube()
 ee::Mesh ee::loadIcosphere(int recursionLevel)
 {
     icosphere::g_cachedMiddlePoints.clear();
-    VertexBuffer vertList = icosphere::VERTICES;
-    FaceBuffer indexList = icosphere::INDICES;
+    std::vector<glm::vec3> vertList = icosphere::VERTICES;
+    std::vector<MeshFace> indexList = icosphere::INDICES;
 
     for (int i = 0; i < recursionLevel; i++)
     {
-        FaceBuffer tempIndList1;
+        std::vector<MeshFace> tempIndList1;
         for (const MeshFace& face : indexList)
         {
             int i0 = icosphere::getMiddlePoint(face[0], face[1], &vertList);
@@ -176,29 +176,29 @@ ee::Mesh ee::loadUVsphere(int nLon, int nLat)
         throw std::logic_error("The number of longitudinal and latitudinal rings has to be greater than 0");
     }
 
-    VertexBuffer vertList;
-    FaceBuffer indexList;
+    std::vector<glm::vec3> vertList;
+    std::vector<MeshFace> indexList;
 
     // Vertices:
     vertList.resize((nLon) * nLat + 2); // plus 1 is for the extra bits in lon side
-    vertList[0] = ee::Vec3(0.0, 1.0, 0.0);
+    vertList[0] = glm::vec3(0.0, 1.0, 0.0);
     for (unsigned lat = 0; lat < nLat; lat++)
     {
-        Float angleLat = glm::pi<Float>() * (Float)(lat + 1) / (nLat + 1);
-        Float sinLat = std::sin(angleLat);
-        Float cosLat = std::cos(angleLat);
+        float angleLat = glm::pi<float>() * (float)(lat + 1) / (nLat + 1);
+        float sinLat = std::sin(angleLat);
+        float cosLat = std::cos(angleLat);
 
         for (int lon = 0; lon < nLon; lon++)
         {
-            Float angleLon = 2 * glm::pi<Float>() * (Float)(lon) / nLon; // (float)(lon == nLon ? 0 : lon) / nLon;
-            Float sinLon = std::sin(angleLon);
-            Float cosLon = std::cos(angleLon);
+            float angleLon = 2 * glm::pi<float>() * (float)(lon) / nLon; // (float)(lon == nLon ? 0 : lon) / nLon;
+            float sinLon = std::sin(angleLon);
+            float cosLon = std::cos(angleLon);
 
             std::size_t index = lon + lat * (nLon) + 1;
-            vertList[index] = ee::Vec3(sinLat * cosLon, cosLat, sinLat * sinLon);
+            vertList[index] = glm::vec3(sinLat * cosLon, cosLat, sinLat * sinLon);
         }
     }
-    vertList[vertList.size() - 1] = ee::Vec3(0.0, -1.0, 0.0);
+    vertList[vertList.size() - 1] = glm::vec3(0.0, -1.0, 0.0);
 
     // Indices:
     for (int lon = 0; lon < nLon - 1; lon++)

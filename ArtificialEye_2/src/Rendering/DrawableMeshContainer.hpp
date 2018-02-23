@@ -9,7 +9,7 @@ namespace ee
     class DrawableMeshContainer : public Drawable
     {
     public:
-        DrawableMeshContainer(const Mesh* mesh, const std::string& textPack, bool dynamic = false, int priority = 0);
+        DrawableMeshContainer(const Mesh* mesh, const std::string& textPack, bool dynamic = false, bool sendNormals = false, bool sendTextCoords = false, int priority = 0);
         ~DrawableMeshContainer()
         {
             glDeleteVertexArrays(1, &m_VAO);
@@ -25,8 +25,9 @@ namespace ee
     private:
         const Mesh* const m_mesh;
 
-        std::vector<glm::vec3> m_cachedVertices;
-        std::vector<MeshFace> m_cachedMeshFaces;
+		const bool m_sendNormals;
+		const bool m_sendTextCoords;
+
         std::vector<Texture> m_textures;
 
         GLenum m_type;

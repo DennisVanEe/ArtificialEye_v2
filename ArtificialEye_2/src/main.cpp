@@ -120,7 +120,7 @@ int main()
 	RendererParam renderParamTemp;
 	renderParamTemp.m_screenWidth = 1400;
 	renderParamTemp.m_screenHeight = 900;
-	renderParamTemp.m_fov = 90.f;
+	renderParamTemp.m_fov = 75.f;
 	renderParamTemp.m_aspect = 1400.f / 900.f;
 	renderParamTemp.m_near = 0.1f;
 	renderParamTemp.m_far = 100.f;
@@ -204,23 +204,21 @@ int main()
 
         uvSubDivSphereMesh.calcNormals();
 
-		// scene.getObject(0)->
+        //g_tracer->raytraceAll();
 
-        g_tracer->raytraceAll();
+        //std::vector<DrawLine> drawpaths;
 
-        std::vector<DrawLine> drawpaths;
+        //ee::Renderer::addTexturePack("lineTextPack", ee::LineUniColorTextPack(Vec3(0.0, 1.0, 0.0)));
+        //auto& paths = g_tracer->getRayPaths();
+        //for (auto& p : paths)
+        //{
+        //    drawpaths.push_back(DrawLine("lineTextPack", p));
+        //}
 
-        ee::Renderer::addTexturePack("lineTextPack", ee::LineUniColorTextPack(Vec3(0.0, 1.0, 0.0)));
-        auto& paths = g_tracer->getRayPaths();
-        for (auto& p : paths)
-        {
-            drawpaths.push_back(DrawLine("lineTextPack", p));
-        }
-
-        for (auto& p : drawpaths)
-        {
-            ee::Renderer::addDrawable(&p);
-        }
+        //for (auto& p : drawpaths)
+        //{
+        //    ee::Renderer::addDrawable(&p);
+        //}
 
         while (ee::Renderer::isInitialized())
         {
