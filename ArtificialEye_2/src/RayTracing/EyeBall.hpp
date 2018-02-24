@@ -9,16 +9,16 @@ namespace ee
 	class EyeBall
 	{
 	public:
-		EyeBall(glm::mat4 position, Mesh* lens) :
-			m_lens(lens),
-			m_position(position),
-			m_invPosition(glm::inverse(m_position))
+		EyeBall(glm::mat4 position, RTObjectMesh* lens) :
+			lens(lens),
+			position(position),
+			invPosition(glm::inverse(position))
 		{
 		}
 
 	public:
-		const Mesh* m_lens;
-		const glm::mat4 m_position;
-		const glm::mat4 m_invPosition;
+		const RTObjectMesh* lens;
+		const glm::mat4 position;
+		const glm::mat4 invPosition;
 	};
 }

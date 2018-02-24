@@ -44,6 +44,8 @@ void ee::RayTracer::raytraceSelect(int pos, int numrays)
     }
 }
 
+// don't have the lens or eyeball in the scene properties, this
+// is to allow for the rays to properly exit efficiently.
 void ee::RayTracer::raytraceOne(const int photorecpPos)
 {
 	// each thread has one of these:
@@ -70,6 +72,25 @@ void ee::RayTracer::raytraceOne(const int photorecpPos)
 
 	// now we average the values to get the color:
 	m_photoReceptors[photorecpPos].color = m_photoReceptors[photorecpPos].color / static_cast<float>(m_sampleCount);
+}
+
+ee::Ray ee::RayTracer::raytraceFromEye(const int photorecpPos)
+{
+    const glm::vec3 origin = glm::vec3(m_eyeball->position *  glm::vec4(m_photoReceptors[photorecpPos].pos, 1.f));
+
+
+    for (int i = 0; i < m_sampleCount; i++)
+    {
+        const glm::vec3 randPos = glm::vec3(randomSampleUnit(), 0.f); // lens is located at the origin, always
+        const glm::vec3 dir = randPos - origin;
+        Ray ray(origin, dir);
+
+        const RTObject* const lens = m_eyeball->lens;
+
+        // first we intersect it with the lens:
+        bool res = lens->calcIntersection(ray, -1); assert(res); // if this doesn't work, something went horrible wrong
+        const glm::vec3 intpoint0 = m_eyeball
+    }
 }
 
 const ee::RTObject* ee::RayTracer::intersectRay(RTRay ray, const RTObject* objIgnore, int triangleIgnore) const

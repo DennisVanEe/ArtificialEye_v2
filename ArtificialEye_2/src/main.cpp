@@ -204,7 +204,7 @@ int main()
 
         uvSubDivSphereMesh.calcNormals();
 
-        //g_tracer->raytraceAll();
+        g_tracer->raytraceAll();
 
         //std::vector<DrawLine> drawpaths;
 
