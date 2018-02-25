@@ -194,7 +194,7 @@ namespace ee
         // Used with calculating normals
 		std::vector<glm::vec3> m_normals;
         std::vector<glm::vec3> m_vertices;
-        std::vector<MeshFace>	 m_faces;
+        std::vector<MeshFace>  m_faces;
 
         mutable bool m_updated;
     };

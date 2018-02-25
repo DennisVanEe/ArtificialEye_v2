@@ -2,23 +2,22 @@
 
 #include <glm/matrix.hpp>
 #include "../Types.hpp"
-#include "../Mesh/Mesh.hpp"
+#include "RTObjectMesh.hpp"
+#include "RTObjectSphere.hpp"
 
 namespace ee
 {
 	class EyeBall
 	{
 	public:
-		EyeBall(glm::mat4 position, RTObjectMesh* lens) :
+		EyeBall(glm::mat4 position, const RTObjectMesh* lens, const RTObjectSphere* eyeball) :
 			lens(lens),
-			position(position),
-			invPosition(glm::inverse(position))
+			eyeball(eyeball)
 		{
 		}
 
 	public:
 		const RTObjectMesh* lens;
-		const glm::mat4 position;
-		const glm::mat4 invPosition;
+		const RTObjectSphere* eyeball;
 	};
 }

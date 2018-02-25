@@ -46,10 +46,7 @@ void ee::Mesh::calcNormals()
 	}
 
 	// Zero the vector:
-	for (int i = 0; i < m_normals.size(); i++)
-	{
-		m_normals[i] = glm::vec3();
-	}
+	std::memset(m_normals.data(), 0, m_normals.size() * sizeof(float));
 
     for (int i = 0; i < m_faces.size(); i++)
     {
@@ -61,7 +58,7 @@ void ee::Mesh::calcNormals()
 
         const glm::vec3 e0 = v1 - v0;
         const glm::vec3 e1 = v2 - v0;
-        const glm::vec3 tempNormal = alignDir(glm::normalize(glm::cross(e0, e1)), glm::normalize(v0 + v1 + v2)); // calculate the temp normal
+        const glm::vec3 tempNormal = glm::normalize(alignDir(glm::cross(e0, e1), v0 + v1 + v2)); // calculate the temp normal
 
         m_normals[f[0]] += tempNormal;
 		m_normals[f[1]] += tempNormal;

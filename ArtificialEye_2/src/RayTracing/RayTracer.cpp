@@ -1,11 +1,12 @@
 #include "RayTracer.hpp"
 
-ee::RayTracer::RayTracer(const std::vector<glm::vec3>& pos, const EyeBall* eyeball, const Scene* scene, 
+ee::RayTracer::RayTracer(const std::vector<glm::vec3>& pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene,
     int maxIterations, int nthreads, int nsamples) :
 	m_scene(scene),
 	m_sampleCount(nsamples),
     m_maxIterations(maxIterations),
-	m_eyeball(eyeball)
+	m_eyeball(eyeball),
+	m_lens(lens)
 {
     assert(maxIterations > 0);
     assert(nthreads > 0);
@@ -46,27 +47,23 @@ void ee::RayTracer::raytraceSelect(int pos, int numrays)
 
 // don't have the lens or eyeball in the scene properties, this
 // is to allow for the rays to properly exit efficiently.
-void ee::RayTracer::raytraceOne(const int photorecpPos)
+void ee::RayTracer::raytraceOne(int photorecpPos)
 {
-	// each thread has one of these:
-	const glm::vec4 homogOrigin = m_eyeball->m_position *  glm::vec4(m_photoReceptors[photorecpPos].pos, 1.f);
-	const glm::vec3 globalOrigin = glm::vec3(homogOrigin);
-
 	// first we need to sample a bunch of rays off the circular lens (basically prepare a bunch of paths)
+	m_photoReceptors[photorecpPos].color = glm::vec3(0.f);
 	for (int i = 0; i < m_sampleCount; i++)
 	{
-		const glm::vec2 pos = randomSampleUnit();
-		const glm::vec4 homogFinalPos = m_eyeball->m_lens->getNormalModelTrans() * glm::vec4(pos, 0.f, 1.f);
-		const glm::vec3 dirPos = glm::vec3(homogFinalPos);
+		const Ray outray = raytraceFromEye(photorecpPos);
 
-		ee::RTRay ray(globalOrigin, glm::normalize(dirPos - globalOrigin));
-
-		const RTObject* object = raytrace(ray);
-
-		// Here goes the super advanced shader...
-		if (object != nullptr)
+		// loop over scene:
+		int numsceneItems = m_scene->getNumObjects();
+		for (int i = 0; i < numsceneItems; i++)
 		{
-			m_photoReceptors[photorecpPos].color = Vec3(1.f, 0.f, 0.f);
+			const RTObject* obj = m_scene->getObject(i);
+			if (obj->calcIntersection(outray, -1))
+			{
+				m_photoReceptors[photorecpPos].color = glm::vec3(1.f, 0.f, 0.f);
+			}
 		}
 	}
 
@@ -74,23 +71,43 @@ void ee::RayTracer::raytraceOne(const int photorecpPos)
 	m_photoReceptors[photorecpPos].color = m_photoReceptors[photorecpPos].color / static_cast<float>(m_sampleCount);
 }
 
-ee::Ray ee::RayTracer::raytraceFromEye(const int photorecpPos)
+ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos)
 {
-    const glm::vec3 origin = glm::vec3(m_eyeball->position *  glm::vec4(m_photoReceptors[photorecpPos].pos, 1.f));
+    const glm::vec3 origin = glm::vec3(m_eyeball->getPosition() *  glm::vec4(m_photoReceptors[photorecpPos].pos, 1.f));
+	const Ray ray0(origin, (glm::vec3(randomSampleUnit(), 0.f) - origin));
 
+	// first we intersect it with the lens:
+	bool res = m_lens->calcIntersection(ray0, -1); assert(res); // if this doesn't work, something went horrible wrong
+	int ignore = m_lens->intFace();
+	glm::vec3 intpoint = m_lens->intPoint(); // the point of intersection
+	glm::vec3 dir = glm::normalize(ee::refract(ray0.dir, m_lens->intNormalInterpolated(), m_eyeball->refractiveIndex / m_lens->refractiveIndex));
+	const Ray ray1(intpoint, dir);
 
-    for (int i = 0; i < m_sampleCount; i++)
-    {
-        const glm::vec3 randPos = glm::vec3(randomSampleUnit(), 0.f); // lens is located at the origin, always
-        const glm::vec3 dir = randPos - origin;
-        Ray ray(origin, dir);
+	m_raypaths.push_back(Line(ray0.origin, ray1.origin));
 
-        const RTObject* const lens = m_eyeball->lens;
+	// new we intersect through the lens:
+	res = m_lens->calcIntersection(ray1, ignore); assert(res);
+	ignore = m_lens->intFace();
+	intpoint = m_lens->intPoint();
+	dir = glm::normalize(ee::refract(ray1.dir, -m_lens->intNormalInterpolated(), m_lens->refractiveIndex / m_eyeball->refractiveIndex));
+	const Ray ray2(intpoint, dir);
 
-        // first we intersect it with the lens:
-        bool res = lens->calcIntersection(ray, -1); assert(res); // if this doesn't work, something went horrible wrong
-        const glm::vec3 intpoint0 = m_eyeball
-    }
+	m_raypaths.push_back(Line(ray1.origin, ray2.origin));
+
+	if (std::isnan(ray2.dir.x))
+	{
+		return Ray(glm::vec3(0.f), glm::vec3(0.f));
+	}
+
+	// now we intersect through the cornea (and out into the world!)
+	res = m_eyeball->calcIntersection(ray2, -1); assert(res);
+	intpoint = m_eyeball->intPoint();
+	dir =  glm::normalize(ee::refract(ray1.dir, m_eyeball->intNormalInterpolated(), m_eyeball->refractiveIndex));
+	const Ray ray3(intpoint, dir);
+
+	m_raypaths.push_back(Line(ray2.origin, ray3.origin));
+
+	return Ray(glm::vec3(0.f), glm::vec3(0.f));
 }
 
 const ee::RTObject* ee::RayTracer::intersectRay(RTRay ray, const RTObject* objIgnore, int triangleIgnore) const
@@ -150,7 +167,7 @@ const ee::RTObject* ee::RayTracer::raytrace(RTRay ray)
 
         // Now we look at the object's properties to see if we go through
         // the object or if we leave the object.
-        if (intersectedObject->refracIndex == 0.0) // the object doesn't support refraction
+        if (intersectedObject->refractiveIndex == 0.0) // the object doesn't support refraction
         {
             if (intersectedObject->isReflective)
             {
@@ -167,9 +184,9 @@ const ee::RTObject* ee::RayTracer::raytrace(RTRay ray)
         }
         else
         {
-            const float currEnvRefraction = ray.objects.size() == 0 ? 1 : ray.objects.top()->refracIndex;
+            const float currEnvRefraction = ray.objects.size() == 0 ? 1 : ray.objects.top()->refractiveIndex;
 
-            const float entEnvRefraction = intersectedObject->refracIndex;
+            const float entEnvRefraction = intersectedObject->refractiveIndex;
             const float ratio = currEnvRefraction / entEnvRefraction;
             ray.dir = ee::refract(ray.dir, intersectedObject->intNormalInterpolated(), ratio);
             line.end = intersectedObject->intPoint();

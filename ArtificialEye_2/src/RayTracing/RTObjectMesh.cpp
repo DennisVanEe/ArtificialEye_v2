@@ -10,19 +10,17 @@ ee::RTObjectMesh::RTObjectMesh(std::string name, Mesh* mesh, float refraction, b
 
 glm::vec3 ee::RTObjectMesh::intPoint() const
 {
-    const float nan = std::numeric_limits<float>::quiet_NaN();
-    return m_intersected ? m_cachedPoint : glm::vec3(nan, nan, nan);
+    return m_intersected ? m_cachedPoint : glm::vec3(NaN);
 }
 
 glm::vec3 ee::RTObjectMesh::intNormalFace() const
 {
-    const float nan = std::numeric_limits<float>::quiet_NaN();
-    return m_intersected ? m_mesh->getFaceNormal(m_cachedFace) : glm::vec3(nan, nan, nan); ;
+    return m_intersected ? m_mesh->getFaceNormal(m_cachedFace) : glm::vec3(NaN);
 }
 
 int ee::RTObjectMesh::intFace() const
 {
-    return m_cachedFace;
+    return m_intersected ? m_cachedFace : -1;
 }
 
 glm::mat4 ee::RTObjectMesh::getPosition() const
@@ -45,14 +43,6 @@ bool ee::RTObjectMesh::calcIntersection(Ray ray, int ignoreTriangle) const
 	int minFace = -1;
 	glm::vec3 minPoint = glm::vec3(0.f, 0.f, 0.f); // the point where the intersection would occur
 	float minDist = std::numeric_limits<float>::infinity();
-
-    for (int i = 0; i < m_mesh->getNumFaces(); i++)
-    {
-        if (m_mesh->getFace(i)[0] < 0 || m_mesh->getFace(i)[1] < 0 || m_mesh->getFace(i)[2] < 0)
-        {
-            i++;
-        }
-    }
 
 	for (int i = 0; i < m_mesh->getNumFaces(); i++)
 	{
@@ -84,22 +74,11 @@ bool ee::RTObjectMesh::calcIntersection(Ray ray, int ignoreTriangle) const
 	m_cachedFace = minFace;
 	m_cachedPoint = minPoint;
 
-	return minFace != -1;
+	m_intersected = minFace != -1;
+	return m_intersected;
 }
 
 glm::vec3 ee::RTObjectMesh::intNormalInterpolated() const
 {
-	MeshFace face = m_mesh->getFace(m_cachedFace);
-    glm::vec3 vert0 = m_mesh->getTransformedVertex(face[0]);
-    glm::vec3 vert1 = m_mesh->getTransformedVertex(face[1]);
-    glm::vec3 vert2 = m_mesh->getTransformedVertex(face[2]);
-
-    glm::vec3 norm0 = m_mesh->getTransformedFaceNormal(face[0]);
-    glm::vec3 norm1 = m_mesh->getTransformedFaceNormal(face[1]);
-    glm::vec3 norm2 = m_mesh->getTransformedFaceNormal(face[2]);
-
-	float u, v, w;
-	baryCentric(m_cachedPoint, vert0, vert1, vert2, &u, &v, &w);
-	glm::vec3 normal = glm::normalize(norm0 * u + norm1 * v + norm2 * w);
-	return normal;
+	return getNormal(m_mesh, m_cachedFace, m_cachedPoint);
 }

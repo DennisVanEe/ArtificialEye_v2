@@ -152,6 +152,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="prop.ini" />
+    <None Include="Shaders\eyeball_frag.glsl" />
+    <None Include="Shaders\eyeball_vert.glsl" />
     <None Include="Shaders\lineUniColor_frag.glsl" />
     <None Include="Shaders\lineUniColor_vert.glsl" />
     <None Include="Shaders\modelLightUniColor_frag.glsl" />

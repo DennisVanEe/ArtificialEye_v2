@@ -10,6 +10,8 @@ namespace ee
 {
     const char PROJ_NAME[] = "ArtificalEye";
 
+	const float NaN = std::numeric_limits<float>::quiet_NaN();
+
     using Float = float;
     using Vec4 = glm::tvec4<Float>;
     using Vec3 = glm::tvec3<Float>;
@@ -63,8 +65,8 @@ namespace ee
         return glm::dot(toFlip, ref) >= 0 ? toFlip : -toFlip;
     }
 
-    inline glm::vec3 alignDir(const glm::vec3& ref, const glm::vec3& change)
+    inline glm::vec3 alignDir(const glm::vec3& change, const glm::vec3& ref)
     {
-        return glm::dot(ref, change) < 0 ? -change : change;
+        return glm::dot(change, ref) >= 0.f ? change : -change;
     }
 }

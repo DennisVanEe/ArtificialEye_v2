@@ -150,8 +150,8 @@ int main()
         Scene scene;
 
         // this is for the eyeball model I am using
-        glm::mat4 eyeballTransform = glm::translate(glm::mat4(1), glm::vec3(0.0, 0.0, -2.0));
-        eyeballTransform = glm::scale(eyeballTransform, glm::vec3(1.55, 1.55, 1.55));
+        glm::mat4 eyeballTransform = glm::translate(glm::mat4(1), glm::vec3(0.f, 0.f, -2.f));
+        eyeballTransform = glm::scale(eyeballTransform, glm::vec3(1.55f, 1.55f, 1.55f));
 
         //eyeballModel.setTransform(eyeballTransform);
 
@@ -159,23 +159,23 @@ int main()
         //  Lens System:
         //
 
-        glm::mat4 eyeballIntersectionTransform = glm::translate(glm::mat4(1), glm::vec3(0.0, 0.0, -2.0));
-        eyeballIntersectionTransform = glm::scale(eyeballIntersectionTransform, glm::vec3(2 * 1.55, 2 * 1.55, 2 * 1.55));
+        glm::mat4 eyeballIntersectionTransform = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, -2.f));
+        eyeballIntersectionTransform = glm::scale(eyeballIntersectionTransform, glm::vec3(2 * 1.55f, 2 * 1.55f, 2 * 1.55f));
+
         Mesh uvSphereMesh = loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude);
         Mesh uvSubDivSphereMesh = loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level_lens);
         Lens lensSphere(&uvSubDivSphereMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
+		uvSubDivSphereMesh.calcNormals();
+
         DrawableMeshContainer lensDrawable(&uvSubDivSphereMesh, "refractTextPack", true);
         Renderer::addDrawable(&lensDrawable);
+        RTObjectMesh rtLens("lens", &uvSubDivSphereMesh, ARTIFICIAL_EYE_PROP.lens_refr_index);
 
-        EyeBall eyeball(eyeballIntersectionTransform, &uvSubDivSphereMesh);
-        RTObjectMesh rtObjectMesh("lens", &uvSubDivSphereMesh, ARTIFICIAL_EYE_PROP.lens_refr_index);
-        RTObjectSphere rtObjectSphere("cornea", eyeballIntersectionTransform, ARTIFICIAL_EYE_PROP.eyeball_refr_index);
-        scene.addObject(&rtObjectMesh);
-        scene.addObject(&rtObjectSphere);
+        RTObjectSphere rtEyeBall("eyeball", eyeballIntersectionTransform, ARTIFICIAL_EYE_PROP.eyeball_refr_index);
 
-		const auto& list = rtObjectMesh.getMesh()->faceBuffer();
+		// const auto& list = rtObjectMesh.getMesh()->faceBuffer();
 
-		Mesh* m = &uvSubDivSphereMesh;
+		// Mesh* m = &uvSubDivSphereMesh;
 
         //
         // Superficial Stuff:
@@ -200,25 +200,23 @@ int main()
         std::vector<glm::vec3> pos = { glm::vec3(0.f, 0.f, -1.f) };
 
         g_constraints = lensSphere.addConstraints(5, &lensSim);
-        g_tracer = &ee::RayTracer::initialize(pos, &eyeball, &scene, 100, 1, 12);
-
-        uvSubDivSphereMesh.calcNormals();
+        g_tracer = &ee::RayTracer::initialize(pos, &rtLens, &rtEyeBall, &scene, 100, 1, 100);
 
         g_tracer->raytraceAll();
 
-        //std::vector<DrawLine> drawpaths;
+        std::vector<DrawLine> drawpaths;
 
-        //ee::Renderer::addTexturePack("lineTextPack", ee::LineUniColorTextPack(Vec3(0.0, 1.0, 0.0)));
-        //auto& paths = g_tracer->getRayPaths();
-        //for (auto& p : paths)
-        //{
-        //    drawpaths.push_back(DrawLine("lineTextPack", p));
-        //}
+        ee::Renderer::addTexturePack("lineTextPack", ee::LineUniColorTextPack(Vec3(0.0, 1.0, 0.0)));
+        auto& paths = g_tracer->getRayPaths();
+        for (auto& p : paths)
+        {
+            drawpaths.push_back(DrawLine("lineTextPack", p));
+        }
 
-        //for (auto& p : drawpaths)
-        //{
-        //    ee::Renderer::addDrawable(&p);
-        //}
+        for (auto& p : drawpaths)
+        {
+            ee::Renderer::addDrawable(&p);
+        }
 
         while (ee::Renderer::isInitialized())
         {

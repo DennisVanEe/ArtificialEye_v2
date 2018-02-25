@@ -12,10 +12,10 @@ uniform float u_refractIndex;
 
 void main()
 {      
-	if (p_position.x < -0.25)
-	{
-		discard;
-	}
+	// if (p_position.x < -0.25)
+	// {
+	// 	 discard;
+	// }
        
     float eta = 1.0 / u_refractIndex;
     vec3 I = normalize(p_position - u_cameraPosition);

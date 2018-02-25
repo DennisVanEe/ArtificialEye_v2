@@ -18,10 +18,10 @@ namespace ee
 	class RayTracer
 	{
 	public:
-		static RayTracer& initialize(const std::vector<glm::vec3>& pos, const EyeBall* eyeball, const Scene* scene, 
+		static RayTracer& initialize(const std::vector<glm::vec3>& pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene,
             int maxIterations, int nthreads, int nsamples)
 		{
-			static RayTracer raytracer(pos, eyeball, scene, maxIterations, nthreads, nsamples);
+			static RayTracer raytracer(pos, lens, eyeball, scene, maxIterations, nthreads, nsamples);
 			return raytracer;
 		}
 
@@ -46,7 +46,7 @@ namespace ee
 			glm::vec3 color;
 		};
 
-		RayTracer(const std::vector<glm::vec3>& pos, const EyeBall* eyeball, const Scene* scene, int maxIterations, int nthreads, int nsamples);
+		RayTracer(const std::vector<glm::vec3>& pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene, int maxIterations, int nthreads, int nsamples);
 
 		void raytraceSelect(int pos, int numrays);
 		void raytraceOne(int pos);
@@ -62,7 +62,9 @@ namespace ee
 		std::vector<PhotoReceptor> m_photoReceptors;
 
 		const Scene* m_scene;
-		const EyeBall* m_eyeball;
+
+		const RTObject* const m_lens;
+		const RTObject* const m_eyeball;
 
 		const int m_sampleCount;
         const int m_maxIterations;

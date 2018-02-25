@@ -17,7 +17,7 @@ namespace ee
 
     void baryCentric(glm::vec3 p, glm::vec3 a, glm::vec3 b, glm::vec3 c, float* u, float* v, float* w);
 
-	glm::vec3 getNormal(const Mesh* mesh, std::size_t triangle, glm::vec3 interPoint);
+	glm::vec3 getNormal(const Mesh* mesh, int triangle, glm::vec3 interPoint);
 
 	// generate a random number generator
 	glm::vec2 randomSampleUnit();

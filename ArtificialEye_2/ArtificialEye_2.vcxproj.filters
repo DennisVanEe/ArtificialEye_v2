@@ -30,6 +30,8 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="prop.ini" />
+    <None Include="Shaders\eyeball_frag.glsl" />
+    <None Include="Shaders\eyeball_vert.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Mesh\Mesh.cpp">

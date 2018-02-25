@@ -10,10 +10,10 @@ namespace ee
 	class RTObject
 	{
 	public:
-		RTObject(std::string name, float refraction, bool reflective = false) :
+		RTObject(std::string name, float refractiveIndex, bool reflective = false) :
 			m_name(name),
 			isReflective(reflective),
-			refracIndex(refraction)
+			refractiveIndex(refractiveIndex)
 		{
 		}
 
@@ -35,8 +35,8 @@ namespace ee
 		// virtual UDP getUDP() const = 0;
 
 	public:
-		bool isReflective;
-		float refracIndex; // internal of object
+		const bool isReflective;
+		const float refractiveIndex; // internal of object
 
 	private:
 		std::string m_name;

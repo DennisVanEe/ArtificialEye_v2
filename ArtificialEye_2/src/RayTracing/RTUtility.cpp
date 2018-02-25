@@ -46,20 +46,26 @@ bool ee::intersectTriangle(Ray ray, glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, gl
 
 void ee::baryCentric(glm::vec3 p, glm::vec3 a, glm::vec3 b, glm::vec3 c, float* u, float* v, float* w)
 {
-    glm::vec3 v0 = b - a, v1 = c - a, v2 = p - a;
-    float d00 = glm::dot(v0, v0);
-    float d01 = glm::dot(v0, v1);
-    float d11 = glm::dot(v1, v1);
-    float d20 = glm::dot(v2, v0);
-    float d21 = glm::dot(v2, v1);
-    float denom = d00 * d11 - d01 * d01;
+	const glm::vec3 v0 = b - a;
+	const glm::vec3 v1 = c - a;
+	const glm::vec3 v2 = p - a;
+
+	const float d00 = glm::dot(v0, v0);
+	const float d01 = glm::dot(v0, v1);
+	const float d11 = glm::dot(v1, v1);
+	const float d20 = glm::dot(v2, v0);
+    const float d21 = glm::dot(v2, v1);
+    const float denom = d00 * d11 - d01 * d01;
+
     *v = (d11 * d20 - d01 * d21) / denom;
     *w = (d00 * d21 - d01 * d20) / denom;
     *u = 1.f - *v - *w;
 }
 
-glm::vec3 ee::getNormal(const Mesh* mesh, std::size_t triangle, glm::vec3 interPoint)
+glm::vec3 ee::getNormal(const Mesh* mesh, int triangle, glm::vec3 interPoint)
 {
+	//return mesh->getTransformedFaceNormal(triangle);
+
 	MeshFace face = mesh->getFace(triangle);
     glm::vec3 vert0 = mesh->getTransformedVertex(face[0]);
     glm::vec3 vert1 = mesh->getTransformedVertex(face[1]);
@@ -68,9 +74,9 @@ glm::vec3 ee::getNormal(const Mesh* mesh, std::size_t triangle, glm::vec3 interP
 	float u, v, w;
 	baryCentric(interPoint, vert0, vert1, vert2, &u, &v, &w);
 
-    glm::vec3 norm0 = mesh->getFaceNormal(face[0]);
-    glm::vec3 norm1 = mesh->getFaceNormal(face[1]);
-    glm::vec3 norm2 = mesh->getFaceNormal(face[2]);
+    glm::vec3 norm0 = mesh->getTransVertexNormal(face[0]);
+    glm::vec3 norm1 = mesh->getTransVertexNormal(face[1]);
+    glm::vec3 norm2 = mesh->getTransVertexNormal(face[2]);
 
 	glm::vec3 normal = glm::normalize(norm0 * u + norm1 * v + norm2 * w);
 
@@ -141,7 +147,7 @@ glm::vec3 ee::refract(const glm::vec3& I, const glm::vec3& N, float eta)
     float k = 1.f - eta * eta * (1.f - NdotI * NdotI);
     if (k < 0.f)
     {
-        return glm::vec3();
+        return glm::vec3(NaN);
     }
     return eta * I - (eta * NdotI + std::sqrt(k)) * N;
 }
