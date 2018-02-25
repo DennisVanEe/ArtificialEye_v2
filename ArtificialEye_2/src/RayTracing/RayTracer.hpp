@@ -54,10 +54,6 @@ namespace ee
         // Ray traces fixed from the eyeball.
         Ray raytraceFromEye(int pos);
 
-        // Actual raytracing implementation:
-        const RTObject* intersectRay(RTRay ray, const RTObject* objIgnore, int triangleIgnore) const;
-        const RTObject* raytrace(RTRay ray);
-
     private:
 		std::vector<PhotoReceptor> m_photoReceptors;
 

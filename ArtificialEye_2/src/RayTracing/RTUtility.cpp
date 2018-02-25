@@ -87,7 +87,7 @@ glm::vec2 ee::randomSampleUnit()
 {
     static std::mt19937 randgen;
     static bool initialize = false;
-    static std::uniform_real_distribution<float> raddist(0.f, 1.f);
+    static std::uniform_real_distribution<float> raddist(0.f, 0.95f);
     static std::uniform_real_distribution<float> angledist(0.f, 2.f * glm::pi<float>());
 
 	if (!initialize)

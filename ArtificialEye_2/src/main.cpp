@@ -200,7 +200,7 @@ int main()
         std::vector<glm::vec3> pos = { glm::vec3(0.f, 0.f, -1.f) };
 
         g_constraints = lensSphere.addConstraints(5, &lensSim);
-        g_tracer = &ee::RayTracer::initialize(pos, &rtLens, &rtEyeBall, &scene, 100, 1, 100);
+        g_tracer = &ee::RayTracer::initialize(pos, &rtLens, &rtEyeBall, &scene, 100, 1, 20);
 
         g_tracer->raytraceAll();
 
