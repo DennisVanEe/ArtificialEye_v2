@@ -202,7 +202,7 @@ int main()
         g_constraints = lensSphere.addConstraints(5, &lensSim);
         g_tracer = &ee::RayTracer::initialize(pos, &rtLens, &rtEyeBall, &scene, 100, 1, 20);
 
-        g_tracer->raytraceAll();
+        // g_tracer->raytraceAll();
 
         std::vector<DrawLine> drawpaths;
 
@@ -245,8 +245,8 @@ int main()
             {
                 lensSim.update(time);
                 Mesh tempMesh = loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level_lens);
-                // uvSubDivSphereMesh.updateVertices(tempMesh.vertexBuffer()));
-                // uvSubDivSphereMesh.updateMeshFaces(tempMesh.vertexBuffer()));
+                uvSubDivSphereMesh.updateVertices(tempMesh.vertexBuffer());
+                uvSubDivSphereMesh.updateMeshFaces(tempMesh.faceBuffer());
                 //g_tracer->raytrace();
             }
 

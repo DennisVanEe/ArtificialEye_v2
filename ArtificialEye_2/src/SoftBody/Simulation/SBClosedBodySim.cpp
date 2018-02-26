@@ -23,27 +23,27 @@ void ee::SBClosedBodySim::SBPressure::applyForces()
 {
     // first we get the current volume of the mesh:
     Float V = m_model->calcVolume();
-    Float invV = 1.0 / V;
+    Float invV = 1.f / V;
 
     // for each face:
-    for (std::size_t i = 0; i < m_model->getNumFaces(); i++)
+    for (int i = 0; i < m_model->getNumFaces(); i++)
     {
         // get triangle indices:
         MeshFace f = m_model->getFace(i);
 
-        Vec3 v0 = m_model->getVertex(f[0]);
-        Vec3 v1 = m_model->getVertex(f[1]);
-        Vec3 v2 = m_model->getVertex(f[2]);
+        glm::vec3 v0 = m_model->getVertex(f[0]);
+		glm::vec3 v1 = m_model->getVertex(f[1]);
+		glm::vec3 v2 = m_model->getVertex(f[2]);
 
         // get current face's area:
-        Vec3 e0 = v1 - v0;
-        Vec3 e1 = v2 - v0;
-        Float A = glm::length(glm::cross(e0, e1)) * 0.5;
+		glm::vec3 e0 = v1 - v0;
+		glm::vec3 e1 = v2 - v0;
+        float A = glm::length(glm::cross(e0, e1)) * 0.5f;
 
         // get the normal:
-        Vec3 norm = m_model->getVertexNormal(i);
+		glm::vec3 norm = m_model->getFaceNormal(i);
 
-        Vec3 pForce = invV * A * m_P * norm;
+		glm::vec3 pForce = invV * A * m_P * norm;
 
         // apply the forces thusly:
         if (m_simulation->getVertexObject(f[0])->m_type == SBObjectType::ACTIVE)
