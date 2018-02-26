@@ -41,7 +41,7 @@ void ee::RayTracer::raytraceAll()
 
 void ee::RayTracer::raytraceSelect(int pos, int numrays)
 {
-    for (int i = pos; i < numrays && i < m_photoReceptors.size(); i++)
+    for (int i = pos, k = 0; k < numrays && i < m_photoReceptors.size(); i++, k++)
     {
         raytraceOne(i);
     }

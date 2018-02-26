@@ -32,6 +32,8 @@
     <None Include="prop.ini" />
     <None Include="Shaders\eyeball_frag.glsl" />
     <None Include="Shaders\eyeball_vert.glsl" />
+    <None Include="Shaders\eyeview_frag.glsl" />
+    <None Include="Shaders\eyeview_vert.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Mesh\Mesh.cpp">
@@ -137,6 +139,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\dependencies\glad\src\glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\PlaneBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -295,6 +300,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Types.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\PlaneBuffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

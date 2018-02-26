@@ -39,13 +39,19 @@ namespace ee
             return m_raypaths;
         }
 
-	private:
+	public:
 		struct PhotoReceptor
 		{
 			glm::vec3 pos;
 			glm::vec3 color;
 		};
 
+		const std::vector<PhotoReceptor>& getPhotoreceptors() const
+		{
+			return m_photoReceptors;
+		}
+
+	private:
 		RayTracer(const std::vector<glm::vec3>& pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene, int maxIterations, int nthreads, int nsamples);
 
 		void raytraceSelect(int pos, int numrays);

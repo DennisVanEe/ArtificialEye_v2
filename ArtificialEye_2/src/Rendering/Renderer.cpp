@@ -6,6 +6,18 @@
 #include "Renderer.hpp"
 #include "Drawable.hpp"
 
+const GLfloat EYE_VIEW_QUAD[] =
+{
+	// positions   // texCoords
+	-1.0f,  1.0f,  0.0f, 1.0f,
+	-1.0f, -1.0f,  0.0f, 0.0f,
+	 1.0f, -1.0f,  1.0f, 0.0f,
+
+	-1.0f,  1.0f,  0.0f, 1.0f,
+	 1.0f, -1.0f,  1.0f, 0.0f,
+	 1.0f,  1.0f,  1.0f, 1.0f
+};
+
 void dummyMouseCallback     (GLFWwindow*, double, double) {}
 void dummyKeyboardCallBack  (GLFWwindow*, int, int, int, int) {}
 void dummyScrollCallBack    (GLFWwindow*, double, double) {}
@@ -33,6 +45,11 @@ namespace ee
         MouseCallbackFunc                                               g_custMouseCallback;
         KeyboardCallbackFunc                                            g_custKeyboardCallback;
         ScrollCallbackFunc                                              g_custScrollCallback;
+
+		// eyeview (the result of the raytracing)
+		GLuint															g_eyeViewVAO;
+		GLuint															g_eyeViewTexture;
+		Shader															g_eyeViewShader;
 
         void mouseCallback(GLFWwindow* window, double xpos, double ypos)
         {
@@ -276,10 +293,65 @@ void ee::Renderer::addDrawable(Drawable* d)
 
 void ee::Renderer::drawAll() 
 { 
+	if (g_eyeViewTexture != 0)
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, g_eyeViewTexture);
+
+		g_eyeViewShader.use();
+
+		glBindVertexArray(g_eyeViewVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		return;
+	}
+
     for (auto& d : g_drawables) 
     { 
         d->draw(); 
     } 
+}
+
+void ee::Renderer::generatePlaneBuffer()
+{
+	// bind it for the texture.
+	GLuint texture_VBO;
+	glGenVertexArrays(1, &g_eyeViewVAO);
+	glGenBuffers(1, &texture_VBO);
+
+	glBindVertexArray(g_eyeViewVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, texture_VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(EYE_VIEW_QUAD), &EYE_VIEW_QUAD, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindVertexArray(0);
+
+	glDeleteBuffers(1, &texture_VBO);
+
+	const std::string frag = g_rootShaderDir + "/" + "eyeview_frag.glsl";
+	const std::string vert = g_rootShaderDir + "/" + "eyeview_vert.glsl";
+	if (!g_eyeViewShader.initialize(vert, frag))
+	{
+		throw std::runtime_error("Could not initialize shader for eyeview.");
+	}
+}
+
+void ee::Renderer::setPlaneBufferTexture(GLuint texture)
+{
+	glDeleteTextures(1, &g_eyeViewTexture);
+	g_eyeViewTexture = texture;
+}
+
+void ee::Renderer::unsetPlaneBufferTexture()
+{
+	g_eyeViewTexture = 0;
 }
 
 ee::TexturePack* ee::Renderer::getTexturePack(const std::string& name)

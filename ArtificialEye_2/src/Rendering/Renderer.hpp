@@ -71,6 +71,10 @@ namespace ee
 
         void drawAll();
 
+		void generatePlaneBuffer();
+		void setPlaneBufferTexture(GLuint texture);
+		void unsetPlaneBufferTexture();
+
         // Removing one is not really necessary in this case (it'll happpen at the end)
         // And there aren't any particles in this case that would lead to that.
         TexturePack* getTexturePack(const std::string& name);

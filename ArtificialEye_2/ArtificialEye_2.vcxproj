@@ -156,6 +156,8 @@
     <None Include="prop.ini" />
     <None Include="Shaders\eyeball_frag.glsl" />
     <None Include="Shaders\eyeball_vert.glsl" />
+    <None Include="Shaders\eyeview_frag.glsl" />
+    <None Include="Shaders\eyeview_vert.glsl" />
     <None Include="Shaders\lineUniColor_frag.glsl" />
     <None Include="Shaders\lineUniColor_vert.glsl" />
     <None Include="Shaders\modelLightUniColor_frag.glsl" />
@@ -185,6 +187,7 @@
     <ClCompile Include="src\Rendering\DrawableMeshContainer.cpp" />
     <ClCompile Include="src\Rendering\DrawLine.cpp" />
     <ClCompile Include="src\Rendering\Lens.cpp" />
+    <ClCompile Include="src\Rendering\PlaneBuffer.cpp" />
     <ClCompile Include="src\Rendering\Renderer.cpp" />
     <ClCompile Include="src\Rendering\shader.cpp" />
     <ClCompile Include="src\Rendering\SkyBox.cpp" />
@@ -226,6 +229,7 @@
     <ClInclude Include="src\Rendering\DrawableMeshContainer.hpp" />
     <ClInclude Include="src\Rendering\DrawLine.hpp" />
     <ClInclude Include="src\Rendering\Lens.hpp" />
+    <ClInclude Include="src\Rendering\PlaneBuffer.hpp" />
     <ClInclude Include="src\Rendering\Renderer.hpp" />
     <ClInclude Include="src\Rendering\shader.hpp" />
     <ClInclude Include="src\Rendering\SkyBox.hpp" />

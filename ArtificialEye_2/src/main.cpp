@@ -10,6 +10,7 @@
 #include "Rendering/TexturePacks/RefractTextPack.hpp"
 #include "Rendering/TexturePacks/LineUniColorTextPack.hpp"
 #include "Rendering/DrawableMeshContainer.hpp"
+#include "Rendering/PlaneBuffer.hpp"
 #include "RayTracing/RayTracer.hpp"
 #include "RayTracing/Scene.hpp"
 #include "RayTracing/EyeBall.hpp"
@@ -53,6 +54,7 @@ std::vector<ee::SBPointConstraint*> g_constraints;
 const Float g_constraintMoveSpeed = 0.1;
 ee::RayTracer* g_tracer;
 bool g_defaultP = true;
+bool g_switchToEyeView = false;
 
 void addConstraints(const std::size_t thickness, ee::SBSimulation* sim, const ee::Mesh* mesh)
 {
@@ -92,6 +94,14 @@ void setSpaceCallback(GLFWwindow* window, int key, int scancode, int action, int
             g_defaultP = !g_defaultP;
         }
     }
+
+	if (key == GLFW_KEY_Y)
+	{
+		if (action == GLFW_PRESS)
+		{
+			g_switchToEyeView = !g_switchToEyeView;
+		}
+	}
 
     if (action == GLFW_PRESS && (key == GLFW_KEY_UP || key == GLFW_KEY_DOWN))
     {
@@ -153,7 +163,7 @@ int main()
         Scene scene;
 
 		glm::mat4 sceneSphereMat = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 5.f));
-		sceneSphereMat = glm::scale(sceneSphereMat, glm::vec3(1.5f));
+		sceneSphereMat = glm::scale(sceneSphereMat, glm::vec3(0.5f));
 		RTObjectSphere sceneSphere("sphere", sceneSphereMat, 0.f);
 		scene.addObject(&sceneSphere);
 
@@ -209,36 +219,40 @@ int main()
         // prepare the simulation
         SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &uvSphereMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
         lensSim.m_constIterations = ARTIFICIAL_EYE_PROP.iterations;
-        addInteriorSpringsUVSphere(&lensSim, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.intspring_coeff, ARTIFICIAL_EYE_PROP.intspring_drag);
+        //addInteriorSpringsUVSphere(&lensSim, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.intspring_coeff, ARTIFICIAL_EYE_PROP.intspring_drag);
         //addConstraints(5, &lensSim, &lensMesh);
         lensSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 20.f, ARTIFICIAL_EYE_PROP.extspring_drag));
 
         // test stuff:
 		// generate a simple 480 x 640 screen
 
-		int res_width = 1;
-		int res_height = 1;
+		int res_width = 10;
+		int res_height = 10;
 
-		float maxHeight = 0.1f;
-		float maxWidth = 0.1f;
-
-		float incHeight = 0.01f / res_height;
-		float incWidth = 0.01f / res_width;
-
-		float width = 0.f;
-		float height = 0.f;
+		float incHeight = 0.01f / static_cast<float>(res_height);
+		float incWidth = 0.01f / static_cast<float>(res_width);
 
 		std::vector<glm::vec3> pos;
+		//pos.push_back(glm::vec3(-0.25f, -0.25f, -1.f));
+		//pos.push_back(glm::vec3(0.25f, 0.25f, -1.f));
+		//pos.push_back(glm::vec3(0.25f, -0.25f, -1.f));
+		//pos.push_back(glm::vec3(-0.25f, 0.25f, -1.f));
+
+		float width, height;
+		width = -0.005f;
 		for (int w = 0; w < res_width; w++, width += incWidth)
 		{
+			height = -0.005f;
 			for (int h = 0; h < res_height; h++, height += incHeight)
 			{
 				pos.push_back(glm::vec3(width, height, -1.f));
 			}
 		}
 
+		ImageBuffer imageBuffer(res_width, res_height);
+
         g_constraints = lensSphere.addConstraints(5, &lensSim);
-        g_tracer = &ee::RayTracer::initialize(pos, &rtLens, &rtEyeBall, &scene, 100, 4, 40);
+        g_tracer = &ee::RayTracer::initialize(pos, &rtLens, &rtEyeBall, &scene, 100, 4, 5);
 
         g_tracer->raytraceAll();
 
@@ -246,7 +260,8 @@ int main()
 
         ee::Renderer::addTexturePack("lineTextPack", ee::LineUniColorTextPack(Vec3(0.0, 1.0, 0.0)));
         auto& paths = g_tracer->getRayPaths();
-        for (auto& p : paths)
+		auto& photoreceptors = g_tracer->getPhotoreceptors();
+        for (const auto& p : paths)
         {
             drawpaths.push_back(DrawLine("lineTextPack", p));
         }
@@ -256,6 +271,19 @@ int main()
             ee::Renderer::addDrawable(&p);
         }
 
+		int uniI = 0;
+		for (int w = 0; w < res_width; w++)
+		{
+			for (int h = 0; h < res_height; h++)
+			{
+				glm::vec3 color = photoreceptors[uniI].color;
+				std::uint8_t val = static_cast<std::uint8_t>(256.f - (256.f * color.x));
+				imageBuffer.setPixel(w, h, glm::u8vec3(val));
+				uniI++;
+			}
+		}
+
+		ee::Renderer::generatePlaneBuffer();
         while (ee::Renderer::isInitialized())
         {
             if (g_enableWireFram)
@@ -275,6 +303,15 @@ int main()
             {
                 lensSim.setP(0.f);
             }
+
+			if (g_switchToEyeView)
+			{
+				ee::Renderer::setPlaneBufferTexture(imageBuffer.getTextureID());
+			}
+			else
+			{
+				ee::Renderer::unsetPlaneBufferTexture();
+			}
 
             ee::Renderer::clearBuffers();
 
