@@ -1,3 +1,5 @@
+#define GLM_FORCE_INLINE
+
 #include "Initialization.hpp"
 
 #include "Rendering/Renderer.hpp"
@@ -197,12 +199,33 @@ int main()
         lensSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 20.f, ARTIFICIAL_EYE_PROP.extspring_drag));
 
         // test stuff:
-        std::vector<glm::vec3> pos = { glm::vec3(0.f, 0.f, -1.f) };
+		// generate a simple 480 x 640 screen
+
+		int res_width = 1;
+		int res_height = 1;
+
+		float maxHeight = 0.1f;
+		float maxWidth = 0.1f;
+
+		float incHeight = 0.01f / res_height;
+		float incWidth = 0.01f / res_width;
+
+		float width = 0.f;
+		float height = 0.f;
+
+		std::vector<glm::vec3> pos;
+		for (int w = 0; w < res_width; w++, width += incWidth)
+		{
+			for (int h = 0; h < res_height; h++, height += incHeight)
+			{
+				pos.push_back(glm::vec3(width, height, -1.f));
+			}
+		}
 
         g_constraints = lensSphere.addConstraints(5, &lensSim);
-        g_tracer = &ee::RayTracer::initialize(pos, &rtLens, &rtEyeBall, &scene, 100, 1, 20);
+        g_tracer = &ee::RayTracer::initialize(pos, &rtLens, &rtEyeBall, &scene, 100, 4, 20);
 
-        // g_tracer->raytraceAll();
+        g_tracer->raytraceAll();
 
         std::vector<DrawLine> drawpaths;
 
@@ -247,7 +270,18 @@ int main()
                 Mesh tempMesh = loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level_lens);
                 uvSubDivSphereMesh.updateVertices(tempMesh.vertexBuffer());
                 uvSubDivSphereMesh.updateMeshFaces(tempMesh.faceBuffer());
-                //g_tracer->raytrace();
+                g_tracer->raytraceAll();
+
+				auto& paths = g_tracer->getRayPaths();
+				for (int i = 0; i < drawpaths.size() && i < paths.size(); i++)
+				{
+					drawpaths[i].setLine(paths[i]);
+				}
+
+				/*for (auto& p : drawpaths)
+				{
+					ee::Renderer::addDrawable(&p);
+				}*/
             }
 
             Renderer::drawAll();

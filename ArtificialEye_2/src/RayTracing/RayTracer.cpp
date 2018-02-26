@@ -22,6 +22,8 @@ ee::RayTracer::RayTracer(const std::vector<glm::vec3>& pos, const RTObject* lens
 
 void ee::RayTracer::raytraceAll()
 {
+	m_raypaths.clear();
+
 	int numPerThreads = m_photoReceptors.size() / m_threads.size();
 	numPerThreads = numPerThreads == 0 ? 1 : numPerThreads;
 
