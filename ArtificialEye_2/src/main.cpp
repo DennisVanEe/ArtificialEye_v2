@@ -29,6 +29,7 @@
 #include <iostream>
 #include <vector>
 #include <glm/matrix.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 using namespace ee;
 
@@ -139,10 +140,10 @@ int main()
         // prepare the renderer:
         Renderer::initialize(ARTIFICIAL_EYE_PROP.shader_dir, renderParamTemp, cameraParams);
         Renderer::setCustomKeyboardCallback(setSpaceCallback);
-        Renderer::setClearColor(glm::vec3(0, 0, 0));
+        Renderer::setClearColor(glm::vec3(0));
 
         // loaded cubemap twice, not efficient, but not important right now:
-        void* res = Renderer::addTexturePack("refractTextPack", RefractTextPack(glm::vec3(0.f, 0.f, 0.f), g_textureDir + g_cubeMapDir, g_cubeMapFaces, ARTIFICIAL_EYE_PROP.lens_refr_index)); assert(res);
+        void* res = Renderer::addTexturePack("refractTextPack", RefractTextPack(glm::vec3(0.f), g_textureDir + g_cubeMapDir, g_cubeMapFaces, ARTIFICIAL_EYE_PROP.lens_refr_index)); assert(res);
         res =       Renderer::addTexturePack("skyBoxTextPack", SkyBoxTextPack(g_textureDir + g_cubeMapDir, g_cubeMapFaces)); assert(res);
 
         // not drawing the eyeball for now
@@ -150,6 +151,20 @@ int main()
         // eyeballModel.load();
 
         Scene scene;
+
+		glm::mat4 sceneSphereMat = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 5.f));
+		sceneSphereMat = glm::scale(sceneSphereMat, glm::vec3(1.5f));
+		RTObjectSphere sceneSphere("sphere", sceneSphereMat, 0.f);
+		scene.addObject(&sceneSphere);
+
+		UniColorTextPack spherepack(glm::vec4(0.f));
+		Renderer::addTexturePack("sphereTextPack", std::move(spherepack));
+
+		Mesh sceneSphereMesh = loadUVsphere(10, 10);
+		sceneSphereMesh.setModelTrans(sceneSphereMat);
+		DrawableMeshContainer sceenSphereDrawable(&sceneSphereMesh, "sphereTextPack");
+
+		Renderer::addDrawable(&sceenSphereDrawable);
 
         // this is for the eyeball model I am using
         glm::mat4 eyeballTransform = glm::translate(glm::mat4(1), glm::vec3(0.f, 0.f, -2.f));
@@ -223,7 +238,7 @@ int main()
 		}
 
         g_constraints = lensSphere.addConstraints(5, &lensSim);
-        g_tracer = &ee::RayTracer::initialize(pos, &rtLens, &rtEyeBall, &scene, 100, 4, 20);
+        g_tracer = &ee::RayTracer::initialize(pos, &rtLens, &rtEyeBall, &scene, 100, 4, 40);
 
         g_tracer->raytraceAll();
 

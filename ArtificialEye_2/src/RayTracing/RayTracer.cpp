@@ -56,6 +56,10 @@ void ee::RayTracer::raytraceOne(int photorecpPos)
 	for (int i = 0; i < m_sampleCount; i++)
 	{
 		const Ray outray = raytraceFromEye(photorecpPos);
+		if (std::isnan(outray.dir.x))
+		{
+			continue;
+		}
 
 		// loop over scene:
 		int numsceneItems = m_scene->getNumObjects();
@@ -64,6 +68,7 @@ void ee::RayTracer::raytraceOne(int photorecpPos)
 			const RTObject* obj = m_scene->getObject(i);
 			if (obj->calcIntersection(outray, -1))
 			{
+				m_raypaths.push_back(Line(outray.origin, obj->intPoint()));
 				m_photoReceptors[photorecpPos].color = glm::vec3(1.f, 0.f, 0.f);
 			}
 		}
@@ -85,6 +90,11 @@ ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos)
 	glm::vec3 dir = glm::normalize(ee::refract(ray0.dir, m_lens->intNormalInterpolated(), m_eyeball->refractiveIndex / m_lens->refractiveIndex));
 	const Ray ray1(intpoint, dir);
 
+	if (std::isnan(ray1.dir.x))
+	{
+		return Ray(glm::vec3(NaN), glm::vec3(NaN));
+	}
+
 	m_raypaths.push_back(Line(ray0.origin, ray1.origin));
 
 	// new we intersect through the lens:
@@ -98,16 +108,22 @@ ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos)
 
 	if (std::isnan(ray2.dir.x))
 	{
-		return Ray(glm::vec3(0.f), glm::vec3(0.f));
+		return Ray(glm::vec3(NaN), glm::vec3(NaN));
 	}
 
 	// now we intersect through the cornea (and out into the world!)
 	res = m_eyeball->calcIntersection(ray2, -1); assert(res);
 	intpoint = m_eyeball->intPoint();
-	dir =  glm::normalize(ee::refract(ray1.dir, m_eyeball->intNormalInterpolated(), m_eyeball->refractiveIndex));
+	dir =  glm::normalize(ee::refract(ray1.dir, -m_eyeball->intNormalInterpolated(), m_eyeball->refractiveIndex));
 	const Ray ray3(intpoint, dir);
 
+	if (std::isnan(ray3.dir.x))
+	{
+		return Ray(glm::vec3(NaN), glm::vec3(NaN));
+	}
+
 	m_raypaths.push_back(Line(ray2.origin, ray3.origin));
+	//m_raypaths.push_back(Line(ray3.origin, ray3.origin + (ray3.dir) * 10.f));
 
 	return ray3;
 }
