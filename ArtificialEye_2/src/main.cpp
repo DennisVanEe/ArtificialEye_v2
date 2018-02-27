@@ -226,11 +226,14 @@ int main()
         // test stuff:
 		// generate a simple 480 x 640 screen
 
-		int res_width = 16;
-		int res_height = 16;
+        const int res_width = 16;
+		const int res_height = 16;
 
-		float incHeight = 0.01f / static_cast<float>(res_height);
-		float incWidth = 0.01f / static_cast<float>(res_width);
+        const float maxHeight = 0.01f;
+        const float maxWidth = 0.01;
+
+		float incHeight = maxHeight / static_cast<float>(res_height);
+		float incWidth = maxWidth / static_cast<float>(res_width);
 
 		std::vector<glm::vec3> pos;
 		//pos.push_back(glm::vec3(-0.25f, -0.25f, -1.f));
@@ -239,10 +242,10 @@ int main()
 		//pos.push_back(glm::vec3(-0.25f, 0.25f, -1.f));
 
 		float width, height;
-		width = -0.005f;
+		width = -maxWidth / 2.f;
 		for (int w = 0; w < res_width; w++, width += incWidth)
 		{
-			height = -0.005f;
+			height = -maxHeight / 2.f;
 			for (int h = 0; h < res_height; h++, height += incHeight)
 			{
 				pos.push_back(glm::vec3(width, height, -1.f));
@@ -329,6 +332,19 @@ int main()
 				{
 					drawpaths[i].setLine(paths[i]);
 				}
+
+                auto& photoreceptors = g_tracer->getPhotoreceptors();
+                int uniI = 0;
+                for (int w = 0; w < res_width; w++)
+                {
+                    for (int h = 0; h < res_height; h++)
+                    {
+                        glm::vec3 color = photoreceptors[uniI].color;
+                        //std::uint8_t val = static_cast<std::uint8_t>(256.f - (256.f * color.x));
+                        imageBuffer.setPixel(w, h, color.x);
+                        uniI++;
+                    }
+                }
 
 				/*for (auto& p : drawpaths)
 				{
