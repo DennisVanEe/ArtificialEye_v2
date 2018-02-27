@@ -20,7 +20,7 @@ ee::ImageBuffer::~ImageBuffer()
 	glDeleteTextures(1, &m_texture);
 }
 
-bool ee::ImageBuffer::setPixel(int x, int y, glm::u8vec3 color)
+bool ee::ImageBuffer::setPixel(int x, int y, float color)
 {
 	if (x >= m_width || y >= m_height)
 	{
@@ -29,23 +29,24 @@ bool ee::ImageBuffer::setPixel(int x, int y, glm::u8vec3 color)
 
 	int index = (y * m_width + x);
 
-	m_imageBuffer[index] = color;
+    unsigned char greyscale = 256.f * color;
+    m_imageBuffer[index] = glm::u8vec3(greyscale);
 
 	return true;
 }
 
 unsigned ee::ImageBuffer::getTextureID() const
 {
-	unsigned texture;
+	GLuint texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, m_imageBuffer.data());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, reinterpret_cast<const unsigned char*>(m_imageBuffer.data()));
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 

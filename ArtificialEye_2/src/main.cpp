@@ -219,15 +219,15 @@ int main()
         // prepare the simulation
         SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &uvSphereMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
         lensSim.m_constIterations = ARTIFICIAL_EYE_PROP.iterations;
-        //addInteriorSpringsUVSphere(&lensSim, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.intspring_coeff, ARTIFICIAL_EYE_PROP.intspring_drag);
+        addInteriorSpringsUVSphere(&lensSim, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.intspring_coeff, ARTIFICIAL_EYE_PROP.intspring_drag);
         //addConstraints(5, &lensSim, &lensMesh);
         lensSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 20.f, ARTIFICIAL_EYE_PROP.extspring_drag));
 
         // test stuff:
 		// generate a simple 480 x 640 screen
 
-		int res_width = 10;
-		int res_height = 10;
+		int res_width = 16;
+		int res_height = 16;
 
 		float incHeight = 0.01f / static_cast<float>(res_height);
 		float incWidth = 0.01f / static_cast<float>(res_width);
@@ -277,8 +277,8 @@ int main()
 			for (int h = 0; h < res_height; h++)
 			{
 				glm::vec3 color = photoreceptors[uniI].color;
-				std::uint8_t val = static_cast<std::uint8_t>(256.f - (256.f * color.x));
-				imageBuffer.setPixel(w, h, glm::u8vec3(val));
+				//std::uint8_t val = static_cast<std::uint8_t>(256.f - (256.f * color.x));
+				imageBuffer.setPixel(w, h, color.x);
 				uniI++;
 			}
 		}

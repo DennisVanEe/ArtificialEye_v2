@@ -69,7 +69,7 @@ void ee::RayTracer::raytraceOne(int photorecpPos)
 			if (obj->calcIntersection(outray, -1))
 			{
 				m_raypaths.push_back(Line(outray.origin, obj->intPoint()));
-				m_photoReceptors[photorecpPos].color = glm::vec3(1.f, 0.f, 0.f);
+				m_photoReceptors[photorecpPos].color += glm::vec3(1.f, 0.f, 0.f);
 			}
 		}
 	}

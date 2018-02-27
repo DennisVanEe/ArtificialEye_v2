@@ -12,7 +12,7 @@ namespace ee
 		ImageBuffer(int width, int height);
 		~ImageBuffer();
 
-		bool setPixel(int x, int y, glm::u8vec3 color); // change an individual pixel color
+		bool setPixel(int x, int y, float color); // change an individual pixel color
 
 		unsigned getTextureID() const;
 
