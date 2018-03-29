@@ -30,10 +30,3 @@ ee::Texture::Texture(const std::string& name, const std::string& path)
 
     stbi_image_free(data);
 }
-
-ee::Texture::Texture(Texture&& other) :
-    m_texture(other.m_texture),
-    m_type(other.m_type)
-{
-    // m_texture = 0;
-}

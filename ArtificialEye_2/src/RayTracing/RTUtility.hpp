@@ -20,7 +20,7 @@ namespace ee
 	glm::vec3 getNormal(const Mesh* mesh, int triangle, glm::vec3 interPoint);
 
 	// generate a random number generator
-	glm::vec2 randomSampleUnit();
+	glm::vec2 sampleUnit(int dist, int angles, int distFact, int angleFact);
 
     // custom refract function (glm's acts weirdly)
     glm::vec3 refract(const glm::vec3& I, const glm::vec3& N, float eta);

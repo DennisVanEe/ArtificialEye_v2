@@ -83,24 +83,38 @@ glm::vec3 ee::getNormal(const Mesh* mesh, int triangle, glm::vec3 interPoint)
 	return normal;
 }
 
-glm::vec2 ee::randomSampleUnit()
+glm::vec2 ee::sampleUnit(int dist, int angles, int distFact, int angleFact)
 {
-    static std::mt19937 randgen;
-    static bool initialize = false;
-    static std::uniform_real_distribution<float> raddist(0.f, 0.95f);
-    static std::uniform_real_distribution<float> angledist(0.f, 2.f * glm::pi<float>());
+ //   static std::mt19937 randgen;
+ //   static bool initialize = false;
+ //   static std::uniform_real_distribution<float> raddist(0.f, 0.95f);
+ //   static std::uniform_real_distribution<float> angledist(0.f, 2.f * glm::pi<float>());
 
-	if (!initialize)
-	{
-		randgen.seed(static_cast<unsigned int>(time(NULL)));
-		initialize = true;
-	}
+	//if (!initialize)
+	//{
+	//	randgen.seed(static_cast<unsigned int>(time(NULL)));
+	//	initialize = true;
+	//}
 
-	const float r = raddist(randgen);
-	const float rsqrt = std::sqrt(r);
-	const float theta = angledist(randgen);
+	//const float r = raddist(randgen);
+	//const float rsqrt = std::sqrt(r);
+	//const float theta = angledist(randgen);
 
-	return glm::vec2(rsqrt * std::cos(theta), rsqrt * std::sin(theta));
+	//return glm::vec2(rsqrt * std::cos(theta), rsqrt * std::sin(theta));
+
+    const float angleFactor = static_cast<float>(angleFact);
+    const float distanceFactor = static_cast<float>(distFact);
+
+    float distanceIndex = static_cast<float>(dist);
+    float angleIndex = static_cast<float>(angles);
+
+    const float r = distanceIndex / distanceFactor;
+    const float theta = (PI2 / angleFactor) * (angleIndex + r);
+
+    const float x = r * std::cos(theta);
+    const float y = r * std::sin(theta);
+
+    return glm::vec2(x, y);
 }
 
 // The resulting intersection point is transformed

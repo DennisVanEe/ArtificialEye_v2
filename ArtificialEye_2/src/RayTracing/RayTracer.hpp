@@ -19,9 +19,9 @@ namespace ee
 	{
 	public:
 		static RayTracer& initialize(const std::vector<glm::vec3>& pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene,
-            int maxIterations, int nthreads, int nsamples)
+            int nthreads, int distFactor, int angleFactor)
 		{
-			static RayTracer raytracer(pos, lens, eyeball, scene, maxIterations, nthreads, nsamples);
+			static RayTracer raytracer(pos, lens, eyeball, scene, nthreads, distFactor, angleFactor);
 			return raytracer;
 		}
 
@@ -52,13 +52,13 @@ namespace ee
 		}
 
 	private:
-		RayTracer(const std::vector<glm::vec3>& pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene, int maxIterations, int nthreads, int nsamples);
+		RayTracer(const std::vector<glm::vec3>& pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene, int nthreads, int distFactor, int angleFactor);
 
 		void raytraceSelect(int pos, int numrays);
 		void raytraceOne(int pos);
 
         // Ray traces fixed from the eyeball.
-        Ray raytraceFromEye(int pos);
+        Ray raytraceFromEye(int pos, int dist, int angle, std::vector<Line>* localPaths);
 
     private:
 		std::vector<PhotoReceptor> m_photoReceptors;
@@ -68,11 +68,13 @@ namespace ee
 		const RTObject* const m_lens;
 		const RTObject* const m_eyeball;
 
-		const int m_sampleCount;
-        const int m_maxIterations;
+		const int m_distFactor;
+        const int m_angleFactor;
+        const int m_totalSamples;
 
 		std::vector<std::thread> m_threads;
 
 		std::vector<Line> m_raypaths; // used for rendering the rays in the scene
+        std::vector<std::vector<Line>> m_individualRayPaths;
     };
 }

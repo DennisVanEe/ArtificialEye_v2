@@ -14,8 +14,6 @@ namespace ee
     public:
         Texture(const std::string& name, const std::string& path);
         Texture(GLuint texture) : m_texture(texture) {}
-        Texture(const Texture& other) = default;
-        Texture(Texture&& other);
 
         GLuint getTexture() const { return m_texture; }
         bool   isEmpty() const { return m_texture == 0; }

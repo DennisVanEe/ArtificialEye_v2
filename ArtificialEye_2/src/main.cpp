@@ -51,7 +51,7 @@ bool g_startSoftBody = false;
 bool g_enableWireFram = false;
 
 std::vector<ee::SBPointConstraint*> g_constraints;
-const Float g_constraintMoveSpeed = 0.1;
+const float g_constraintMoveSpeed = 0.1f;
 ee::RayTracer* g_tracer;
 bool g_defaultP = true;
 bool g_switchToEyeView = false;
@@ -229,8 +229,8 @@ int main()
         const int res_width = 16;
 		const int res_height = 16;
 
-        const float maxHeight = 0.01f;
-        const float maxWidth = 0.01;
+        const float maxHeight = 1.0f;
+        const float maxWidth = 1.0f;
 
 		float incHeight = maxHeight / static_cast<float>(res_height);
 		float incWidth = maxWidth / static_cast<float>(res_width);
@@ -255,7 +255,7 @@ int main()
 		ImageBuffer imageBuffer(res_width, res_height);
 
         g_constraints = lensSphere.addConstraints(5, &lensSim);
-        g_tracer = &ee::RayTracer::initialize(pos, &rtLens, &rtEyeBall, &scene, 100, 4, 5);
+        g_tracer = &ee::RayTracer::initialize(pos, &rtLens, &rtEyeBall, &scene, 4, 8, 8);
 
         g_tracer->raytraceAll();
 
