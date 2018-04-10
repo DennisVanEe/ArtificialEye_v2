@@ -10,8 +10,11 @@ namespace ee
     class FramesBuffer
     {
     public:
+        FramesBuffer() : m_buffer(nullptr) {}
         FramesBuffer(int resolution, int nFrames, FRAMES_BUFFER_MODE mode);
         ~FramesBuffer();
+
+        void initialize(int resolution, int nFrames, FRAMES_BUFFER_MODE mode);
 
         // This will fail if a maxFrame was set and it has been reached.
         inline bool setPixel(int frame, int framePos, const void* color);

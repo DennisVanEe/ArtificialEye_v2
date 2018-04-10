@@ -56,21 +56,6 @@ ee::RayTracer* g_tracer;
 bool g_defaultP = true;
 bool g_switchToEyeView = false;
 
-void addConstraints(const std::size_t thickness, ee::SBSimulation* sim, const ee::Mesh* mesh)
-{
-    for (std::size_t i = 0, sub = (thickness / 2 + 1); i < thickness; i++, sub--)
-    {
-        const std::size_t index = (ARTIFICIAL_EYE_PROP.latitude / 2 - sub) * (ARTIFICIAL_EYE_PROP.longitude) + 1;
-        const std::size_t end = index + ARTIFICIAL_EYE_PROP.longitude;
-
-        for (std::size_t j = index; j < end; j++)
-        {
-            auto ptr = sim->addConstraint(&ee::SBPointConstraint(mesh->getVertex(j), sim->getVertexObject(j)));
-            g_constraints.push_back(ptr);
-        }
-    }
-}
-
 void setSpaceCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_SPACE)

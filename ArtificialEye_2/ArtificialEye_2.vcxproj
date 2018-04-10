@@ -200,6 +200,7 @@
     <ClCompile Include="src\Rendering\TexturePacks\UniColorTextPack.cpp" />
     <ClCompile Include="src\Rendering\Textures\CubeMap.cpp" />
     <ClCompile Include="src\Rendering\Textures\Texture.cpp" />
+    <ClCompile Include="src\Simulation.cpp" />
     <ClCompile Include="src\SoftBody\Constraints\SBLengthConstraint.cpp" />
     <ClCompile Include="src\SoftBody\Integrators\SBVerletIntegrator.cpp" />
     <ClCompile Include="src\SoftBody\Objects\SBVertex.cpp" />
@@ -245,6 +246,7 @@
     <ClInclude Include="src\Rendering\TexturePacks\UniColorTextPack.hpp" />
     <ClInclude Include="src\Rendering\Textures\CubeMap.hpp" />
     <ClInclude Include="src\Rendering\Textures\Texture.hpp" />
+    <ClInclude Include="src\Simulation.hpp" />
     <ClInclude Include="src\SoftBody\Constraints\SBConstraint.hpp" />
     <ClInclude Include="src\SoftBody\Constraints\SBLengthConstraint.hpp" />
     <ClInclude Include="src\SoftBody\Constraints\SBPointConstraint.hpp" />

@@ -1,10 +1,27 @@
 #include "FrameBuffer.hpp"
 
 ee::FramesBuffer::FramesBuffer(int resolution, int nFrames, FRAMES_BUFFER_MODE mode) :
-    m_mode(mode),
-    m_resolution(resolution),
-    m_frameCount(nFrames)
+    m_buffer(nullptr)
 {
+    initialize(resolution, nFrames, mode);
+}
+
+ee::FramesBuffer::~FramesBuffer()
+{
+    delete[] m_buffer;
+}
+
+void ee::FramesBuffer::initialize(int resolution, int nFrames, FRAMES_BUFFER_MODE mode)
+{
+    if (m_buffer != nullptr)
+    {
+        return;
+    }
+
+    m_mode = mode;
+    m_resolution = resolution;
+    m_frameCount = nFrames;
+
     switch (mode)
     {
     case FRAMES_BUFFER_MODE::FLOAT3:
@@ -23,9 +40,4 @@ ee::FramesBuffer::FramesBuffer(int resolution, int nFrames, FRAMES_BUFFER_MODE m
 
     m_frameSize = m_pixelSize * resolution;
     m_buffer = new Byte[m_frameSize * m_frameCount];
-}
-
-ee::FramesBuffer::~FramesBuffer()
-{
-    delete[] m_buffer;
 }

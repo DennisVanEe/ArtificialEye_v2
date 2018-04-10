@@ -104,7 +104,7 @@ void ee::RayTracer::raytraceOne(int photorecpPos)
         }
 	}
 
-	// Now we average the values to get the color:
+	// Now we average the values to get the color and set this value.
 	localColor = localColor / static_cast<float>(m_totalSamples);
     m_framesBuffer->setPixel(m_currentFrame, photorecpPos, &localColor);
 }
