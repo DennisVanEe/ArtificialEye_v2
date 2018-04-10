@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\version.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\sdc\sdc_obj.dir\$(Configuration)\crease.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\sdc\sdc_obj.dir\$(Configuration)\typeTraits.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\vtr\vtr_obj.dir\$(Configuration)\fvarLevel.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\vtr\vtr_obj.dir\$(Configuration)\fvarRefinement.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\vtr\vtr_obj.dir\$(Configuration)\level.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\vtr\vtr_obj.dir\$(Configuration)\quadRefinement.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\vtr\vtr_obj.dir\$(Configuration)\refinement.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\vtr\vtr_obj.dir\$(Configuration)\sparseSelector.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\vtr\vtr_obj.dir\$(Configuration)\triRefinement.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\error.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\endCapBSplineBasisPatchFactory.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\endCapGregoryBasisPatchFactory.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\endCapLegacyGregoryPatchFactory.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\gregoryBasis.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\patchBasis.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\patchDescriptor.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\patchMap.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\patchTable.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\patchTableFactory.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\ptexIndices.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\stencilTable.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\stencilTableFactory.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\stencilBuilder.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\topologyDescriptor.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\topologyRefiner.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\topologyRefinerFactory.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\osd_cpu_obj.dir\$(Configuration)\cpuEvaluator.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\osd_cpu_obj.dir\$(Configuration)\cpuKernel.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\osd_cpu_obj.dir\$(Configuration)\cpuPatchTable.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\osd_cpu_obj.dir\$(Configuration)\cpuVertexBuffer.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\osd_cpu_obj.dir\$(Configuration)\ompEvaluator.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\osd_cpu_obj.dir\$(Configuration)\ompKernel.obj">
+      <Filter>Object Libraries</Filter>
+    </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Object Libraries">
+      <UniqueIdentifier>{02F00D8C-7D70-3A79-ABCC-D5C4427890F3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D5774E70-5903-3ABA-BB6B-2E75A8929DAD}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

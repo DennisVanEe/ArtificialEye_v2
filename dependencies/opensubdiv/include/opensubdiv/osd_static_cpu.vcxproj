@@ -1,0 +1,275 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{DEF13E53-8C75-31E1-B814-69F335497406}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>osd_static_cpu</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\lib\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">osd_static_cpu.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">osdCPU</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\lib\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">osd_static_cpu.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">osdCPU</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\lib\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">osd_static_cpu.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">osdCPU</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\lib\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">osd_static_cpu.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">osdCPU</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv;C:\Users\Dennis van Ee\Downloads\GLEW\include;C:\Program Files (x86)\Windows Kits\8.1\Include\um;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4005;4350;4548</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <OpenMPSupport>true</OpenMPSupport>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;OPENSUBDIV_VERSION_STRING="3.3.1";NOMINMAX;_USE_MATH_DEFINES;_CRT_SECURE_NO_WARNINGS;OPENSUBDIV_HAS_OPENGL;OPENSUBDIV_HAS_OPENMP;OSD_USES_GLEW;OPENSUBDIV_HAS_GLSL_TRANSFORM_FEEDBACK;OPENSUBDIV_HAS_GLSL_COMPUTE;OPENSUBDIV_HAS_DX11SDK;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;OPENSUBDIV_VERSION_STRING=\"3.3.1\";NOMINMAX;_USE_MATH_DEFINES;_CRT_SECURE_NO_WARNINGS;OPENSUBDIV_HAS_OPENGL;OPENSUBDIV_HAS_OPENMP;OSD_USES_GLEW;OPENSUBDIV_HAS_GLSL_TRANSFORM_FEEDBACK;OPENSUBDIV_HAS_GLSL_COMPUTE;OPENSUBDIV_HAS_DX11SDK;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv;C:\Users\Dennis van Ee\Downloads\GLEW\include;C:\Program Files (x86)\Windows Kits\8.1\Include\um;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv;C:\Users\Dennis van Ee\Downloads\GLEW\include;C:\Program Files (x86)\Windows Kits\8.1\Include\um;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv;C:\Users\Dennis van Ee\Downloads\GLEW\include;C:\Program Files (x86)\Windows Kits\8.1\Include\um;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4005;4350;4548</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <OpenMPSupport>true</OpenMPSupport>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OPENSUBDIV_VERSION_STRING="3.3.1";NOMINMAX;_USE_MATH_DEFINES;_CRT_SECURE_NO_WARNINGS;OPENSUBDIV_HAS_OPENGL;OPENSUBDIV_HAS_OPENMP;OSD_USES_GLEW;OPENSUBDIV_HAS_GLSL_TRANSFORM_FEEDBACK;OPENSUBDIV_HAS_GLSL_COMPUTE;OPENSUBDIV_HAS_DX11SDK;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OPENSUBDIV_VERSION_STRING=\"3.3.1\";NOMINMAX;_USE_MATH_DEFINES;_CRT_SECURE_NO_WARNINGS;OPENSUBDIV_HAS_OPENGL;OPENSUBDIV_HAS_OPENMP;OSD_USES_GLEW;OPENSUBDIV_HAS_GLSL_TRANSFORM_FEEDBACK;OPENSUBDIV_HAS_GLSL_COMPUTE;OPENSUBDIV_HAS_DX11SDK;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv;C:\Users\Dennis van Ee\Downloads\GLEW\include;C:\Program Files (x86)\Windows Kits\8.1\Include\um;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv;C:\Users\Dennis van Ee\Downloads\GLEW\include;C:\Program Files (x86)\Windows Kits\8.1\Include\um;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv;C:\Users\Dennis van Ee\Downloads\GLEW\include;C:\Program Files (x86)\Windows Kits\8.1\Include\um;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4005;4350;4548</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <OpenMPSupport>true</OpenMPSupport>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OPENSUBDIV_VERSION_STRING="3.3.1";NOMINMAX;_USE_MATH_DEFINES;_CRT_SECURE_NO_WARNINGS;OPENSUBDIV_HAS_OPENGL;OPENSUBDIV_HAS_OPENMP;OSD_USES_GLEW;OPENSUBDIV_HAS_GLSL_TRANSFORM_FEEDBACK;OPENSUBDIV_HAS_GLSL_COMPUTE;OPENSUBDIV_HAS_DX11SDK;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OPENSUBDIV_VERSION_STRING=\"3.3.1\";NOMINMAX;_USE_MATH_DEFINES;_CRT_SECURE_NO_WARNINGS;OPENSUBDIV_HAS_OPENGL;OPENSUBDIV_HAS_OPENMP;OSD_USES_GLEW;OPENSUBDIV_HAS_GLSL_TRANSFORM_FEEDBACK;OPENSUBDIV_HAS_GLSL_COMPUTE;OPENSUBDIV_HAS_DX11SDK;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv;C:\Users\Dennis van Ee\Downloads\GLEW\include;C:\Program Files (x86)\Windows Kits\8.1\Include\um;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv;C:\Users\Dennis van Ee\Downloads\GLEW\include;C:\Program Files (x86)\Windows Kits\8.1\Include\um;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv;C:\Users\Dennis van Ee\Downloads\GLEW\include;C:\Program Files (x86)\Windows Kits\8.1\Include\um;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4005;4350;4548</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <OpenMPSupport>true</OpenMPSupport>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OPENSUBDIV_VERSION_STRING="3.3.1";NOMINMAX;_USE_MATH_DEFINES;_CRT_SECURE_NO_WARNINGS;OPENSUBDIV_HAS_OPENGL;OPENSUBDIV_HAS_OPENMP;OSD_USES_GLEW;OPENSUBDIV_HAS_GLSL_TRANSFORM_FEEDBACK;OPENSUBDIV_HAS_GLSL_COMPUTE;OPENSUBDIV_HAS_DX11SDK;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;OPENSUBDIV_VERSION_STRING=\"3.3.1\";NOMINMAX;_USE_MATH_DEFINES;_CRT_SECURE_NO_WARNINGS;OPENSUBDIV_HAS_OPENGL;OPENSUBDIV_HAS_OPENMP;OSD_USES_GLEW;OPENSUBDIV_HAS_GLSL_TRANSFORM_FEEDBACK;OPENSUBDIV_HAS_GLSL_COMPUTE;OPENSUBDIV_HAS_DX11SDK;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv;C:\Users\Dennis van Ee\Downloads\GLEW\include;C:\Program Files (x86)\Windows Kits\8.1\Include\um;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv;C:\Users\Dennis van Ee\Downloads\GLEW\include;C:\Program Files (x86)\Windows Kits\8.1\Include\um;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\version.cpp" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\sdc\sdc_obj.dir\$(Configuration)\crease.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\sdc\sdc_obj.dir\$(Configuration)\typeTraits.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\vtr\vtr_obj.dir\$(Configuration)\fvarLevel.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\vtr\vtr_obj.dir\$(Configuration)\fvarRefinement.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\vtr\vtr_obj.dir\$(Configuration)\level.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\vtr\vtr_obj.dir\$(Configuration)\quadRefinement.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\vtr\vtr_obj.dir\$(Configuration)\refinement.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\vtr\vtr_obj.dir\$(Configuration)\sparseSelector.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\vtr\vtr_obj.dir\$(Configuration)\triRefinement.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\error.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\endCapBSplineBasisPatchFactory.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\endCapGregoryBasisPatchFactory.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\endCapLegacyGregoryPatchFactory.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\gregoryBasis.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\patchBasis.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\patchDescriptor.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\patchMap.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\patchTable.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\patchTableFactory.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\ptexIndices.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\stencilTable.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\stencilTableFactory.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\stencilBuilder.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\topologyDescriptor.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\topologyRefiner.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.dir\$(Configuration)\topologyRefinerFactory.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\osd_cpu_obj.dir\$(Configuration)\cpuEvaluator.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\osd_cpu_obj.dir\$(Configuration)\cpuKernel.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\osd_cpu_obj.dir\$(Configuration)\cpuPatchTable.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\osd_cpu_obj.dir\$(Configuration)\cpuVertexBuffer.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\osd_cpu_obj.dir\$(Configuration)\ompEvaluator.obj" />
+    <Object Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\osd_cpu_obj.dir\$(Configuration)\ompKernel.obj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\far_obj.vcxproj">
+      <Project>{2CC82ED2-B968-3988-8758-31DDE7614F65}</Project>
+      <Name>far_obj</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\osd_cpu_obj.vcxproj">
+      <Project>{71338814-D7F7-36A2-8317-2AAE0E23AFDB}</Project>
+      <Name>osd_cpu_obj</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\sdc\sdc_obj.vcxproj">
+      <Project>{2F066E0C-9A54-3E99-8C19-8E4C960536BF}</Project>
+      <Name>sdc_obj</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\vtr\vtr_obj.vcxproj">
+      <Project>{387406E2-A01A-319B-8E56-B794969DE70A}</Project>
+      <Name>vtr_obj</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

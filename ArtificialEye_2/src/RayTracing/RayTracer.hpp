@@ -12,16 +12,17 @@
 #include "RTUtility.hpp"
 #include "RTRay.hpp"
 #include "Scene.hpp"
+#include "FrameBuffer.hpp"
 
 namespace ee
 {
 	class RayTracer
 	{
 	public:
-		static RayTracer& initialize(const std::vector<glm::vec3>& pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene,
+		static RayTracer& initialize(const std::vector<glm::vec3>& pos, FramesBuffer* framesBuffer, const RTObject* lens, const RTObject* eyeball, const Scene* scene,
             int nthreads, int distFactor, int angleFactor)
 		{
-			static RayTracer raytracer(pos, lens, eyeball, scene, nthreads, distFactor, angleFactor);
+			static RayTracer raytracer(pos, framesBuffer, lens, eyeball, scene, nthreads, distFactor, angleFactor);
 			return raytracer;
 		}
 
@@ -52,7 +53,7 @@ namespace ee
 		}
 
 	private:
-		RayTracer(const std::vector<glm::vec3>& pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene, int nthreads, int distFactor, int angleFactor);
+		RayTracer(const std::vector<glm::vec3>& pos, FramesBuffer* framesBuffer, const RTObject* lens, const RTObject* eyeball, const Scene* scene, int nthreads, int distFactor, int angleFactor);
 
 		void raytraceSelect(int pos, int numrays);
 		void raytraceOne(int pos);
@@ -64,6 +65,7 @@ namespace ee
 		std::vector<PhotoReceptor> m_photoReceptors;
 
 		const Scene* m_scene;
+        FramesBuffer* m_framesBuffer;
 
 		const RTObject* const m_lens;
 		const RTObject* const m_eyeball;

@@ -3,9 +3,10 @@
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 
-ee::RayTracer::RayTracer(const std::vector<glm::vec3>& pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene,
+ee::RayTracer::RayTracer(const std::vector<glm::vec3>& pos, FramesBuffer* framesBuffer, const RTObject* lens, const RTObject* eyeball, const Scene* scene,
     int nthreads, int distFactor, int angleFactor) :
-	m_scene(scene),
+    m_scene(scene),
+    m_framesBuffer(framesBuffer),
 	m_distFactor(distFactor),
     m_angleFactor(angleFactor),
     m_totalSamples(distFactor * angleFactor),
@@ -65,7 +66,7 @@ void ee::RayTracer::raytraceOne(int photorecpPos)
     m_individualRayPaths[photorecpPos].clear();
 
 	// first we need to sample a bunch of rays off the circular lens (basically prepare a bunch of paths)
-	m_photoReceptors[photorecpPos].color = glm::vec3(0.f);
+    glm::vec3 localColor(0.f);
 	for (int d = 0; d < m_distFactor; d++)
 	{
         for (int a = 0; a < m_angleFactor; a++)
@@ -84,14 +85,15 @@ void ee::RayTracer::raytraceOne(int photorecpPos)
                 if (obj->calcIntersection(outray, -1))
                 {
                     m_raypaths.push_back(Line(outray.origin, obj->intPoint()));
-                    m_photoReceptors[photorecpPos].color += glm::vec3(1.f, 0.f, 0.f);
+                    localColor += glm::vec3(1.f, 0.f, 0.f);
                 }
             }
         }
 	}
 
 	// now we average the values to get the color:
-	m_photoReceptors[photorecpPos].color = m_photoReceptors[photorecpPos].color / static_cast<float>(m_totalSamples);
+	localColor = localColor / static_cast<float>(m_totalSamples);
+
 }
 
 ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, int dist, int angle, std::vector<Line>* localPaths)

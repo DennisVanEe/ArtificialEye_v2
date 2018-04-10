@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\sdc\crease.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\sdc\typeTraits.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\sdc\bilinearScheme.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\sdc\catmarkScheme.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\sdc\crease.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\sdc\loopScheme.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\sdc\options.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\sdc\scheme.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\sdc\types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{25A59157-65A3-3BBC-808F-065AA47AC36B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D5774E70-5903-3ABA-BB6B-2E75A8929DAD}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

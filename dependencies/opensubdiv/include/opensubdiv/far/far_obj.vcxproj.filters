@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\error.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\endCapBSplineBasisPatchFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\endCapGregoryBasisPatchFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\endCapLegacyGregoryPatchFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\gregoryBasis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\patchBasis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\patchDescriptor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\patchMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\patchTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\patchTableFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\ptexIndices.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\stencilTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\stencilTableFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\stencilBuilder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\topologyDescriptor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\topologyRefiner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\topologyRefinerFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\gregoryBasis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\endCapBSplineBasisPatchFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\endCapGregoryBasisPatchFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\endCapLegacyGregoryPatchFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\patchBasis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\stencilBuilder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\error.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\patchDescriptor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\patchParam.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\patchMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\patchTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\patchTableFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\primvarRefiner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\ptexIndices.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\stencilTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\stencilTableFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\topologyDescriptor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\topologyLevel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\topologyRefiner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\topologyRefinerFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\far\types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{25A59157-65A3-3BBC-808F-065AA47AC36B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D5774E70-5903-3ABA-BB6B-2E75A8929DAD}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

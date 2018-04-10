@@ -10,6 +10,8 @@ namespace ee
 {
     const char PROJ_NAME[] = "ArtificalEye";
 
+    enum class Byte : unsigned char {};
+
 	const float NaN = std::numeric_limits<float>::quiet_NaN();
 
     using Float = float;

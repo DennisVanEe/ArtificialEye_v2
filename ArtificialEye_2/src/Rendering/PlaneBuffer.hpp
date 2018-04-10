@@ -3,6 +3,7 @@
 #include <glm/common.hpp>
 #include <glad/glad.h>
 #include <vector>
+#include "..\RayTracing\ImageBuffer.hpp"
 
 namespace ee
 {
@@ -12,11 +13,11 @@ namespace ee
 		ImageBuffer(int width, int height);
 		~ImageBuffer();
 
-		bool setPixel(int x, int y, float color); // change an individual pixel color
+		inline bool setPixel(int x, int y, float color); // change an individual pixel color
 
 		unsigned getTextureID() const;
 
-		int getWidth() const
+        int getWidth() const
 		{
 			return m_width;
 		}

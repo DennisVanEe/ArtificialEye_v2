@@ -1,0 +1,212 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\cpuGLVertexBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\glLegacyGregoryPatchTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\glPatchTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\glVertexBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\glslPatchShaderSource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\glXFBEvaluator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\glComputeEvaluator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\cpuD3D11VertexBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\d3d11ComputeEvaluator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\d3d11LegacyGregoryPatchTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\d3d11PatchTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\d3d11VertexBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\hlslPatchShaderSource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\cpuKernel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\bufferDescriptor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\cpuEvaluator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\cpuPatchTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\cpuVertexBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\nonCopyable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\opengl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\ompEvaluator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\ompKernel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\cpuGLVertexBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\glLegacyGregoryPatchTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\glPatchTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\glVertexBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\glMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\glslPatchShaderSource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\glXFBEvaluator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\glComputeEvaluator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\cpuD3D11VertexBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\d3d11ComputeEvaluator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\d3d11LegacyGregoryPatchTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\d3d11PatchTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\d3d11VertexBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\d3d11Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\hlslPatchShaderSource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\patchBasisCommon.gen.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\glslPatchCommon.gen.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\glslPatchBSpline.gen.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\glslPatchGregory.gen.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\glslPatchGregoryBasis.gen.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\glslXFBKernel.gen.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\glslComputeKernel.gen.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\hlslComputeKernel.gen.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\hlslPatchCommon.gen.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\hlslPatchBSpline.gen.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\hlslPatchGregory.gen.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\opensubdiv\osd\hlslPatchGregoryBasis.gen.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\CMakeFiles\7aeb971da4efb0ef82c564f9424aa6e2\patchBasisCommon.gen.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\CMakeFiles\7aeb971da4efb0ef82c564f9424aa6e2\glslPatchCommon.gen.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\CMakeFiles\7aeb971da4efb0ef82c564f9424aa6e2\glslPatchBSpline.gen.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\CMakeFiles\7aeb971da4efb0ef82c564f9424aa6e2\glslPatchGregory.gen.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\CMakeFiles\7aeb971da4efb0ef82c564f9424aa6e2\glslPatchGregoryBasis.gen.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\CMakeFiles\7aeb971da4efb0ef82c564f9424aa6e2\glslXFBKernel.gen.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\CMakeFiles\7aeb971da4efb0ef82c564f9424aa6e2\glslComputeKernel.gen.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\CMakeFiles\7aeb971da4efb0ef82c564f9424aa6e2\hlslComputeKernel.gen.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\CMakeFiles\7aeb971da4efb0ef82c564f9424aa6e2\hlslPatchCommon.gen.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\CMakeFiles\7aeb971da4efb0ef82c564f9424aa6e2\hlslPatchBSpline.gen.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\CMakeFiles\7aeb971da4efb0ef82c564f9424aa6e2\hlslPatchGregory.gen.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Dennis van Ee\Downloads\OpenSubdiv-master\CMakeFiles\7aeb971da4efb0ef82c564f9424aa6e2\hlslPatchGregoryBasis.gen.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{0058E25A-C7BD-3E3C-8CFA-D7F056EB4919}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{25A59157-65A3-3BBC-808F-065AA47AC36B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inc">
+      <UniqueIdentifier>{E04ABFF3-CC3C-3572-B50E-FD2E65536177}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D5774E70-5903-3ABA-BB6B-2E75A8929DAD}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

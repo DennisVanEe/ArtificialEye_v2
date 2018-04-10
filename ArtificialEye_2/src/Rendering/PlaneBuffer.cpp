@@ -3,6 +3,7 @@
 #include "glm/gtc/type_ptr.hpp"
 
 #include <iostream>
+#include "..\RayTracing\ImageBuffer.hpp"
 
 using namespace std;
 using namespace glm;
