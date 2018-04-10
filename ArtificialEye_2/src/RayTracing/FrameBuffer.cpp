@@ -1,9 +1,9 @@
 #include "FrameBuffer.hpp"
 
-ee::FramesBuffer::FramesBuffer(int width, int height, int maxFrames, FRAMES_BUFFER_MODE mode) :
+ee::FramesBuffer::FramesBuffer(int resolution, int nFrames, FRAMES_BUFFER_MODE mode) :
     m_mode(mode),
-    m_maxFrames(maxFrames),
-    m_width(width), m_height(height)
+    m_resolution(resolution),
+    m_frameCount(nFrames)
 {
     switch (mode)
     {
@@ -21,8 +21,8 @@ ee::FramesBuffer::FramesBuffer(int width, int height, int maxFrames, FRAMES_BUFF
         break;
     }
 
-    m_imageSize = m_pixelSize * m_width * m_height;
-    m_buffer = new Byte[m_imageSize * maxFrames];
+    m_frameSize = m_pixelSize * resolution;
+    m_buffer = new Byte[m_frameSize * m_frameCount];
 }
 
 ee::FramesBuffer::~FramesBuffer()

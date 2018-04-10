@@ -3,56 +3,61 @@
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 
-ee::RayTracer::RayTracer(const std::vector<glm::vec3>& pos, FramesBuffer* framesBuffer, const RTObject* lens, const RTObject* eyeball, const Scene* scene,
+#define MAX_NUM_LINES_PER_PATH 4
+#define NUM_LINES_IN_EYE 3
+#define NUM_LINES_OUTSIDE_EYE 1
+
+ee::RayTracer::RayTracer(const glm::vec3* positions, int nPositions, FramesBuffer* framesBuffer, const RTObject* lens, const RTObject* eyeball, const Scene* scene,
     int nthreads, int distFactor, int angleFactor) :
-    m_scene(scene),
+    m_photoReceptors(positions),
+    m_nPhotoReceptors(nPositions),
+
+    m_currentFrame(0),
     m_framesBuffer(framesBuffer),
+
+    m_scene(scene),
+    m_eyeball(eyeball),
+    m_lens(lens),
+
 	m_distFactor(distFactor),
     m_angleFactor(angleFactor),
     m_totalSamples(distFactor * angleFactor),
-	m_eyeball(eyeball),
-	m_lens(lens)
-{
-    assert(m_distFactor > 0);
-    assert(m_angleFactor > 0);
-    assert(nthreads > 0);
 
-    m_individualRayPaths.resize(pos.size());
-	m_threads.resize(nthreads);
-	m_photoReceptors.resize(pos.size());
-    for (int i = 0; i < pos.size(); i++)
-    {
-		m_photoReceptors[i].pos = pos[i];
-    }
+    m_nThreads(nthreads)
+{
+    assert(framesBuffer->getMode() == FRAMES_BUFFER_MODE::FLOAT1);
+
+    m_threads = new std::thread[m_nThreads];
+    m_linesPerPhotoReceptor = MAX_NUM_LINES_PER_PATH * m_distFactor * m_angleFactor;
+    m_nRayPaths = nPositions * m_linesPerPhotoReceptor;
+    m_rayPaths = new Line[m_nRayPaths];
+}
+
+ee::RayTracer::~RayTracer()
+{
+    delete[] m_threads;
+    delete[] m_rayPaths;
 }
 
 void ee::RayTracer::raytraceAll()
 {
-	m_raypaths.clear();
-
-	int numPerThreads = m_photoReceptors.size() / m_threads.size();
+    int numPerThreads = m_nPhotoReceptors / m_nThreads;
 	numPerThreads = numPerThreads == 0 ? 1 : numPerThreads;
 
-    for (int i = 0, pos = 0; i < m_threads.size(); i++, pos += numPerThreads)
+    for (int i = 0, pos = 0; i < m_nThreads; i++, pos += numPerThreads)
     {
-		std::thread th(&RayTracer::raytraceSelect, this, pos, numPerThreads);
-		m_threads[i] = std::move(th);
+        m_threads[i] = std::thread(&RayTracer::raytraceSelect, this, pos, numPerThreads);
     }
 
-    for (auto& thread : m_threads)
+    for (int i = 0; i < m_nThreads; i++)
     {
-        thread.join();
-    }
-
-    for (auto&& path : m_individualRayPaths)
-    {
-        m_raypaths.insert(m_raypaths.end(), path.begin(), path.end());
+        m_threads[i].join();
     }
 }
 
 void ee::RayTracer::raytraceSelect(int pos, int numrays)
 {
-    for (int i = pos, k = 0; k < numrays && i < m_photoReceptors.size(); i++, k++)
+    for (int i = pos, k = 0; k < numrays && i < m_nPhotoReceptors; i++, k++)
     {
         raytraceOne(i);
     }
@@ -63,42 +68,52 @@ void ee::RayTracer::raytraceSelect(int pos, int numrays)
 // this is run in one thread
 void ee::RayTracer::raytraceOne(int photorecpPos)
 {
-    m_individualRayPaths[photorecpPos].clear();
+    const int raypathOffset = photorecpPos * m_linesPerPhotoReceptor;
+    Line* allIndividualPaths = &m_rayPaths[raypathOffset]; // all the paths sampled from this photoreceptor
+    int globalPosition = 0;
 
 	// first we need to sample a bunch of rays off the circular lens (basically prepare a bunch of paths)
-    glm::vec3 localColor(0.f);
+    // glm::vec3 localColor(0.f); - This is when color is introduced
+    float localColor = 0.f;
 	for (int d = 0; d < m_distFactor; d++)
 	{
         for (int a = 0; a < m_angleFactor; a++)
         {
-            const Ray outray = raytraceFromEye(photorecpPos, d, a, &m_individualRayPaths[photorecpPos]);
+            Line* individualPath = &allIndividualPaths[globalPosition];
+
+            int localPosition;
+            const Ray outray = raytraceFromEye(photorecpPos, d, a, individualPath, &localPosition);
             if (std::isnan(outray.dir.x))
             {
                 continue;
             }
 
+            globalPosition += localPosition;
+
             // loop over scene:
-            int numsceneItems = m_scene->getNumObjects();
-            for (int i = 0; i < numsceneItems; i++)
+            for (int i = 0; i < m_scene->getNumObjects() && i < NUM_LINES_OUTSIDE_EYE; i++)
             {
                 const RTObject* obj = m_scene->getObject(i);
+                // If there was an intersection
                 if (obj->calcIntersection(outray, -1))
                 {
-                    m_raypaths.push_back(Line(outray.origin, obj->intPoint()));
-                    localColor += glm::vec3(1.f, 0.f, 0.f);
+                    individualPath[globalPosition++] = Line(outray.origin, obj->intPoint());
+                    localColor += 1.f;
                 }
             }
         }
 	}
 
-	// now we average the values to get the color:
+	// Now we average the values to get the color:
 	localColor = localColor / static_cast<float>(m_totalSamples);
-
+    m_framesBuffer->setPixel(m_currentFrame, photorecpPos, &localColor);
 }
 
-ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, int dist, int angle, std::vector<Line>* localPaths)
+ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, int dist, int angle, Line* localPaths, int* freePosition)
 {
-    const glm::vec3 origin = glm::vec3(m_eyeball->getPosition() *  glm::vec4(m_photoReceptors[photorecpPos].pos, 1.f));
+    int currentPosition = 0;
+
+    const glm::vec3 origin = glm::vec3(m_eyeball->getPosition() *  glm::vec4(m_photoReceptors[photorecpPos], 1.f));
     const glm::vec2 sampledPoint = sampleUnit(dist, angle, m_distFactor, m_angleFactor);
 	const Ray ray0(origin, glm::normalize(glm::vec3(sampledPoint, 0.f) - origin));
 
@@ -106,7 +121,7 @@ ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, int dist, int angle, st
 	bool res = m_lens->calcIntersection(ray0, -1);
     if (!res)
     {
-        return Ray(glm::vec3(NaN, NaN, NaN), glm::vec3(NaN, NaN, NaN));
+        return Ray(NaN);
     }
 	int ignore = m_lens->intFace();
 	glm::vec3 intpoint = m_lens->intPoint(); // the point of intersection
@@ -115,34 +130,38 @@ ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, int dist, int angle, st
 
 	if (std::isnan(ray1.dir.x))
 	{
-		return Ray(glm::vec3(NaN), glm::vec3(NaN));
+        *freePosition = currentPosition;
+		return Ray(NaN);
 	}
 
-    localPaths->push_back(Line(ray0.origin, ray1.origin));
+    localPaths[currentPosition++] = Line(ray0.origin, ray1.origin);
 
 	// new we intersect through the lens:
 	res = m_lens->calcIntersection(ray1, ignore);
     if (!res)
     {
-        return Ray(glm::vec3(NaN, NaN, NaN), glm::vec3(NaN, NaN, NaN));
+        *freePosition = currentPosition;
+        return Ray(NaN);
     }
 	ignore = m_lens->intFace();
 	intpoint = m_lens->intPoint();
 	dir = glm::normalize(ee::refract(ray1.dir, -m_lens->intNormalInterpolated(), m_lens->refractiveIndex / m_eyeball->refractiveIndex));
 	const Ray ray2(intpoint, dir);
 
-    localPaths->push_back(Line(ray1.origin, ray2.origin));
+    localPaths[currentPosition++] = Line(ray1.origin, ray2.origin);
 
 	if (std::isnan(ray2.dir.x))
 	{
-		return Ray(glm::vec3(NaN), glm::vec3(NaN));
+        *freePosition = currentPosition;
+		return Ray(NaN);
 	}
 
 	// now we intersect through the cornea (and out into the world!)
 	res = m_eyeball->calcIntersection(ray2, -1);
     if (!res)
     {
-        return Ray(glm::vec3(NaN, NaN, NaN), glm::vec3(NaN, NaN, NaN));
+        *freePosition = currentPosition;
+        return Ray(NaN);
     }
 	intpoint = m_eyeball->intPoint();
 	dir =  glm::normalize(ee::refract(ray1.dir, -m_eyeball->intNormalInterpolated(), m_eyeball->refractiveIndex));
@@ -150,11 +169,12 @@ ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, int dist, int angle, st
 
 	if (std::isnan(ray3.dir.x))
 	{
-		return Ray(glm::vec3(NaN), glm::vec3(NaN));
+        *freePosition = currentPosition;
+		return Ray(NaN);
 	}
 
-    localPaths->push_back(Line(ray2.origin, ray3.origin));
-	//m_raypaths.push_back(Line(ray3.origin, ray3.origin + (ray3.dir) * 10.f));
+    localPaths[currentPosition++] = Line(ray2.origin, ray3.origin);
 
+    *freePosition = currentPosition;
 	return ray3;
 }

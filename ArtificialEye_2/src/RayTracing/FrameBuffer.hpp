@@ -10,68 +10,76 @@ namespace ee
     class FramesBuffer
     {
     public:
-        FramesBuffer(int width, int height, int maxFrames, FRAMES_BUFFER_MODE mode);
+        FramesBuffer(int resolution, int nFrames, FRAMES_BUFFER_MODE mode);
         ~FramesBuffer();
 
         // This will fail if a maxFrame was set and it has been reached.
-        inline bool setPixel(int frame, int width, int height, const void* color);
+        inline bool setPixel(int frame, int framePos, const void* color);
 
-        inline int getMaxNumFrames() const;
-        inline int getWidth() const;
-        inline int getHeight() const;
-
-        int getBufferSize() const;
+        inline int getNumFrames() const;
+        inline int getFrameResolution() const;
+        inline int getBufferSize() const;
+        inline FRAMES_BUFFER_MODE getMode() const;
 
         template<class T = Byte>
-        const T* getBuffer() const;
+        const T* getFrame(int frame) const;
+
+        template<class T = Byte>
+        const T* getAllFrames() const;
 
     private:
         FRAMES_BUFFER_MODE m_mode;
         int m_pixelSize;
-        int m_imageSize;
-        int m_maxFrames;
-        int m_width, m_height;
+        int m_resolution;
+        int m_frameSize;
+        int m_frameCount;
 
         Byte* m_buffer;
     };
 }
 
-int ee::FramesBuffer::getMaxNumFrames() const
+int ee::FramesBuffer::getNumFrames() const
 {
-    return m_maxFrames;
+    return m_frameCount;
 }
 
-int ee::FramesBuffer::getWidth() const
+int ee::FramesBuffer::getFrameResolution() const
 {
-    return m_width;
-}
-
-int ee::FramesBuffer::getHeight() const
-{
-    return m_height;
+    return m_resolution;
 }
 
 int ee::FramesBuffer::getBufferSize() const
 {
-    return m_imageSize * m_maxFrames;
+    return m_frameSize * m_frameCount;
+}
+
+ee::FRAMES_BUFFER_MODE ee::FramesBuffer::getMode() const
+{
+    return m_mode;
 }
 
 template<class T>
-const T* ee::FramesBuffer::FramesBuffer::getBuffer() const
+const T* ee::FramesBuffer::FramesBuffer::getFrame(int frame) const
+{
+    const int startOfFrame = frame * m_imageSize;
+    return reinterpret_cast<T*>(&m_buffer[startOfFrame]);
+}
+
+template<class T>
+const T* ee::FramesBuffer::FramesBuffer::getAllFrames() const
 {
     return reinterpret_cast<T*>(m_buffer);
 }
 
-bool ee::FramesBuffer::setPixel(int frame, int width, int height, const void* color)
+bool ee::FramesBuffer::setPixel(int frame, int framePos, const void* color)
 {
-    if (frame >= m_maxFrames || width >= m_width || height >= m_height)
+    if (frame >= m_frameCount || framePos > m_resolution)
     {
         return false;
     }
 
-    const int startOfFrame = frame * m_imageSize;
-    const int frameOffset = m_pixelSize * (height * m_width + width);
-    const int totalOffset = startOfFrame + frameOffset;
+    const int startOfFrame = frame * m_frameCount;
+    const int totalOffset = startOfFrame + framePos;
 
     std::memcpy(&m_buffer[totalOffset], color, m_pixelSize);
 

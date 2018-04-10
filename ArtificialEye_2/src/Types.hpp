@@ -25,20 +25,22 @@ namespace ee
 
     struct Ray
     {
-        Vec3 origin;
-        Vec3 dir;
+        glm::vec3 origin;
+        glm::vec3 dir;
 
         Ray() {}
-        Ray(Vec3 origin, Vec3 dir) : origin(origin), dir(dir) {}
+        Ray(float val) : origin(val), dir(val) {}
+        Ray(glm::vec3  origin, glm::vec3  dir) : origin(origin), dir(dir) {}
     };
 
     struct Line
     {
-        Vec3 start;
-        Vec3 end;
+        glm::vec3 start;
+        glm::vec3 end;
 
         Line() {}
-        Line(Vec3 start, Vec3 end) : start(start), end(end) {}
+        Line(float val) : start(val), end(val) {}
+        Line(glm::vec3 start, glm::vec3 end) : start(start), end(end) {}
     };
 
     // Zeros the vector if it is close enough to zero
