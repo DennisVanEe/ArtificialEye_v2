@@ -235,27 +235,26 @@ int main()
 		float incHeight = maxHeight / static_cast<float>(res_height);
 		float incWidth = maxWidth / static_cast<float>(res_width);
 
-		std::vector<glm::vec3> pos;
-		//pos.push_back(glm::vec3(-0.25f, -0.25f, -1.f));
-		//pos.push_back(glm::vec3(0.25f, 0.25f, -1.f));
-		//pos.push_back(glm::vec3(0.25f, -0.25f, -1.f));
-		//pos.push_back(glm::vec3(-0.25f, 0.25f, -1.f));
+        const int numPhotoreceptorsPosition = res_width * res_height;
+        glm::vec3* photoreceptorPositions = new glm::vec3[numPhotoreceptorsPosition];
+		float width = -maxWidth / 2.f;
+        int photoIndex = 0;
 
-		float width, height;
-		width = -maxWidth / 2.f;
+        FramesBuffer framesBuffer(numPhotoreceptorsPosition, 16, FRAMES_BUFFER_MODE::FLOAT1);
+
 		for (int w = 0; w < res_width; w++, width += incWidth)
 		{
-			height = -maxHeight / 2.f;
+			float height = -maxHeight / 2.f;
 			for (int h = 0; h < res_height; h++, height += incHeight)
 			{
-				pos.push_back(glm::vec3(width, height, -1.f));
+                photoreceptorPositions[photoIndex] = glm::vec3(width, height, -1.f);
 			}
 		}
 
 		ImageBuffer imageBuffer(res_width, res_height);
 
         g_constraints = lensSphere.addConstraints(5, &lensSim);
-        g_tracer = &ee::RayTracer::initialize(pos, &rtLens, &rtEyeBall, &scene, 4, 8, 8);
+        g_tracer = &ee::RayTracer::initialize(photoreceptorPositions, numPhotoreceptorsPosition, &rtLens, &rtEyeBall, &scene, 4, 8, 8);
 
         g_tracer->raytraceAll();
 
@@ -357,6 +356,8 @@ int main()
             Renderer::swapBuffers();
             Renderer::pollEvents();
         }
+
+        delete[] photoreceptorPositions;
     }
     catch (const std::exception& e)
     {
