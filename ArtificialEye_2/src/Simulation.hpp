@@ -3,22 +3,21 @@
 #include "RayTracing/RTObject.hpp"
 #include "RayTracing/Scene.hpp"
 #include "RayTracing/FrameBuffer.hpp"
+#include "Initialization.hpp"
 
 namespace ee
 {
     struct SimParam
     {
         // Framesbuffer parameters:
-        int                nSimFrames;
-        FRAMES_BUFFER_MODE colorMode;
+        int                    nSimFrames;
+        FRAMES_BUFFER_MODE     colorMode;
 
         // Raytracer parameters:
-        RTObject*          rtLens;
-        RTObject*          rtEyeball;
-        Scene*             rtScene;
-        int                nThreads;
-        int                angleFactor;
-        int                distFactor;
+        Scene*                 rtScene;
+        int                    nThreads;
+        int                    angleFactor;
+        int                    distFactor;
     };
 
     bool initializeSimulation(const SimParam& param);
@@ -28,6 +27,9 @@ namespace ee
     void setMuslceValue(float muslce);
     // Commits results of frame 
     void pushFrame();
+
+    // For drawing:
+
 
     // Runs the simulation:
     void stepSimulation(float timeDelta);
