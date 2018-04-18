@@ -13,11 +13,6 @@ namespace ee
         SkyBox(SkyBox&& other);
         ~SkyBox();
 
-        Drawable* getCopy() const override
-        {
-            return new SkyBox(*this);
-        }
-
         void draw() override;
 
     private:

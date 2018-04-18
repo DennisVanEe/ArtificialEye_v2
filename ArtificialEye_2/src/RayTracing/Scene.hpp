@@ -4,29 +4,17 @@
 #include <memory>
 #include "RTObject.hpp"
 #include "RTRay.hpp"
-#include "../Rendering/Drawable.hpp"
 
 namespace ee
 {
 	class Scene
 	{
 	public:
-        struct Object
-        {
-            std::unique_ptr<RTObject> rtObject;
-            std::unique_ptr<Drawable> drawable;
-        };
-
 		// Can't decrease the size of an object
-		void addObject(const RTObject* object, const Drawable* drawable)
+		void addObject(const RTObject* object)
 		{
 			RTObject* const newObject = object->getCopy();
-            Drawable* const newDrawable = drawable->getCopy();
-
-            Object tempObject;
-            tempObject.rtObject = std::unique_ptr<RTObject>(newObject);
-            tempObject.drawable = std::unique_ptr<Drawable>(newDrawable);
-			m_objects.push_back(tempObject);
+			m_objects.push_back(std::unique_ptr<RTObject>(newObject));
 		}
 
 		int getNumObjects() const
@@ -34,17 +22,17 @@ namespace ee
 			return static_cast<int>(m_objects.size());
 		}
 
-		const Object* getObject(int i) const
+		const RTObject* getObject(int i) const
 		{
-			return &m_objects[i];
+			return m_objects[i].get();
 		}
 
-        Object* getObject(int i)
+		RTObject* getObject(int i)
 		{
-			return &m_objects[i];
+			return m_objects[i].get();
 		}
 
 	private:
-		std::vector<Object> m_objects;
+		std::vector<std::unique_ptr<RTObject>> m_objects;
 	};
 }

@@ -12,58 +12,59 @@
 #include "RTUtility.hpp"
 #include "RTRay.hpp"
 #include "Scene.hpp"
-#include "FrameBuffer.hpp"
 
 namespace ee
 {
 	class RayTracer
 	{
 	public:
-		static RayTracer& initialize(const glm::vec3* positions, int nPositions, FramesBuffer* framesBuffer, const RTObject* lens, const RTObject* eyeball, const Scene* scene,
+		static RayTracer& initialize(const std::vector<glm::vec3>& pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene,
             int nthreads, int distFactor, int angleFactor)
 		{
-			static RayTracer raytracer(positions, nPositions, framesBuffer, lens, eyeball, scene, nthreads, distFactor, angleFactor);
+			static RayTracer raytracer(pos, lens, eyeball, scene, nthreads, distFactor, angleFactor);
 			return raytracer;
 		}
-
-        ~RayTracer();
-
-        const Line* getRayPaths() const
-        {
-            return m_rayPaths;
-        }
-
-        int getNumRayPaths() const
-        {
-            return m_nRayPaths;
-        }
 
 		/*
 		* Ray traces the rays. */
 		void raytraceAll();
 
-        void stepFrame()
+        const std::vector<Line>& getRayPaths() const
         {
-            m_currentFrame++;
+            return m_raypaths;
         }
 
+        std::vector<Line>& getRayPaths()
+        {
+            return m_raypaths;
+        }
+
+	public:
+		struct PhotoReceptor
+		{
+			glm::vec3 pos;
+			glm::vec3 color;
+		};
+
+		const std::vector<PhotoReceptor>& getPhotoreceptors() const
+		{
+			return m_photoReceptors;
+		}
+
 	private:
-		RayTracer(const glm::vec3* positions, int nPositions, FramesBuffer* framesBuffer, const RTObject* lens, const RTObject* eyeball, const Scene* scene, int nthreads, int distFactor, int angleFactor);
+		RayTracer(const std::vector<glm::vec3>& pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene, int nthreads, int distFactor, int angleFactor);
 
 		void raytraceSelect(int pos, int numrays);
 		void raytraceOne(int pos);
 
         // Ray traces fixed from the eyeball.
-        Ray raytraceFromEye(int pos, int dist, int angle, Line* localPaths, int* freePosition);
+        Ray raytraceFromEye(int pos, int dist, int angle, std::vector<Line>* localPaths);
 
     private:
-		const glm::vec3* m_photoReceptors;
-        const int m_nPhotoReceptors;
-
-        int m_currentFrame;
-        FramesBuffer* m_framesBuffer;
+		std::vector<PhotoReceptor> m_photoReceptors;
 
 		const Scene* m_scene;
+
 		const RTObject* const m_lens;
 		const RTObject* const m_eyeball;
 
@@ -71,11 +72,9 @@ namespace ee
         const int m_angleFactor;
         const int m_totalSamples;
 
-		std::thread* m_threads;
-        int m_nThreads;
+		std::vector<std::thread> m_threads;
 
-        Line* m_rayPaths;
-        int m_nRayPaths;
-        int m_linesPerPhotoReceptor;
+		std::vector<Line> m_raypaths; // used for rendering the rays in the scene
+        std::vector<std::vector<Line>> m_individualRayPaths;
     };
 }

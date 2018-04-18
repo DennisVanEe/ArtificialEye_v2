@@ -19,11 +19,6 @@ namespace ee
         DrawLine(DrawLine&& other);
         ~DrawLine();
 
-        Drawable* getCopy() const override
-        {
-            return new DrawLine(*this);
-        }
-
         void setPoint0(glm::vec3 p0);
         void setPoint1(glm::vec3 p1);
 

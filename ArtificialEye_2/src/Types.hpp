@@ -10,8 +10,6 @@ namespace ee
 {
     const char PROJ_NAME[] = "ArtificalEye";
 
-    enum class Byte : unsigned char {};
-
 	const float NaN = std::numeric_limits<float>::quiet_NaN();
 
     using Float = float;
@@ -25,22 +23,20 @@ namespace ee
 
     struct Ray
     {
-        glm::vec3 origin;
-        glm::vec3 dir;
+        Vec3 origin;
+        Vec3 dir;
 
         Ray() {}
-        Ray(float val) : origin(val), dir(val) {}
-        Ray(glm::vec3  origin, glm::vec3  dir) : origin(origin), dir(dir) {}
+        Ray(Vec3 origin, Vec3 dir) : origin(origin), dir(dir) {}
     };
 
     struct Line
     {
-        glm::vec3 start;
-        glm::vec3 end;
+        Vec3 start;
+        Vec3 end;
 
         Line() {}
-        Line(float val) : start(val), end(val) {}
-        Line(glm::vec3 start, glm::vec3 end) : start(start), end(end) {}
+        Line(Vec3 start, Vec3 end) : start(start), end(end) {}
     };
 
     // Zeros the vector if it is close enough to zero

@@ -24,9 +24,9 @@ namespace ee
 
 		virtual bool calcIntersection(Ray ray, int ignoreTriangle) const = 0;
 		virtual glm::vec3 intPoint() const = 0;
-		virtual glm::vec3 intNormalInterpolated() const = 0;
-		virtual glm::vec3 intNormalFace() const = 0;
-		virtual int intFace() const = 0;
+		virtual  glm::vec3 intNormalInterpolated() const = 0;
+		virtual  glm::vec3 intNormalFace() const = 0;
+		virtual int  intFace() const = 0;
 
 		virtual glm::mat4 getPosition() const = 0;
 

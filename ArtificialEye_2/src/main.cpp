@@ -29,6 +29,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <fstream>
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -50,11 +51,79 @@ const std::string g_cubeMapDir = "SkyBox";
 bool g_startSoftBody = false;
 bool g_enableWireFram = false;
 
+struct CSVLine
+{
+    float tension;
+    std::vector<std::uint8_t> pixels;
+};
+
+std::vector<CSVLine> g_csvLines;
+
 std::vector<ee::SBPointConstraint*> g_constraints;
 const float g_constraintMoveSpeed = 0.1f;
 ee::RayTracer* g_tracer;
 bool g_defaultP = true;
 bool g_switchToEyeView = false;
+bool g_addLine = false;
+bool g_writeFile = false;
+bool g_clearFile = false;
+std::ofstream g_csvWriter;
+
+void pushCSVLine(const ImageBuffer* buffer)
+{
+    CSVLine line;
+    line.tension = glm::length2(g_constraints[0]->m_point);
+
+    int size = buffer->getTotalPixelAmt();
+    const glm::u8vec3* getData = buffer->getBuffer();
+    for (int i = 0; i < size; i++)
+    {
+        std::uint8_t val = getData[i].r;
+        line.pixels.push_back(val);
+    }
+
+    g_csvLines.push_back(line);
+}
+
+void clearCSVLine()
+{
+    g_csvLines.clear();
+}
+
+void writeCSVLines()
+{
+    g_csvWriter.open("output.csv", std::ofstream::app);
+    if (!g_csvWriter.is_open())
+    {
+        throw std::exception("Could not create the file output.csv");
+    }
+
+    for (const CSVLine& line : g_csvLines)
+    {
+        g_csvWriter << line.tension;
+        for (std::uint8_t b : line.pixels)
+        {
+            g_csvWriter << "," << static_cast<int>(b);
+        }
+        g_csvWriter << std::endl;
+    }
+    g_csvWriter.close();
+}
+
+void addConstraints(const std::size_t thickness, ee::SBSimulation* sim, const ee::Mesh* mesh)
+{
+    for (std::size_t i = 0, sub = (thickness / 2 + 1); i < thickness; i++, sub--)
+    {
+        const std::size_t index = (ARTIFICIAL_EYE_PROP.latitude / 2 - sub) * (ARTIFICIAL_EYE_PROP.longitude) + 1;
+        const std::size_t end = index + ARTIFICIAL_EYE_PROP.longitude;
+
+        for (std::size_t j = index; j < end; j++)
+        {
+            auto ptr = sim->addConstraint(&ee::SBPointConstraint(mesh->getVertex(j), sim->getVertexObject(j)));
+            g_constraints.push_back(ptr);
+        }
+    }
+}
 
 void setSpaceCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -87,6 +156,30 @@ void setSpaceCallback(GLFWwindow* window, int key, int scancode, int action, int
 			g_switchToEyeView = !g_switchToEyeView;
 		}
 	}
+
+    if (key == GLFW_KEY_R)
+    {
+        if (action == GLFW_PRESS)
+        {
+            g_addLine = true;
+        }
+    }
+
+    if (key == GLFW_KEY_T)
+    {
+        if (action == GLFW_PRESS)
+        {
+            g_writeFile = true;
+        }
+    }
+
+    if (key == GLFW_KEY_U)
+    {
+        if (action == GLFW_PRESS)
+        {
+            g_clearFile = true;
+        }
+    }
 
     if (action == GLFW_PRESS && (key == GLFW_KEY_UP || key == GLFW_KEY_DOWN))
     {
@@ -125,6 +218,9 @@ int main()
 
     try
     {
+        g_csvWriter.open("output.csv", std::ofstream::out | std::ofstream::trunc);
+        g_csvWriter.close();
+
         // The default camera parameters:
         CameraParam cameraParams;
         cameraParams.m_position = glm::vec3(10.f, 0.f, 0.f);
@@ -162,8 +258,8 @@ int main()
 		Renderer::addDrawable(&sceenSphereDrawable);
 
         // this is for the eyeball model I am using
-        // glm::mat4 eyeballTransform = glm::translate(glm::mat4(1), glm::vec3(0.f, 0.f, -2.f));
-        // eyeballTransform = glm::scale(eyeballTransform, glm::vec3(1.55f, 1.55f, 1.55f));
+        glm::mat4 eyeballTransform = glm::translate(glm::mat4(1), glm::vec3(0.f, 0.f, -2.f));
+        eyeballTransform = glm::scale(eyeballTransform, glm::vec3(1.55f, 1.55f, 1.55f));
 
         //eyeballModel.setTransform(eyeballTransform);
 
@@ -205,6 +301,7 @@ int main()
         SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &uvSphereMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
         lensSim.m_constIterations = ARTIFICIAL_EYE_PROP.iterations;
         addInteriorSpringsUVSphere(&lensSim, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.intspring_coeff, ARTIFICIAL_EYE_PROP.intspring_drag);
+        //addConstraints(5, &lensSim, &lensMesh);
         lensSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 20.f, ARTIFICIAL_EYE_PROP.extspring_drag));
 
         // test stuff:
@@ -219,26 +316,27 @@ int main()
 		float incHeight = maxHeight / static_cast<float>(res_height);
 		float incWidth = maxWidth / static_cast<float>(res_width);
 
-        const int numPhotoreceptorsPosition = res_width * res_height;
-        glm::vec3* photoreceptorPositions = new glm::vec3[numPhotoreceptorsPosition];
-		float width = -maxWidth / 2.f;
-        int photoIndex = 0;
+		std::vector<glm::vec3> pos;
+		//pos.push_back(glm::vec3(-0.25f, -0.25f, -1.f));
+		//pos.push_back(glm::vec3(0.25f, 0.25f, -1.f));
+		//pos.push_back(glm::vec3(0.25f, -0.25f, -1.f));
+		//pos.push_back(glm::vec3(-0.25f, 0.25f, -1.f));
 
-        FramesBuffer framesBuffer(numPhotoreceptorsPosition, 16, FRAMES_BUFFER_MODE::FLOAT1);
-
+		float width, height;
+		width = -maxWidth / 2.f;
 		for (int w = 0; w < res_width; w++, width += incWidth)
 		{
-			float height = -maxHeight / 2.f;
+			height = -maxHeight / 2.f;
 			for (int h = 0; h < res_height; h++, height += incHeight)
 			{
-                photoreceptorPositions[photoIndex] = glm::vec3(width, height, -1.f);
+				pos.push_back(glm::vec3(width, height, -1.f));
 			}
 		}
 
 		ImageBuffer imageBuffer(res_width, res_height);
 
         g_constraints = lensSphere.addConstraints(5, &lensSim);
-        g_tracer = &ee::RayTracer::initialize(photoreceptorPositions, numPhotoreceptorsPosition, &rtLens, &rtEyeBall, &scene, 4, 8, 8);
+        g_tracer = &ee::RayTracer::initialize(pos, &rtLens, &rtEyeBall, &scene, 4, 8, 8);
 
         g_tracer->raytraceAll();
 
@@ -335,13 +433,32 @@ int main()
 				}*/
             }
 
+            if (g_addLine)
+            {
+                std::cout << "Added current state to CSV buffer." << std::endl;
+                pushCSVLine(&imageBuffer);
+                g_addLine = false;
+            }
+
+            if (g_writeFile)
+            {
+                std::cout << "Wrote current CSV buffer to file." << std::endl;
+                writeCSVLines();
+                g_writeFile = false;
+            }
+
+            if (g_clearFile)
+            {
+                std::cout << "Cleared the CSV buffer." << std::endl;
+                clearCSVLine();
+                g_clearFile = false;
+            }
+
             Renderer::drawAll();
             Renderer::update(time);
             Renderer::swapBuffers();
             Renderer::pollEvents();
         }
-
-        delete[] photoreceptorPositions;
     }
     catch (const std::exception& e)
     {
@@ -353,6 +470,7 @@ int main()
         return -1;
     }
 
+    std::cout << "Exiting the simulation..." << std::endl;
     Renderer::deinitialize();
     return 0;
 }
