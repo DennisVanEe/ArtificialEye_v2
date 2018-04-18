@@ -20,6 +20,11 @@ namespace ee
 
         void setTexture(std::vector<Texture> texture) { m_textures = texture; }
 
+        Drawable* getCopy() const override
+        {
+            return new DrawableMeshContainer(*this);
+        }
+
         void draw() override;
 
     private:

@@ -28,6 +28,16 @@ namespace ee
 
         ~RayTracer();
 
+        const Line* getRayPaths() const
+        {
+            return m_rayPaths;
+        }
+
+        int getNumRayPaths() const
+        {
+            return m_nRayPaths;
+        }
+
 		/*
 		* Ray traces the rays. */
 		void raytraceAll();

@@ -9,6 +9,13 @@
 #include "Rendering/Lens.hpp"
 #include "Mesh/MeshGenerator.hpp"
 #include "Mesh/Subdivision.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Rendering/TexturePacks/RefractTextPack.hpp"
+#include "Rendering/TexturePacks/SkyBoxTextPack.hpp"
+#include "Rendering/TexturePacks/UniColorTextPack.hpp"
+#include "Rendering/TexturePacks/LineUniColorTextPack.hpp"
+#include "Rendering/SkyBox.hpp"
+#include "Rendering/DrawableMeshContainer.hpp"
 
 const glm::vec3* generatePhotoreceptors(int* nPhotoreceptors)
 {
@@ -62,6 +69,22 @@ namespace ee
     std::vector<ee::SBPointConstraint*> g_constraints;
     Mesh                                g_simLensMesh;
     Mesh                                g_traceLensMesh;
+
+    // drawables for OpenGL rendering:
+    const std::string                   g_textureDir        = "Textures/";
+    const std::string                   g_cubeMapDir        = "SkyBox";
+    const std::vector<std::string>      g_cubeMapFaces
+    {
+        "right.jpg",
+        "left.jpg",
+        "top.jpg",
+        "bottom.jpg",
+        "back.jpg",
+        "front.jpg"
+    };
+
+    SkyBox*                             g_skyBox;
+    DrawableMeshContainer*              g_lensDrawable;
 }
 
 bool ee::initializeSimulation(const SimParam& param)
@@ -70,6 +93,17 @@ bool ee::initializeSimulation(const SimParam& param)
     {
         return false;
     }
+
+    // initialize the renderer
+    Renderer::initialize(ARTIFICIAL_EYE_PROP.shader_dir, *param.renderParam, *param.cameraParams);
+    // Renderer::setCustomKeyboardCallback(setSpaceCallback);
+    Renderer::setClearColor(glm::vec3(0.f));
+
+    // prepare the texture packs (as setup by the renderer:
+    Renderer::addTexturePack("refractTextPack", RefractTextPack(glm::vec3(0.f), g_textureDir + g_cubeMapDir, g_cubeMapFaces, ARTIFICIAL_EYE_PROP.lens_refr_index));
+    Renderer::addTexturePack("skyBoxTextPack", SkyBoxTextPack(g_textureDir + g_cubeMapDir, g_cubeMapFaces));
+    Renderer::addTexturePack("lineTextPack", LineUniColorTextPack(glm::vec3(0.f, 1.f, 0.f)));
+    Renderer::addTexturePack("lineTextPack", ee::LineUniColorTextPack(glm::vec3(0.f, 1.f, 0.f)));
 
     // Now prepare the scene and all the objects for the ray tracer:
 
@@ -108,6 +142,23 @@ bool ee::initializeSimulation(const SimParam& param)
     // Prepare the ray tracer:
     g_raytracer = &ee::RayTracer::initialize(g_photoReceptors, nPhotoreceptors, &g_framesBuffer, g_rtLens, g_rtEyeball, param.rtScene, param.nThreads, param.distFactor, param.angleFactor);
 
+    // Create the drawable objects:
+    g_skyBox = new SkyBox("skyBoxTextPack");
+    g_lensDrawable = new DrawableMeshContainer(&g_traceLensMesh, "refractTextPack", true);
+
+    // Now prepare the drawables:
+    for (int i = 0; i < param.rtScene->getNumObjects(); i++)
+    {
+        Scene::Object* obj = param.rtScene->getObject(i);
+        Renderer::addDrawable(obj->drawable.get());
+    }
+    for (int i = 0; i < g_raytracer->getNumRayPaths(); i++)
+    {
+        Renderer::addDrawable(&g_raytracer->getRayPaths()[i]);
+    }
+    Renderer::addDrawable(g_skyBox);
+    Renderer::addDrawable(g_lensDrawable);
+
     g_initialized = true;
 
     return true;
@@ -117,10 +168,10 @@ bool ee::deinitializeSimulation()
 {
     delete[] g_photoReceptors;
     delete[] g_muscleConstraints;
-    delete g_simulation;
-    delete g_lens;
-    delete g_rtEyeball;
-    delete g_rtLens;
+    delete   g_simulation;
+    delete   g_lens;
+    delete   g_rtEyeball;
+    delete   g_rtLens;
 
     g_initialized = false;
 

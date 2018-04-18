@@ -18,6 +18,10 @@ namespace ee
         int                    nThreads;
         int                    angleFactor;
         int                    distFactor;
+
+        // Render parameters:
+        RendererParam*         renderParam;
+        CameraParam*           cameraParams;
     };
 
     bool initializeSimulation(const SimParam& param);
@@ -29,7 +33,7 @@ namespace ee
     void pushFrame();
 
     // For drawing:
-
+    
 
     // Runs the simulation:
     void stepSimulation(float timeDelta);

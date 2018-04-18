@@ -21,6 +21,8 @@ namespace ee
 
         void setShaderMaterial(ShaderMaterial mat);
 
+        virtual Drawable* getCopy() const = 0;
+
         int getPriority() const;
 
         bool willDraw() const;
