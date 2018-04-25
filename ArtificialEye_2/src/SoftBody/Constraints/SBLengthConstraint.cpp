@@ -2,9 +2,10 @@
 
 #include <glm/gtx/norm.hpp>
 
-ee::SBLengthConstraint::SBLengthConstraint(const Float length, SBObject* const objA, SBObject* objB, Float factor) :
+ee::SBLengthConstraint::SBLengthConstraint(const Float length, SBObject* const objA, SBObject* objB, Float factor, int id) :
     m_length(length),
     m_factor(factor),
+    m_id(id),
     m_objA(objA),
     m_objB(objB)
 {

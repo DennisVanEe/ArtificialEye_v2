@@ -5,13 +5,14 @@
 #include <glm/glm.hpp>
 #include <thread>
 
-#include "../Mesh/Mesh.hpp"
-#include "EyeBall.hpp"
 #include "../Types.hpp"
 #include "../Rendering/DrawLine.hpp"
+#include "../Mesh/Mesh.hpp"
+#include "EyeBall.hpp"
 #include "RTUtility.hpp"
 #include "RTRay.hpp"
 #include "Scene.hpp"
+#include "Pupil.hpp"
 
 namespace ee
 {
@@ -19,9 +20,9 @@ namespace ee
 	{
 	public:
 		static RayTracer& initialize(const std::vector<glm::vec3>& pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene,
-            int nthreads, int distFactor, int angleFactor)
+            Pupil* pupil, int nthreads, int distFactor, int angleFactor)
 		{
-			static RayTracer raytracer(pos, lens, eyeball, scene, nthreads, distFactor, angleFactor);
+			static RayTracer raytracer(pos, lens, eyeball, scene, pupil, nthreads, distFactor, angleFactor);
 			return raytracer;
 		}
 
@@ -52,13 +53,14 @@ namespace ee
 		}
 
 	private:
-		RayTracer(const std::vector<glm::vec3>& pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene, int nthreads, int distFactor, int angleFactor);
+		RayTracer(const std::vector<glm::vec3>& pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene, 
+            Pupil* pupil, int nthreads, int distFactor, int angleFactor);
 
 		void raytraceSelect(int pos, int numrays);
 		void raytraceOne(int pos);
 
         // Ray traces fixed from the eyeball.
-        Ray raytraceFromEye(int pos, int dist, int angle, std::vector<Line>* localPaths);
+        Ray raytraceFromEye(int pos, glm::vec3 pupilPos, std::vector<Line>* localPaths);
 
     private:
 		std::vector<PhotoReceptor> m_photoReceptors;
@@ -71,6 +73,8 @@ namespace ee
 		const int m_distFactor;
         const int m_angleFactor;
         const int m_totalSamples;
+
+        Pupil* m_pupil;
 
 		std::vector<std::thread> m_threads;
 

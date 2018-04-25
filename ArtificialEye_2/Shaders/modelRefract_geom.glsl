@@ -7,14 +7,15 @@ smooth out vec3 p_normal;
 smooth out vec3 p_position;
 
 in vec3 pg_position[3];
+in mat4 pg_model[3];
 
 void main()
 {
 	// calculate the normal:
-    vec3 a = vec3(gl_in[1].gl_Position) - vec3(gl_in[0].gl_Position);
-    vec3 b = vec3(gl_in[2].gl_Position) - vec3(gl_in[0].gl_Position);
+    vec3 a = vec3(pg_position[1]) - vec3(pg_position[0]);
+    vec3 b = vec3(pg_position[2]) - vec3(pg_position[0]);
     vec3 norm = normalize(cross(b, a));
-    if (dot(norm, vec3(gl_in[0].gl_Position)) > 0)
+    if (dot(norm, vec3(pg_position[0])) > 0)
     {
         norm = -norm;
     }

@@ -17,9 +17,9 @@ void ee::addInteriorSpringsUVSphere(SBClosedBodySim* const sim, const unsigned n
             std::size_t index0 = j + (i * nLon);
             std::size_t index1 = j + ((nLat - 1 - i) * nLon);
 
-            sim->addSpring(stiffness, dampening, sim->getVertexObject(index0), sim->getVertexObject(index1));
+            //sim->addSpring(stiffness, dampening, sim->getVertexObject(index0), sim->getVertexObject(index1));
             float length = glm::length(sim->getVertexObject(index0)->m_currPosition - sim->getVertexObject(index1)->m_currPosition);
-            sim->addConstraint(new SBLengthConstraint(length, sim->getVertexObject(index0), sim->getVertexObject(index1), 0.9));
+            sim->addConstraint(new SBLengthConstraint(length, sim->getVertexObject(index0), sim->getVertexObject(index1), 0.9, 1));
         }
     }
 }

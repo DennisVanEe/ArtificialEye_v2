@@ -30,10 +30,21 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <sstream>
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 using namespace ee;
+
+// These are values you can change:
+
+// Number of  pixels:
+const int res_width = 4;
+const int res_height = 4;
+
+// Total area of retina:
+const float maxHeight = 1.0f;
+const float maxWidth = 1.0f;
 
 std::vector<std::string> g_cubeMapFaces
 {
@@ -60,7 +71,9 @@ struct CSVLine
 std::vector<CSVLine> g_csvLines;
 
 std::vector<ee::SBPointConstraint*> g_constraints;
+std::vector<std::unique_ptr<ee::SBConstraint>>* g_allConstraints;
 const float g_constraintMoveSpeed = 0.1f;
+float g_totalDisplacement = 0.f;
 ee::RayTracer* g_tracer;
 bool g_defaultP = true;
 bool g_switchToEyeView = false;
@@ -196,13 +209,99 @@ void setSpaceCallback(GLFWwindow* window, int key, int scancode, int action, int
 
         for (auto& constraint : g_constraints)
         {
-            constraint->m_point += g_constraintMoveSpeed * dir * glm::normalize(Vec3(constraint->m_point.x, 0.0, constraint->m_point.z));
+            constraint->m_point += g_constraintMoveSpeed * dir * glm::normalize(glm::vec3(constraint->m_point.x, 0.f, constraint->m_point.z));
+            g_totalDisplacement += g_constraintMoveSpeed * dir;
+        }
+
+        for (auto& val : *g_allConstraints)
+        {
+            if (val->getID() != 0)
+            {
+                SBLengthConstraint* len = dynamic_cast<SBLengthConstraint*>(val.get());
+                len->m_length += len->m_length * -dir * 0.005;
+            }
         }
     }
 }
 
+// TODO: move this to somewhere more appropriate
+struct EyePosition
+{
+    glm::quat rotation;
+    glm::vec3 position;
+};
+
+std::vector<EyePosition> g_framePositions;
+
 int main()
 {
+    // THESE ARE CONSTANTS YOU SHOULD CHANGE:
+    std::string FRAME_POSITION_DIR = "input.txt";
+
+
+    std::ifstream framePositionStream(FRAME_POSITION_DIR);
+    if (!framePositionStream.is_open())
+    {
+        std::cout << "[ERROR]: Could not open input file: " << FRAME_POSITION_DIR << std::endl;
+        return -1;
+    }
+
+    std::string line;
+    for (int lineIndex = 0; std::getline(framePositionStream, line); lineIndex++)
+    {
+        if (lineIndex % 2 != 0)
+        {
+            continue;
+        }
+
+        std::istringstream stream(line);
+
+        std::string word;
+        for (int wordIndex = 0; stream >> word; wordIndex++)
+        {
+            EyePosition currFramePos;
+
+            if (wordIndex == 0)
+            {
+                continue;
+            }
+
+            float val = std::atof(word.c_str());
+            switch (wordIndex)
+            {
+            // rotation:
+            case 1:
+                currFramePos.rotation.x = val;
+                break;
+            case 2:
+                currFramePos.rotation.y = val;
+                break;
+            case 3:
+                currFramePos.rotation.z = val;
+                break;
+            case 4:
+                currFramePos.rotation.w = val;
+                break;
+
+            // position:
+            case 5:
+                currFramePos.position.x = val;
+                break;
+            case 6:
+                currFramePos.position.y = val;
+                break;
+            case 7:
+                currFramePos.position.z = val;
+                break;
+            default:
+                std::cout << "[ERROR]: Issue with frame posiiton syntax." << std::endl;
+                return -1;
+            }
+
+            g_framePositions.push_back(currFramePos);
+        }
+    }
+
     if (!ARTIFICIAL_EYE_PROP.success)
     {
         return -1;
@@ -218,6 +317,13 @@ int main()
 
     try
     {
+        // These components here are for rotating the eyeball and positioning the eye.
+        glm::mat4 rotationEye = glm::rotate(glm::mat4(1), glm::radians(30.f), glm::vec3(1.f, 0.f, 0.f));
+        glm::mat4 positionEye = glm::translate(glm::mat4(1), glm::vec3(0.f, 0.f, 5.0f));
+
+        // generate the base model transform for placing the object in the world:
+        glm::mat4 globalModel = positionEye * rotationEye;
+
         g_csvWriter.open("output.csv", std::ofstream::out | std::ofstream::trunc);
         g_csvWriter.close();
 
@@ -236,10 +342,6 @@ int main()
         // loaded cubemap twice, not efficient, but not important right now:
         void* res = Renderer::addTexturePack("refractTextPack", RefractTextPack(glm::vec3(0.f), g_textureDir + g_cubeMapDir, g_cubeMapFaces, ARTIFICIAL_EYE_PROP.lens_refr_index)); assert(res);
         res =       Renderer::addTexturePack("skyBoxTextPack", SkyBoxTextPack(g_textureDir + g_cubeMapDir, g_cubeMapFaces)); assert(res);
-
-        // not drawing the eyeball for now
-        // LoadableModel eyeballModel("Models/eyeball/eyebal_fbx.fbx", 1);
-        // eyeballModel.load();
 
         Scene scene;
 
@@ -267,61 +369,58 @@ int main()
         //  Lens System:
         //
 
-        glm::mat4 eyeballIntersectionTransform = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, -2.f));
-        eyeballIntersectionTransform = glm::scale(eyeballIntersectionTransform, glm::vec3(2 * 1.55f, 2 * 1.55f, 2 * 1.55f));
+        // The "base transform" for the eyeball and lens. Transforms them so that they are in the proper relative positions
+        const glm::mat4 eyeballIntermTransform = glm::scale(glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, -2.f)), glm::vec3(2 * 1.55f, 2 * 1.55f, 2 * 1.55f));
+        const glm::mat4 lensIntermTransform    = glm::scale(glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f)), glm::vec3(1.f, ARTIFICIAL_EYE_PROP.lens_thickness, 1.f));
+        const glm::mat4 pupilTransform         = glm::mat4();
 
-        Mesh uvSphereMesh = loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude);
+        // Update the model transforms for each of these (NOTE: this is done each frame, with globalModel changing each frame)
+        glm::mat4 eyeballModel = globalModel * eyeballIntermTransform;
+        glm::mat4 lensModel = globalModel * lensIntermTransform;
+        glm::mat4 pupilModel = globalModel * pupilTransform;
+
+        // First load the mesh for the simulation:
+        Mesh uvSphereMesh       = loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude);
+        uvSphereMesh.setModelTrans(lensModel);
+        // Now subdivide the loop and use it for the raytracer:
         Mesh uvSubDivSphereMesh = loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level_lens);
-        Lens lensSphere(&uvSubDivSphereMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
-		uvSubDivSphereMesh.calcNormals();
+        uvSubDivSphereMesh.calcNormals(); // this is a one-time operation
+        uvSubDivSphereMesh.setModelTrans(lensModel);
 
+        // Prepare the lens with the appropriate values:
+        Lens lensSphere(&uvSubDivSphereMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
+
+        // Prepare the pupil:
+        Pupil pupil(pupilModel, 1.f);
+
+        // For raytracing:
+        RTObjectMesh rtLens("lens", &uvSubDivSphereMesh, ARTIFICIAL_EYE_PROP.lens_refr_index);
+        RTObjectSphere rtEyeBall("eyeball", eyeballModel, ARTIFICIAL_EYE_PROP.eyeball_refr_index);
+
+        // Prepare the simulation:
+        SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &uvSphereMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
+        lensSim.m_constIterations = ARTIFICIAL_EYE_PROP.iterations;
+        lensSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 30.f, ARTIFICIAL_EYE_PROP.extspring_drag));
+        addInteriorSpringsUVSphere(&lensSim, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.intspring_coeff, ARTIFICIAL_EYE_PROP.intspring_drag);
+        // Get constraints for the relations:
+        g_constraints =    lensSphere.addConstraints(5, &lensSim);
+        g_allConstraints = lensSim.getConstraints();
+
+        // For drawing and what not, not really that important
         DrawableMeshContainer lensDrawable(&uvSubDivSphereMesh, "refractTextPack", true);
         Renderer::addDrawable(&lensDrawable);
-        RTObjectMesh rtLens("lens", &uvSubDivSphereMesh, ARTIFICIAL_EYE_PROP.lens_refr_index);
-
-        RTObjectSphere rtEyeBall("eyeball", eyeballIntersectionTransform, ARTIFICIAL_EYE_PROP.eyeball_refr_index);
-
-		// const auto& list = rtObjectMesh.getMesh()->faceBuffer();
-
-		// Mesh* m = &uvSubDivSphereMesh;
-
-        //
-        // Superficial Stuff:
-        //
 
         SkyBox skyBox("skyBoxTextPack");
         Renderer::addDrawable(&skyBox);
 
-        // update the positons of the lens
-        const glm::mat4 lensModelTrans = glm::scale(glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f)), glm::vec3(1.f, ARTIFICIAL_EYE_PROP.lens_thickness, 1.f));
-        uvSphereMesh.setModelTrans(lensModelTrans);
-        uvSubDivSphereMesh.setModelTrans(lensModelTrans);
+        // The amount to increment the counter by:
+		const float incHeight = maxHeight / static_cast<float>(res_height);
+		const float incWidth  = maxWidth  / static_cast<float>(res_width);
 
-        // prepare the simulation
-        SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &uvSphereMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
-        lensSim.m_constIterations = ARTIFICIAL_EYE_PROP.iterations;
-        addInteriorSpringsUVSphere(&lensSim, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.intspring_coeff, ARTIFICIAL_EYE_PROP.intspring_drag);
-        //addConstraints(5, &lensSim, &lensMesh);
-        lensSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 20.f, ARTIFICIAL_EYE_PROP.extspring_drag));
-
-        // test stuff:
-		// generate a simple 480 x 640 screen
-
-        const int res_width = 16;
-		const int res_height = 16;
-
-        const float maxHeight = 1.0f;
-        const float maxWidth = 1.0f;
-
-		float incHeight = maxHeight / static_cast<float>(res_height);
-		float incWidth = maxWidth / static_cast<float>(res_width);
-
+        // Simple grid-like array of positions:
+        // Generate the positions:
 		std::vector<glm::vec3> pos;
-		//pos.push_back(glm::vec3(-0.25f, -0.25f, -1.f));
-		//pos.push_back(glm::vec3(0.25f, 0.25f, -1.f));
-		//pos.push_back(glm::vec3(0.25f, -0.25f, -1.f));
-		//pos.push_back(glm::vec3(-0.25f, 0.25f, -1.f));
-
+        pos.reserve(res_height * res_width);
 		float width, height;
 		width = -maxWidth / 2.f;
 		for (int w = 0; w < res_width; w++, width += incWidth)
@@ -333,16 +432,16 @@ int main()
 			}
 		}
 
-		ImageBuffer imageBuffer(res_width, res_height);
+		// Prepare the image buffer and the ray tracer:
+        ImageBuffer imageBuffer(res_width, res_height);
+        g_tracer = &ee::RayTracer::initialize(pos, &rtLens, &rtEyeBall, &scene, &pupil, 4, 2, 2);
 
-        g_constraints = lensSphere.addConstraints(5, &lensSim);
-        g_tracer = &ee::RayTracer::initialize(pos, &rtLens, &rtEyeBall, &scene, 4, 8, 8);
-
+        // Ray trace the result:
         g_tracer->raytraceAll();
 
+        // Output the paths drawn (this is for drawing):
         std::vector<DrawLine> drawpaths;
-
-        ee::Renderer::addTexturePack("lineTextPack", ee::LineUniColorTextPack(Vec3(0.0, 1.0, 0.0)));
+        ee::Renderer::addTexturePack("lineTextPack", ee::LineUniColorTextPack(glm::vec3(0.f, 1.f, 0.f)));
         auto& paths = g_tracer->getRayPaths();
 		auto& photoreceptors = g_tracer->getPhotoreceptors();
         for (const auto& p : paths)
@@ -355,21 +454,46 @@ int main()
             ee::Renderer::addDrawable(&p);
         }
 
+        // Write the paths to an image buffer:
 		int uniI = 0;
 		for (int w = 0; w < res_width; w++)
 		{
 			for (int h = 0; h < res_height; h++)
 			{
 				glm::vec3 color = photoreceptors[uniI].color;
-				//std::uint8_t val = static_cast<std::uint8_t>(256.f - (256.f * color.x));
+				// std::uint8_t val = static_cast<std::uint8_t>(256.f - (256.f * color.x));
 				imageBuffer.setPixel(w, h, color.x);
 				uniI++;
 			}
 		}
 
+        int currentFrameIndex = 0;
+
+        // Render the image buffer if required:
 		ee::Renderer::generatePlaneBuffer();
         while (ee::Renderer::isInitialized())
         {
+            // update the positions when necessary
+            if (currentFrameIndex < g_framePositions.size())
+            {
+                rotationEye = glm::mat4_cast(g_framePositions[currentFrameIndex].rotation);
+                positionEye = glm::translate(glm::mat4(1), g_framePositions[currentFrameIndex].position);
+
+                globalModel = positionEye * rotationEye;
+
+                eyeballModel = globalModel * eyeballIntermTransform;
+                lensModel = globalModel * lensIntermTransform;
+                pupilModel = globalModel * pupilTransform;
+
+                uvSphereMesh.setModelTrans(lensModel);
+                uvSubDivSphereMesh.setModelTrans(lensModel);
+                rtEyeBall.setPosition(eyeballModel);
+                pupil.pos = pupilModel;
+
+                currentFrameIndex++;
+            }
+
+
             if (g_enableWireFram)
             {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

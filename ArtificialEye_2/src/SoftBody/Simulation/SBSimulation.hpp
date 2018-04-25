@@ -40,6 +40,10 @@ namespace ee
 
         SBObject* getVertexObject(std::size_t VertexID);
         const SBObject* getVertexObject(std::size_t VertexID) const;
+        SBConstraintList* getConstraints()
+        {
+            return &m_constraints;
+        }
 
         std::size_t getNumVertexObjects() const;
 

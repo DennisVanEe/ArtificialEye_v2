@@ -14,7 +14,7 @@ namespace ee
             m_obj(obj)
         {
         }
-
+        int getID() const { return 0; }
         void satisfyConstraint() override { m_obj->m_currPosition = m_point; }
         SBConstraint* getCopy() const override { return new SBPointConstraint(*this); }
 

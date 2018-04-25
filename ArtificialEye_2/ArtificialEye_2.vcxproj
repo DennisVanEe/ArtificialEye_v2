@@ -217,6 +217,7 @@
     <ClInclude Include="src\Mesh\PerfectSphere.hpp" />
     <ClInclude Include="src\Mesh\Subdivision.hpp" />
     <ClInclude Include="src\RayTracing\EyeBall.hpp" />
+    <ClInclude Include="src\RayTracing\Pupil.hpp" />
     <ClInclude Include="src\RayTracing\RayTracer.hpp" />
     <ClInclude Include="src\RayTracing\RTObject.hpp" />
     <ClInclude Include="src\RayTracing\RTObjectMesh.hpp" />

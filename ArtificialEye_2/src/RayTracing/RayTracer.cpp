@@ -4,17 +4,20 @@
 #include <glm/gtx/string_cast.hpp>
 
 ee::RayTracer::RayTracer(const std::vector<glm::vec3>& pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene,
-    int nthreads, int distFactor, int angleFactor) :
+    Pupil* pupil, int nthreads, int distFactor, int angleFactor) :
 	m_scene(scene),
 	m_distFactor(distFactor),
     m_angleFactor(angleFactor),
     m_totalSamples(distFactor * angleFactor),
+    m_pupil(pupil),
 	m_eyeball(eyeball),
 	m_lens(lens)
 {
     assert(m_distFactor > 0);
     assert(m_angleFactor > 0);
     assert(nthreads > 0);
+
+    m_pupil->sampleFixed(distFactor, angleFactor);
 
     m_individualRayPaths.resize(pos.size());
 	m_threads.resize(nthreads);
@@ -66,26 +69,24 @@ void ee::RayTracer::raytraceOne(int photorecpPos)
 
 	// first we need to sample a bunch of rays off the circular lens (basically prepare a bunch of paths)
 	m_photoReceptors[photorecpPos].color = glm::vec3(0.f);
-	for (int d = 0; d < m_distFactor; d++)
+    const std::vector<glm::vec3>* samples = m_pupil->getFixedSamples();
+	for (glm::vec3 pupilSample : *samples)
 	{
-        for (int a = 0; a < m_angleFactor; a++)
+        const Ray outray = raytraceFromEye(photorecpPos, pupilSample, &m_individualRayPaths[photorecpPos]);
+        if (std::isnan(outray.dir.x))
         {
-            const Ray outray = raytraceFromEye(photorecpPos, d, a, &m_individualRayPaths[photorecpPos]);
-            if (std::isnan(outray.dir.x))
-            {
-                continue;
-            }
+            continue;
+        }
 
-            // loop over scene:
-            int numsceneItems = m_scene->getNumObjects();
-            for (int i = 0; i < numsceneItems; i++)
+        // loop over scene:
+        int numsceneItems = m_scene->getNumObjects();
+        for (int i = 0; i < numsceneItems; i++)
+        {
+            const RTObject* obj = m_scene->getObject(i);
+            if (obj->calcIntersection(outray, -1))
             {
-                const RTObject* obj = m_scene->getObject(i);
-                if (obj->calcIntersection(outray, -1))
-                {
-                    m_raypaths.push_back(Line(outray.origin, obj->intPoint()));
-                    m_photoReceptors[photorecpPos].color += glm::vec3(1.f, 0.f, 0.f);
-                }
+                m_raypaths.push_back(Line(outray.origin, obj->intPoint()));
+                m_photoReceptors[photorecpPos].color += glm::vec3(1.f, 0.f, 0.f);
             }
         }
 	}
@@ -94,11 +95,11 @@ void ee::RayTracer::raytraceOne(int photorecpPos)
 	m_photoReceptors[photorecpPos].color = m_photoReceptors[photorecpPos].color / static_cast<float>(m_totalSamples);
 }
 
-ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, int dist, int angle, std::vector<Line>* localPaths)
+ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, glm::vec3 pupilPos, std::vector<Line>* localPaths)
 {
     const glm::vec3 origin = glm::vec3(m_eyeball->getPosition() *  glm::vec4(m_photoReceptors[photorecpPos].pos, 1.f));
-    const glm::vec2 sampledPoint = sampleUnit(dist, angle, m_distFactor, m_angleFactor);
-	const Ray ray0(origin, glm::normalize(glm::vec3(sampledPoint, 0.f) - origin));
+    // Point on the lens (to be changed to iris soon)
+    const Ray ray0(origin, glm::normalize(pupilPos - origin));
 
 	// first we intersect it with the lens:
 	bool res = m_lens->calcIntersection(ray0, -1);

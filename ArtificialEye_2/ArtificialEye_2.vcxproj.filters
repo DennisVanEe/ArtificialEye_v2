@@ -305,5 +305,8 @@
     <ClInclude Include="src\Rendering\PlaneBuffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\RayTracing\Pupil.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

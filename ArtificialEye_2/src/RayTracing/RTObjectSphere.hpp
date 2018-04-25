@@ -42,6 +42,12 @@ namespace ee
 			return m_position;
 		}
 
+        void setPosition(glm::mat4 pos)
+        {
+            m_position = pos;
+            m_invPosition = glm::inverse(pos);
+        }
+
 		RTObject* getCopy() const override
 		{ 
 			return new RTObjectSphere(*this); 
