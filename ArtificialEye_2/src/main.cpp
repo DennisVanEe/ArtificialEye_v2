@@ -236,8 +236,8 @@ std::vector<EyePosition> g_framePositions;
 int main()
 {
     // THESE ARE CONSTANTS YOU SHOULD CHANGE:
-    std::string FRAME_POSITION_DIR = "input.txt";
-
+    std::string FRAME_POSITION_DIR = "MotionLEye.txt";
+    std::string OUTPUT_DIR = "output.csv";
 
     std::ifstream framePositionStream(FRAME_POSITION_DIR);
     if (!framePositionStream.is_open())
@@ -247,7 +247,7 @@ int main()
     }
 
     std::string line;
-    for (int lineIndex = 0; std::getline(framePositionStream, line); lineIndex++)
+    for (int lineIndex = 1; std::getline(framePositionStream, line); lineIndex++)
     {
         if (lineIndex % 2 != 0)
         {
@@ -257,10 +257,9 @@ int main()
         std::istringstream stream(line);
 
         std::string word;
+        EyePosition currFramePos;
         for (int wordIndex = 0; stream >> word; wordIndex++)
         {
-            EyePosition currFramePos;
-
             if (wordIndex == 0)
             {
                 continue;
@@ -297,9 +296,9 @@ int main()
                 std::cout << "[ERROR]: Issue with frame posiiton syntax." << std::endl;
                 return -1;
             }
-
-            g_framePositions.push_back(currFramePos);
         }
+        currFramePos.position -= glm::vec3(35, - 100, 1848);
+        g_framePositions.push_back(currFramePos);
     }
 
     if (!ARTIFICIAL_EYE_PROP.success)
@@ -318,13 +317,14 @@ int main()
     try
     {
         // These components here are for rotating the eyeball and positioning the eye.
-        glm::mat4 rotationEye = glm::rotate(glm::mat4(1), glm::radians(30.f), glm::vec3(1.f, 0.f, 0.f));
-        glm::mat4 positionEye = glm::translate(glm::mat4(1), glm::vec3(0.f, 0.f, 5.0f));
+
+        glm::mat4 rotationEye = glm::mat4_cast(g_framePositions[0].rotation);
+        glm::mat4 positionEye = glm::translate(glm::mat4(1), g_framePositions[0].position);
 
         // generate the base model transform for placing the object in the world:
         glm::mat4 globalModel = positionEye * rotationEye;
 
-        g_csvWriter.open("output.csv", std::ofstream::out | std::ofstream::trunc);
+        g_csvWriter.open(OUTPUT_DIR, std::ofstream::out | std::ofstream::trunc);
         g_csvWriter.close();
 
         // The default camera parameters:
@@ -372,12 +372,12 @@ int main()
         // The "base transform" for the eyeball and lens. Transforms them so that they are in the proper relative positions
         const glm::mat4 eyeballIntermTransform = glm::scale(glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, -2.f)), glm::vec3(2 * 1.55f, 2 * 1.55f, 2 * 1.55f));
         const glm::mat4 lensIntermTransform    = glm::scale(glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f)), glm::vec3(1.f, ARTIFICIAL_EYE_PROP.lens_thickness, 1.f));
-        const glm::mat4 pupilTransform         = glm::mat4();
+        const glm::mat4 pupilInterimTransform   = glm::mat4();
 
         // Update the model transforms for each of these (NOTE: this is done each frame, with globalModel changing each frame)
         glm::mat4 eyeballModel = globalModel * eyeballIntermTransform;
-        glm::mat4 lensModel = globalModel * lensIntermTransform;
-        glm::mat4 pupilModel = globalModel * pupilTransform;
+        glm::mat4 lensModel    = globalModel * lensIntermTransform;
+        glm::mat4 pupilModel   = globalModel * pupilInterimTransform;
 
         // First load the mesh for the simulation:
         Mesh uvSphereMesh       = loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude);
@@ -467,7 +467,8 @@ int main()
 			}
 		}
 
-        int currentFrameIndex = 0;
+        int currentFrameIndex = 1;
+        bool readyToWrite = true;
 
         // Render the image buffer if required:
 		ee::Renderer::generatePlaneBuffer();
@@ -482,8 +483,8 @@ int main()
                 globalModel = positionEye * rotationEye;
 
                 eyeballModel = globalModel * eyeballIntermTransform;
-                lensModel = globalModel * lensIntermTransform;
-                pupilModel = globalModel * pupilTransform;
+                lensModel    = globalModel * lensIntermTransform;
+                pupilModel   = globalModel * pupilInterimTransform;
 
                 uvSphereMesh.setModelTrans(lensModel);
                 uvSubDivSphereMesh.setModelTrans(lensModel);
@@ -491,6 +492,15 @@ int main()
                 pupil.pos = pupilModel;
 
                 currentFrameIndex++;
+            }
+            else
+            {
+                if (readyToWrite)
+                {
+                    writeCSVLines();
+                    std::cout << "Wrote result to output." << std::endl;
+                    readyToWrite = false;
+                }
             }
 
 
@@ -523,8 +533,9 @@ int main()
 
             ee::Renderer::clearBuffers();
 
-            float time = Renderer::timeElapsed();
-            if (g_startSoftBody)
+            //float time = Renderer::timeElapsed();
+            const float time = 1.f / 30.f;
+            //if (g_startSoftBody)
             {
                 lensSim.update(time);
                 Mesh tempMesh = loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level_lens);
@@ -556,15 +567,17 @@ int main()
 					ee::Renderer::addDrawable(&p);
 				}*/
             }
+            pushCSVLine(&imageBuffer);
+            std::cout << "Added frame " << currentFrameIndex << " to output." << std::endl;
 
-            if (g_addLine)
+            /*if (g_addLine)
             {
                 std::cout << "Added current state to CSV buffer." << std::endl;
                 pushCSVLine(&imageBuffer);
                 g_addLine = false;
-            }
+            }*/
 
-            if (g_writeFile)
+           /* if (g_writeFile)
             {
                 std::cout << "Wrote current CSV buffer to file." << std::endl;
                 writeCSVLines();
@@ -576,7 +589,7 @@ int main()
                 std::cout << "Cleared the CSV buffer." << std::endl;
                 clearCSVLine();
                 g_clearFile = false;
-            }
+            }*/
 
             Renderer::drawAll();
             Renderer::update(time);
