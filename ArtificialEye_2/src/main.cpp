@@ -39,12 +39,12 @@ using namespace ee;
 // These are values you can change:
 
 // Number of  pixels:
-const int res_width = 4;
-const int res_height = 4;
+const int res_width = ARTIFICIAL_EYE_PROP.photo_res_width;
+const int res_height = ARTIFICIAL_EYE_PROP.photo_res_height;
 
 // Total area of retina:
-const float maxHeight = 1.0f;
-const float maxWidth = 1.0f;
+const float maxHeight = ARTIFICIAL_EYE_PROP.distance_height;
+const float maxWidth = ARTIFICIAL_EYE_PROP.distance_width;
 
 std::vector<std::string> g_cubeMapFaces
 {
@@ -59,8 +59,9 @@ std::vector<std::string> g_cubeMapFaces
 const std::string g_textureDir = "Textures/";
 const std::string g_cubeMapDir = "SkyBox";
 
-bool g_startSoftBody = false;
-bool g_enableWireFram = false;
+bool g_startSoftBody_hid = false;
+bool g_startSoftBody     = true;
+bool g_enableWireFram    = false;
 
 struct CSVLine
 {
@@ -76,7 +77,7 @@ const float g_constraintMoveSpeed = 0.1f;
 float g_totalDisplacement = 0.f;
 ee::RayTracer* g_tracer;
 bool g_defaultP = true;
-bool g_switchToEyeView = false;
+bool g_switchToEyeView = true;
 bool g_addLine = false;
 bool g_writeFile = false;
 bool g_clearFile = false;
@@ -140,77 +141,34 @@ void addConstraints(const std::size_t thickness, ee::SBSimulation* sim, const ee
 
 void setSpaceCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    if (key == GLFW_KEY_SPACE)
+    if (action != GLFW_PRESS)
     {
-        if (action == GLFW_PRESS)
-        {
-            g_startSoftBody = !g_startSoftBody;
-        }
-    }
-    else if (key == GLFW_KEY_N)
-    {
-        if (action == GLFW_PRESS)
-        {
-            g_enableWireFram = !g_enableWireFram;
-        }
-    }
-    else if (key == GLFW_KEY_R)
-    {
-        if (action == GLFW_PRESS)
-        {
-            g_defaultP = !g_defaultP;
-        }
+        return;
     }
 
-	if (key == GLFW_KEY_Y)
-	{
-		if (action == GLFW_PRESS)
-		{
-			g_switchToEyeView = !g_switchToEyeView;
-		}
-	}
-
-    if (key == GLFW_KEY_R)
+    float sign;
+    switch (key)
     {
-        if (action == GLFW_PRESS)
-        {
-            g_addLine = true;
-        }
-    }
-
-    if (key == GLFW_KEY_T)
-    {
-        if (action == GLFW_PRESS)
-        {
-            g_writeFile = true;
-        }
-    }
-
-    if (key == GLFW_KEY_U)
-    {
-        if (action == GLFW_PRESS)
-        {
-            g_clearFile = true;
-        }
-    }
-
-    if (action == GLFW_PRESS && (key == GLFW_KEY_UP || key == GLFW_KEY_DOWN))
-    {
-        float dir;
-        switch (key)
-        {
-        case GLFW_KEY_UP:
-            dir = 1.f;
-            break;
-        case GLFW_KEY_DOWN:
-            dir = -1.f;
-            break;
-        }
+    case GLFW_KEY_SPACE:
+        g_startSoftBody_hid = !g_startSoftBody_hid;
+        break;
+    case GLFW_KEY_N:
+        g_enableWireFram = !g_enableWireFram;
+        break;
+    case GLFW_KEY_R:
+        g_defaultP = !g_defaultP;
+        break;
+    case GLFW_KEY_Y:
+        g_switchToEyeView = !g_switchToEyeView;
+        break;
+    case GLFW_KEY_UP:
+    case GLFW_KEY_DOWN:
+        sign = key == GLFW_KEY_UP ? 1.f : -1.f;
 
         for (auto& constraint : g_constraints)
         {
-            constraint->m_point += g_constraintMoveSpeed * dir * glm::normalize(glm::vec3(constraint->m_point.x, 0.f, constraint->m_point.z));
-            g_totalDisplacement += g_constraintMoveSpeed * dir;
+            constraint->m_point += g_constraintMoveSpeed * sign * glm::normalize(glm::vec3(constraint->m_point.x, 0.f, constraint->m_point.z));
+            g_totalDisplacement += g_constraintMoveSpeed * sign;
         }
 
         for (auto& val : *g_allConstraints)
@@ -218,7 +176,7 @@ void setSpaceCallback(GLFWwindow* window, int key, int scancode, int action, int
             if (val->getID() != 0)
             {
                 SBLengthConstraint* len = dynamic_cast<SBLengthConstraint*>(val.get());
-                len->m_length += len->m_length * -dir * 0.005;
+                len->m_length += len->m_length * -sign * 0.005;
             }
         }
     }
@@ -307,12 +265,12 @@ int main()
     }
 
 	RendererParam renderParamTemp;
-	renderParamTemp.m_screenWidth = 1400;
+	renderParamTemp.m_screenWidth  = 1400;
 	renderParamTemp.m_screenHeight = 900;
-	renderParamTemp.m_fov = 75.f;
-	renderParamTemp.m_aspect = 1400.f / 900.f;
-	renderParamTemp.m_near = 0.1f;
-	renderParamTemp.m_far = 100.f;
+	renderParamTemp.m_fov          = 75.f;
+	renderParamTemp.m_aspect       = 1400.f / 900.f;
+	renderParamTemp.m_near         = 0.1f;
+	renderParamTemp.m_far          = 100.f;
 
     try
     {
@@ -330,9 +288,9 @@ int main()
         // The default camera parameters:
         CameraParam cameraParams;
         cameraParams.m_position = glm::vec3(10.f, 0.f, 0.f);
-        cameraParams.m_up = glm::vec3(0.f, 1.f, 0.f);
-        cameraParams.m_yaw = 180.f;
-        cameraParams.m_pitch = 0.f;
+        cameraParams.m_up       = glm::vec3(0.f, 1.f, 0.f);
+        cameraParams.m_yaw      = 180.f;
+        cameraParams.m_pitch    = 0.f;
 
         // prepare the renderer:
         Renderer::initialize(ARTIFICIAL_EYE_PROP.shader_dir, renderParamTemp, cameraParams);
@@ -434,10 +392,12 @@ int main()
 
 		// Prepare the image buffer and the ray tracer:
         ImageBuffer imageBuffer(res_width, res_height);
-        g_tracer = &ee::RayTracer::initialize(pos, &rtLens, &rtEyeBall, &scene, &pupil, 4, 2, 2);
+        g_tracer = &ee::RayTracer::initialize(pos, &rtLens, &rtEyeBall, &scene, &pupil, 4, ARTIFICIAL_EYE_PROP.distance_factor, ARTIFICIAL_EYE_PROP.angle_factor);
 
         // Ray trace the result:
+        std::cout << "ray-tracing..." << std::endl;
         g_tracer->raytraceAll();
+        std::cout << "stopped-tracing..." << std::endl;
 
         // Output the paths drawn (this is for drawing):
         std::vector<DrawLine> drawpaths;
@@ -461,7 +421,6 @@ int main()
 			for (int h = 0; h < res_height; h++)
 			{
 				glm::vec3 color = photoreceptors[uniI].color;
-				// std::uint8_t val = static_cast<std::uint8_t>(256.f - (256.f * color.x));
 				imageBuffer.setPixel(w, h, color.x);
 				uniI++;
 			}
@@ -495,6 +454,8 @@ int main()
             }
             else
             {
+                g_startSoftBody = false;
+
                 if (readyToWrite)
                 {
                     writeCSVLines();
@@ -533,11 +494,10 @@ int main()
 
             ee::Renderer::clearBuffers();
 
-            //float time = Renderer::timeElapsed();
-            const float time = 1.f / 30.f;
-            //if (g_startSoftBody)
+            if (g_startSoftBody || g_startSoftBody_hid)
             {
-                lensSim.update(time);
+                lensSim.update(ARTIFICIAL_EYE_PROP.time_step);
+
                 Mesh tempMesh = loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level_lens);
                 uvSubDivSphereMesh.updateVertices(tempMesh.vertexBuffer());
                 uvSubDivSphereMesh.updateMeshFaces(tempMesh.faceBuffer());
@@ -556,43 +516,17 @@ int main()
                     for (int h = 0; h < res_height; h++)
                     {
                         glm::vec3 color = photoreceptors[uniI].color;
-                        //std::uint8_t val = static_cast<std::uint8_t>(256.f - (256.f * color.x));
                         imageBuffer.setPixel(w, h, color.x);
                         uniI++;
                     }
                 }
-
-				/*for (auto& p : drawpaths)
-				{
-					ee::Renderer::addDrawable(&p);
-				}*/
             }
+
             pushCSVLine(&imageBuffer);
             std::cout << "Added frame " << currentFrameIndex << " to output." << std::endl;
 
-            /*if (g_addLine)
-            {
-                std::cout << "Added current state to CSV buffer." << std::endl;
-                pushCSVLine(&imageBuffer);
-                g_addLine = false;
-            }*/
-
-           /* if (g_writeFile)
-            {
-                std::cout << "Wrote current CSV buffer to file." << std::endl;
-                writeCSVLines();
-                g_writeFile = false;
-            }
-
-            if (g_clearFile)
-            {
-                std::cout << "Cleared the CSV buffer." << std::endl;
-                clearCSVLine();
-                g_clearFile = false;
-            }*/
-
             Renderer::drawAll();
-            Renderer::update(time);
+            Renderer::update(Renderer::timeElapsed());
             Renderer::swapBuffers();
             Renderer::pollEvents();
         }

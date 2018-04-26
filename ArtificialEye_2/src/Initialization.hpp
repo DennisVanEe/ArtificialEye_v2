@@ -13,6 +13,13 @@ namespace ee
     {
         bool            success; // true if loading succeeds
 
+        float           distance_width;
+        float           distance_height;
+        int             photo_res_width;
+        int             photo_res_height;
+        int             angle_factor;
+        int             distance_factor;
+
         int			    latitude;
 		int				longitude;
 		int			    iterations;

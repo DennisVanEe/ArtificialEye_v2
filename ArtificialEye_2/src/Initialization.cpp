@@ -33,6 +33,25 @@ ee::ArtificialEyeProp ee::initializeArtificialEyeProp(const std::string& dir)
             throw std::runtime_error("Could not open file " + dir);
         }
 
+        result.distance_width = reader.GetReal("ray_tracer", "distance_width", -1.0);
+        errorLessThanZero(result.distance_width, &result.success);
+
+        result.distance_height = reader.GetReal("ray_tracer", "distnace_height", -1.0);
+        errorLessThanZero(result.distance_height, &result.success);
+
+        result.photo_res_width = reader.GetInteger("ray_tracer", "photo_res_width", -1);
+        errorLessThanZero(result.photo_res_width, &result.success);
+
+        result.photo_res_height = reader.GetInteger("ray_tracer", "photo_res_height", -1);
+        errorLessThanZero(result.photo_res_height, &result.success);
+
+        result.angle_factor = reader.GetInteger("ray_tracer", "angle_factor", -1);
+        errorLessThanZero(result.angle_factor, &result.success);
+
+        result.distance_factor = reader.GetInteger("ray_tracer", "distance_factor", -1);
+        errorLessThanZero(result.distance_factor, &result.success);
+
+
         result.latitude = reader.GetInteger("lens", "latitude", -1);
 		errorLessThanZero(result.latitude, &result.success);
 
