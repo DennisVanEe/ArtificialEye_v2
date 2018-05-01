@@ -77,7 +77,6 @@ void ee::RayTracer::raytraceOne(int photorecpPos)
     const std::vector<glm::vec3>* samples = m_pupil->getFixedSamples();
 	for (glm::vec3 pupilSample : *samples)
 	{
-        int currIndex = m_individualRayPaths[photorecpPos].lastValidLine;
         const Ray outray = raytraceFromEye(photorecpPos, pupilSample, &m_individualRayPaths[photorecpPos]);
         if (std::isnan(outray.origin.x))
         {
