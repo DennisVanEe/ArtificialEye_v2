@@ -13,6 +13,11 @@ namespace ee
     {
         bool            success; // true if loading succeeds
 
+        int             threads;
+
+        std::string     input_file;
+        std::string     output_file;
+
         float           distance_width;
         float           distance_height;
         int             photo_res_width;

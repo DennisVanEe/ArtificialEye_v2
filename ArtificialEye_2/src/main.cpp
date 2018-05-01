@@ -171,14 +171,14 @@ void setSpaceCallback(GLFWwindow* window, int key, int scancode, int action, int
             g_totalDisplacement += g_constraintMoveSpeed * sign;
         }
 
-        for (auto& val : *g_allConstraints)
-        {
-            if (val->getID() != 0)
-            {
-                SBLengthConstraint* len = dynamic_cast<SBLengthConstraint*>(val.get());
-                len->m_length += len->m_length * -sign * 0.005;
-            }
-        }
+        //for (auto& val : *g_allConstraints)
+        //{
+        //    if (val->getID() != 0)
+        //    {
+        //        SBLengthConstraint* len = dynamic_cast<SBLengthConstraint*>(val.get());
+        //        len->m_length += len->m_length * -sign * 0.005;
+        //    }
+        //}
     }
 }
 
@@ -194,8 +194,8 @@ std::vector<EyePosition> g_framePositions;
 int main()
 {
     // THESE ARE CONSTANTS YOU SHOULD CHANGE:
-    std::string FRAME_POSITION_DIR = "MotionLEye.txt";
-    std::string OUTPUT_DIR = "output.csv";
+    std::string& FRAME_POSITION_DIR = ARTIFICIAL_EYE_PROP.input_file;
+    std::string& OUTPUT_DIR = ARTIFICIAL_EYE_PROP.output_file;
 
     std::ifstream framePositionStream(FRAME_POSITION_DIR);
     if (!framePositionStream.is_open())
@@ -392,35 +392,34 @@ int main()
 
 		// Prepare the image buffer and the ray tracer:
         ImageBuffer imageBuffer(res_width, res_height);
-        g_tracer = &ee::RayTracer::initialize(pos, &rtLens, &rtEyeBall, &scene, &pupil, 4, ARTIFICIAL_EYE_PROP.distance_factor, ARTIFICIAL_EYE_PROP.angle_factor);
+        g_tracer = &ee::RayTracer::initialize(&pos, &rtLens, &rtEyeBall, &scene, &pupil, ARTIFICIAL_EYE_PROP.threads, ARTIFICIAL_EYE_PROP.distance_factor, ARTIFICIAL_EYE_PROP.angle_factor, false);
 
         // Ray trace the result:
-        std::cout << "ray-tracing..." << std::endl;
+        std::cout << "ray-tracing initial scene..." << std::endl;
         g_tracer->raytraceAll();
-        std::cout << "stopped-tracing..." << std::endl;
+        std::cout << "stopped-tracing initial scene..." << std::endl;
 
         // Output the paths drawn (this is for drawing):
         std::vector<DrawLine> drawpaths;
         ee::Renderer::addTexturePack("lineTextPack", ee::LineUniColorTextPack(glm::vec3(0.f, 1.f, 0.f)));
-        auto& paths = g_tracer->getRayPaths();
-		auto& photoreceptors = g_tracer->getPhotoreceptors();
-        for (const auto& p : paths)
-        {
-            drawpaths.push_back(DrawLine("lineTextPack", p));
-        }
+        // auto& paths = g_tracer->getRayPaths();
+        // for (const auto& p : paths)
+        // {
+        //     drawpaths.push_back(DrawLine("lineTextPack", p));
+        // }
 
-        for (auto& p : drawpaths)
-        {
-            ee::Renderer::addDrawable(&p);
-        }
+        // for (auto& p : drawpaths)
+        // {
+        //     ee::Renderer::addDrawable(&p);
+        // }
 
         // Write the paths to an image buffer:
-		int uniI = 0;
-		for (int w = 0; w < res_width; w++)
+        auto* photoreceptors = g_tracer->getColors();
+		for (int w = 0, uniI = 0; w < res_width; w++)
 		{
 			for (int h = 0; h < res_height; h++)
 			{
-				glm::vec3 color = photoreceptors[uniI].color;
+				glm::vec3 color = (*photoreceptors)[uniI];
 				imageBuffer.setPixel(w, h, color.x);
 				uniI++;
 			}
@@ -503,19 +502,18 @@ int main()
                 uvSubDivSphereMesh.updateMeshFaces(tempMesh.faceBuffer());
                 g_tracer->raytraceAll();
 
-				auto& paths = g_tracer->getRayPaths();
-				for (int i = 0; i < drawpaths.size() && i < paths.size(); i++)
-				{
-					drawpaths[i].setLine(paths[i]);
-				}
+				//auto& paths = g_tracer->getRayPaths();
+				//for (int i = 0; i < drawpaths.size() && i < paths.size(); i++)
+				//{
+				//	drawpaths[i].setLine(paths[i]);
+				//}
 
-                auto& photoreceptors = g_tracer->getPhotoreceptors();
-                int uniI = 0;
-                for (int w = 0; w < res_width; w++)
+                auto* photoreceptors = g_tracer->getColors();
+                for (int w = 0, uniI = 0; w < res_width; w++)
                 {
                     for (int h = 0; h < res_height; h++)
                     {
-                        glm::vec3 color = photoreceptors[uniI].color;
+                        glm::vec3 color = (*photoreceptors)[uniI];
                         imageBuffer.setPixel(w, h, color.x);
                         uniI++;
                     }

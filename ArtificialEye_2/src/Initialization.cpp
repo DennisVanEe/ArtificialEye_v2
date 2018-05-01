@@ -33,6 +33,9 @@ ee::ArtificialEyeProp ee::initializeArtificialEyeProp(const std::string& dir)
             throw std::runtime_error("Could not open file " + dir);
         }
 
+        result.input_file = reader.Get("files", "input_file", "");
+        result.output_file = reader.Get("files", "output_file", "");
+
         result.distance_width = reader.GetReal("ray_tracer", "distance_width", -1.0);
         errorLessThanZero(result.distance_width, &result.success);
 
@@ -104,6 +107,9 @@ ee::ArtificialEyeProp ee::initializeArtificialEyeProp(const std::string& dir)
 
 		result.time_step = F(reader.GetReal("simulation", "time_step", -1.0));
 		errorLessThanZero(result.time_step, &result.success);
+
+        result.threads = reader.GetInteger("simulation", "threads", -1.0);
+        errorLessThanZero(result.threads, &result.success);
 
 		result.shader_dir = reader.Get("graphics", "shader_dir", "");
 		result.success = result.shader_dir != "";

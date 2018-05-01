@@ -38,9 +38,9 @@ namespace ee
 			glm::vec3 color;
 		};
 
-		const std::vector<glm::vec3>& getColors() const
+		const std::vector<glm::vec3>* getColors() const
 		{
-			return m_colors;
+			return &m_colors;
 		}
 
 	private:

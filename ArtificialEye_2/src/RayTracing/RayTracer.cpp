@@ -3,6 +3,8 @@
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 
+int ee::RayTracer::ms_totalSamples = 0;
+
 ee::RayTracer::RayTracer(const std::vector<glm::vec3>* pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene,
     Pupil* pupil, int nthreads, int distFactor, int angleFactor, bool drawRays) :
     m_photoPos(pos),
@@ -65,7 +67,10 @@ void ee::RayTracer::raytraceSelect(int pos, int numrays)
 // this is run in one thread
 void ee::RayTracer::raytraceOne(int photorecpPos)
 {
-    m_individualRayPaths[photorecpPos].lastValidLine = 0;
+    if (m_drawLines)
+    {
+        m_individualRayPaths[photorecpPos].lastValidLine = 0;
+    }
 
 	// first we need to sample a bunch of rays off the circular lens (basically prepare a bunch of paths)
 	m_colors[photorecpPos] = glm::vec3(0.f);
