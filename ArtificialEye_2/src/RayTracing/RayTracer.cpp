@@ -77,7 +77,8 @@ void ee::RayTracer::raytraceOne(int photorecpPos)
     const std::vector<glm::vec3>* samples = m_pupil->getFixedSamples();
 	for (glm::vec3 pupilSample : *samples)
 	{
-        const Ray outray = raytraceFromEye(photorecpPos, pupilSample, &m_individualRayPaths[photorecpPos]);
+        IndividualPath* subset = m_drawLines ? &m_individualRayPaths[photorecpPos] : nullptr;
+        const Ray outray = raytraceFromEye(photorecpPos, pupilSample, subset);
         if (std::isnan(outray.origin.x))
         {
             continue;
@@ -141,7 +142,7 @@ ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, glm::vec3 pupilPos, Ind
 	const Ray ray3(intpoint, dir);
 
     // insert the lins as appropriate:
-    if (m_drawLines)
+    if (m_drawLines && localPaths != nullptr)
     {
         localPaths->addLine(Line(ray0.origin, ray1.origin));
         localPaths->addLine(Line(ray1.origin, ray2.origin));
