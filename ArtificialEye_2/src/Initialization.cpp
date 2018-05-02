@@ -48,11 +48,8 @@ ee::ArtificialEyeProp ee::initializeArtificialEyeProp(const std::string& dir)
         result.photo_res_height = reader.GetInteger("ray_tracer", "photo_res_height", -1);
         errorLessThanZero(result.photo_res_height, &result.success);
 
-        result.angle_factor = reader.GetInteger("ray_tracer", "angle_factor", -1);
-        errorLessThanZero(result.angle_factor, &result.success);
-
-        result.distance_factor = reader.GetInteger("ray_tracer", "distance_factor", -1);
-        errorLessThanZero(result.distance_factor, &result.success);
+        result.samples = reader.GetInteger("ray_tracer", "samples", -1);
+        errorLessThanZero(result.samples, &result.success);
 
 
         result.latitude = reader.GetInteger("lens", "latitude", -1);

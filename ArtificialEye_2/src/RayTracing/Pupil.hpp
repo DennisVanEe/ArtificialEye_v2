@@ -3,6 +3,8 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include <vector>
+#include <random>
+#include <ctime>
 #include "../Types.hpp"
 
 namespace ee
@@ -14,43 +16,38 @@ namespace ee
             radius(startRadius), pos(pos) {}
 
         // Sampled points over pupil that don't vary
-        const std::vector<glm::vec3>* sampleFixed(int distFact, int angleFact)
+        void generateSamples(int numSamples)
         {
-            m_fixedSamples.clear();
-            m_fixedSamples.reserve(distFact * angleFact);
-            for (int dist = 0; dist < distFact; dist++)
+            std::random_device randDev;
+            std::mt19937 generator(randDev());
+            std::uniform_real_distribution<float> randDist(0.f, 1.f);
+
+            m_samples.clear();
+            m_samples.reserve(numSamples);
+            for (int i = 0; i < numSamples; i++)
             {
-                for (int angles = 0; angles < angleFact; angles++)
-                {
-                    const float angleFactor = static_cast<float>(angleFact);
-                    const float distanceFactor = static_cast<float>(distFact);
+                float val0 = randDist(generator);
+                float val1 = randDist(generator);
+                float val2 = randDist(generator);
 
-                    float distanceIndex = static_cast<float>(dist);
-                    float angleIndex = static_cast<float>(angles);
+                float t = PI2 * val0;
+                float u = val1 + val2;
+                float r = u > 1.f ? 2.f - u : u;
 
-                    const float r = radius * distanceIndex / distanceFactor;
-                    const float theta = (PI2 / angleFactor) * (angleIndex + r);
-
-                    const float x = r * std::cos(theta);
-                    const float y = r * std::sin(theta);
-
-                    const glm::vec3 point = glm::vec3(pos * glm::vec4(x, y, 0.f, 1.f));
-                    m_fixedSamples.push_back(point);
-                }
+                const glm::vec3 point = glm::vec3(pos * glm::vec4(r * std::cos(t), r * std::sin(t), 0.f, 1.f));
+                m_samples.push_back(point);
             }
-
-            return &m_fixedSamples;
         }
 
-        const std::vector<glm::vec3>* getFixedSamples() const
+        const std::vector<glm::vec3>* getSamples() const
         {
-            return &m_fixedSamples;
+            return &m_samples;
         }
 
         glm::mat4 pos;
         float     radius;
 
     private:
-        std::vector<glm::vec3> m_fixedSamples;
+        std::vector<glm::vec3> m_samples;
     };
 }

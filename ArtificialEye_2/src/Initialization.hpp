@@ -22,8 +22,7 @@ namespace ee
         float           distance_height;
         int             photo_res_width;
         int             photo_res_height;
-        int             angle_factor;
-        int             distance_factor;
+        int             samples;
 
         int			    latitude;
 		int				longitude;

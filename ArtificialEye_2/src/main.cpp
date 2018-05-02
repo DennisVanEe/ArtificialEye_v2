@@ -265,8 +265,8 @@ int main()
     }
 
 	RendererParam renderParamTemp;
-	renderParamTemp.m_screenWidth  = 1400;
-	renderParamTemp.m_screenHeight = 900;
+	renderParamTemp.m_screenWidth  = 480;
+	renderParamTemp.m_screenHeight = 480;
 	renderParamTemp.m_fov          = 75.f;
 	renderParamTemp.m_aspect       = 1400.f / 900.f;
 	renderParamTemp.m_near         = 0.1f;
@@ -392,7 +392,7 @@ int main()
 
 		// Prepare the image buffer and the ray tracer:
         ImageBuffer imageBuffer(res_width, res_height);
-        g_tracer = &ee::RayTracer::initialize(&pos, &rtLens, &rtEyeBall, &scene, &pupil, ARTIFICIAL_EYE_PROP.threads, ARTIFICIAL_EYE_PROP.distance_factor, ARTIFICIAL_EYE_PROP.angle_factor, false);
+        g_tracer = &ee::RayTracer::initialize(&pos, &rtLens, &rtEyeBall, &scene, &pupil, ARTIFICIAL_EYE_PROP.threads, ARTIFICIAL_EYE_PROP.samples, false);
 
         // Ray trace the result:
         std::cout << "ray-tracing initial scene..." << std::endl;

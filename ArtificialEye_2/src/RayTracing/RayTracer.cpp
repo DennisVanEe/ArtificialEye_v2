@@ -6,26 +6,23 @@
 int ee::RayTracer::ms_totalSamples = 0;
 
 ee::RayTracer::RayTracer(const std::vector<glm::vec3>* pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene,
-    Pupil* pupil, int nthreads, int distFactor, int angleFactor, bool drawRays) :
+    Pupil* pupil, int nthreads, int samples, bool drawRays) :
     m_photoPos(pos),
     m_drawLines(drawRays),
 	m_scene(scene),
-	m_distFactor(distFactor),
-    m_angleFactor(angleFactor),
-    m_totalSamples(distFactor * angleFactor),
+    m_totalSamples(samples),
     m_pupil(pupil),
 	m_eyeball(eyeball),
 	m_lens(lens)
 {
-    assert(m_distFactor > 0);
-    assert(m_angleFactor > 0);
+    assert(samples > 0);
     assert(nthreads > 0);
 
     // The total number of possible ray-paths:
     const int totalNumSamples = m_totalSamples * m_photoPos->size();
 
     // Generate the samples:
-    m_pupil->sampleFixed(distFactor, angleFactor);
+    m_pupil->generateSamples(m_totalSamples);
 
     // don't allocate if not drawing
     if (m_drawLines)
@@ -74,7 +71,7 @@ void ee::RayTracer::raytraceOne(int photorecpPos)
 
 	// first we need to sample a bunch of rays off the circular lens (basically prepare a bunch of paths)
 	m_colors[photorecpPos] = glm::vec3(0.f);
-    const std::vector<glm::vec3>* samples = m_pupil->getFixedSamples();
+    const std::vector<glm::vec3>* samples = m_pupil->getSamples();
 	for (glm::vec3 pupilSample : *samples)
 	{
         IndividualPath* subset = m_drawLines ? &m_individualRayPaths[photorecpPos] : nullptr;

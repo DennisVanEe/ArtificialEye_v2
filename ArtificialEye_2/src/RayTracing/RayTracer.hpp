@@ -20,10 +20,10 @@ namespace ee
 	{
 	public:
 		static RayTracer& initialize(const std::vector<glm::vec3>* pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene,
-            Pupil* pupil, int nthreads, int distFactor, int angleFactor, bool drawRays)
+            Pupil* pupil, int nthreads, int samples, bool drawRays)
 		{
-			static RayTracer raytracer(pos, lens, eyeball, scene, pupil, nthreads, distFactor, angleFactor, drawRays);
-            ms_totalSamples = angleFactor * distFactor;
+			static RayTracer raytracer(pos, lens, eyeball, scene, pupil, nthreads, samples, drawRays);
+            ms_totalSamples = samples;
 			return raytracer;
 		}
 
@@ -45,7 +45,7 @@ namespace ee
 
 	private:
 		RayTracer(const std::vector<glm::vec3>* pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene, 
-            Pupil* pupil, int nthreads, int distFactor, int angleFactor, bool drawRays);
+            Pupil* pupil, int nthreads, int samples, bool drawRays);
 
 		void raytraceSelect(int pos, int numrays);
 		void raytraceOne(int pos);
@@ -82,8 +82,6 @@ namespace ee
 		const RTObject* const m_lens;
 		const RTObject* const m_eyeball;
 
-		const int m_distFactor;
-        const int m_angleFactor;
         const int m_totalSamples;
 
         static int ms_totalSamples;
