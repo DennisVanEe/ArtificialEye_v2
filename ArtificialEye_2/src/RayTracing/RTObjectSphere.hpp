@@ -15,7 +15,7 @@ namespace ee
 		{
 		}
 
-        bool calcIntersection(Ray ray, int ignoreTriangle) const override;
+        bool calcIntersection(Ray ray, int ignoreTriangle, bool towardsPhoto) const override;
 
 		virtual glm::vec3 intPoint() const 
 		{ 

@@ -22,7 +22,7 @@ namespace ee
 			return m_name;
 		}
 
-		virtual bool calcIntersection(Ray ray, int ignoreTriangle) const = 0;
+		virtual bool calcIntersection(Ray ray, int ignoreTriangle, bool towardsPhoto) const = 0;
 		virtual glm::vec3 intPoint() const = 0;
 		virtual  glm::vec3 intNormalInterpolated() const = 0;
 		virtual  glm::vec3 intNormalFace() const = 0;

@@ -26,6 +26,7 @@
 #include "Mesh/MeshGenerator.hpp"
 #include "Mesh/Subdivision.hpp"
 
+#include <chrono>
 #include <string>
 #include <iostream>
 #include <vector>
@@ -396,8 +397,11 @@ int main()
 
         // Ray trace the result:
         std::cout << "ray-tracing initial scene..." << std::endl;
+        auto before = std::chrono::high_resolution_clock::now();
         g_tracer->raytraceAll();
+        auto after = std::chrono::high_resolution_clock::now();
         std::cout << "stopped-tracing initial scene..." << std::endl;
+        std::cout << "time elapsed: " << (after - before).count() << std::endl;
 
         // Output the paths drawn (this is for drawing):
         std::vector<DrawLine> drawpaths;

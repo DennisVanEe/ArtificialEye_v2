@@ -145,7 +145,7 @@ namespace ee
 		//
 		// Access specific items:
 
-        Vec3 getVertex(int vertexID) const { return m_vertices[vertexID]; }
+        Vec3 getVertex(int vertexID) const { assert(vertexID < m_vertices.size() && vertexID >= 0); return m_vertices[vertexID]; }
         Vec3 getTransformedVertex(int vertexID)  const { return transPoint3(getModelTrans(), getVertex(vertexID)); }
 
 		Vec3 getVertexNormal(int vertexID) const { return m_normals[vertexID]; }

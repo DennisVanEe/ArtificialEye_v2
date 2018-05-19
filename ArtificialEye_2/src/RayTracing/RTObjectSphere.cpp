@@ -9,7 +9,7 @@ int sign(T val)
 #undef max
 #undef min
 
-bool ee::RTObjectSphere::calcIntersection(Ray ray, int ignoreTriangle) const
+bool ee::RTObjectSphere::calcIntersection(Ray ray, int ignoreTriangle, bool towardsPhoto) const
 {
 	const float min_dist = 0.001f;
 	const float max_dist = std::numeric_limits<float>::max();

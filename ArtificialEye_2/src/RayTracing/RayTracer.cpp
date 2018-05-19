@@ -86,7 +86,7 @@ void ee::RayTracer::raytraceOne(int photorecpPos)
         for (int i = 0; i < numsceneItems; i++)
         {
             const RTObject* obj = m_scene->getObject(i);
-            if (obj->calcIntersection(outray, -1))
+            if (obj->calcIntersection(outray, -1, false))
             {
                 if (m_drawLines)
                 {
@@ -107,7 +107,7 @@ ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, glm::vec3 pupilPos, Ind
     const Ray ray0(origin, glm::normalize(pupilPos - origin));
 
 	// first we intersect it with the lens:
-	bool res = m_lens->calcIntersection(ray0, -1);
+	bool res = m_lens->calcIntersection(ray0, -1, true);
     if (!res)
     {
         return Ray(glm::vec3(NaN), glm::vec3(NaN));
@@ -118,7 +118,7 @@ ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, glm::vec3 pupilPos, Ind
 	const Ray ray1(intpoint, dir);
 
 	// new we intersect through the lens:
-	res = m_lens->calcIntersection(ray1, ignore);
+	res = m_lens->calcIntersection(ray1, ignore, false);
     if (!res)
     {
         return Ray(glm::vec3(NaN), glm::vec3(NaN));
@@ -129,7 +129,7 @@ ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, glm::vec3 pupilPos, Ind
 	const Ray ray2(intpoint, dir);
 
 	// now we intersect through the cornea (and out into the world!)
-	res = m_eyeball->calcIntersection(ray2, -1);
+	res = m_eyeball->calcIntersection(ray2, -1, false);
     if (!res)
     {
         return Ray(glm::vec3(NaN), glm::vec3(NaN));

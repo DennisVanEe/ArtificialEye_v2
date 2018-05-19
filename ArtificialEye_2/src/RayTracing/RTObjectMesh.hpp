@@ -9,7 +9,7 @@ namespace ee
 	public:
 		RTObjectMesh(std::string name, Mesh* mesh, float refraction = std::numeric_limits<float>::quiet_NaN(), bool reflective = false);
 
-		bool calcIntersection(Ray ray, int ignoreTriangle) const override;
+		bool calcIntersection(Ray ray, int ignoreTriangle, bool towardsPhoto) const override;
 		glm::vec3 intNormalInterpolated() const override;
 
 		glm::vec3 intPoint() const override;

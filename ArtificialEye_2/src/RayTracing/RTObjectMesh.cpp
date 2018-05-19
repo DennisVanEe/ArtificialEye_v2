@@ -38,13 +38,16 @@ const ee::Mesh* ee::RTObjectMesh::getMesh() const
     return m_mesh;
 }
 
-bool ee::RTObjectMesh::calcIntersection(Ray ray, int ignoreTriangle) const
+bool ee::RTObjectMesh::calcIntersection(Ray ray, int ignoreTriangle, bool towardsPhoto) const
 {
 	int minFace = -1;
 	glm::vec3 minPoint = glm::vec3(0.f, 0.f, 0.f); // the point where the intersection would occur
 	float minDist = std::numeric_limits<float>::infinity();
 
-	for (int i = 0; i < m_mesh->getNumFaces(); i++)
+    const int startPosition = towardsPhoto ? (m_mesh->getNumFaces() / 2.f + 0.5f) : 0;
+    const int endPosition = towardsPhoto ? m_mesh->getNumFaces() : (m_mesh->getNumFaces() / 2.f + 0.5f);
+
+	for (int i = startPosition; i < endPosition; i++)
 	{
 		if (i != ignoreTriangle)
 		{
