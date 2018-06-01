@@ -15,6 +15,7 @@ bool ee::RTMesh::intersect(Ray ray, int ignoreFace, RTMeshIntersection* o_int) c
     int triangle;
     if (!m_tree.intersect(0, ray, ignoreFace, &point, &triangle))
     {
+        //assert(false);
         return false;
     }
 

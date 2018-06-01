@@ -5,6 +5,7 @@
 #include <vector>
 #include <random>
 #include <ctime>
+#include <cstdlib>
 #include "../Types.hpp"
 
 namespace ee
@@ -18,21 +19,19 @@ namespace ee
         // Sampled points over pupil that don't vary
         void generateSamples(int numSamples)
         {
-            std::random_device randDev;
-            std::mt19937 generator(randDev());
-            std::uniform_real_distribution<float> randDist(0.f, 1.f);
+            std::srand(0);
 
             m_samples.clear();
             m_samples.reserve(numSamples);
             for (int i = 0; i < numSamples; i++)
             {
-                float val0 = randDist(generator);
-                float val1 = randDist(generator);
-                float val2 = randDist(generator);
+                const float val0 = static_cast<float>(rand()) / RAND_MAX * 0.975f;
+                const float val1 = static_cast<float>(rand()) / RAND_MAX * 0.975f;
+                const float val2 = static_cast<float>(rand()) / RAND_MAX * 0.975f;
 
-                float t = PI2 * val0;
-                float u = val1 + val2;
-                float r = u > 1.f ? 2.f - u : u;
+                const float t = PI2 * val0;
+                const float u = val1 + val2;
+                const float r = u > 1.f ? 2.f - u : u;
 
                 const glm::vec3 point = glm::vec3(pos * glm::vec4(r * std::cos(t), r * std::sin(t), 0.f, 1.f));
                 m_samples.push_back(point);

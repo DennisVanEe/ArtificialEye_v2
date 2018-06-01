@@ -24,11 +24,11 @@
 #include "Mesh/MeshGenerator.hpp"
 #include "Mesh/Subdivision.hpp"
 
-#include <chrono>
 #include <string>
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <iomanip>
 #include <sstream>
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -65,7 +65,7 @@ bool g_enableWireFram    = false;
 struct CSVLine
 {
     float tension;
-    std::vector<std::uint8_t> pixels;
+    std::vector<float> pixels;
 };
 
 std::vector<CSVLine> g_csvLines;
@@ -81,19 +81,11 @@ bool g_writeFile = false;
 bool g_clearFile = false;
 std::ofstream g_csvWriter;
 
-void pushCSVLine(const ImageBuffer* buffer)
+void pushCSVLine(const std::vector<float>& buffer)
 {
     CSVLine line;
     line.tension = glm::length2(g_constraints[0]->m_point);
-
-    int size = buffer->getTotalPixelAmt();
-    const glm::u8vec3* getData = buffer->getBuffer();
-    for (int i = 0; i < size; i++)
-    {
-        std::uint8_t val = getData[i].r;
-        line.pixels.push_back(val);
-    }
-
+    line.pixels = buffer;
     g_csvLines.push_back(line);
 }
 
@@ -113,9 +105,9 @@ void writeCSVLines()
     for (const CSVLine& line : g_csvLines)
     {
         g_csvWriter << line.tension;
-        for (std::uint8_t b : line.pixels)
+        for (float b : line.pixels)
         {
-            g_csvWriter << "," << static_cast<int>(b);
+            g_csvWriter << "," << b;
         }
         g_csvWriter << std::endl;
     }
@@ -179,6 +171,22 @@ struct EyePosition
 };
 
 std::vector<EyePosition> g_framePositions;
+
+void writeCSVLine(int frameIndex, const RayTracer& tracer, ImageBuffer* imageBuffer)
+{
+    const auto& photoreceptors = *tracer.getColors();
+    for (int w = 0, uniI = 0; w < res_width; w++)
+    {
+        for (int h = 0; h < res_height; h++)
+        {
+            const float color = photoreceptors[uniI];
+            imageBuffer->setPixel(w, h, color);
+            uniI++;
+        }
+    }
+    pushCSVLine(photoreceptors);
+    std::cout << "Finished frame: " << frameIndex << std::endl;
+}
 
 int main()
 {
@@ -315,20 +323,18 @@ int main()
 
         Pupil pupil(pupilModel, 1.f);
 
-        Mesh sphereMesh = loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude);
-        Mesh subDivSphereMesh = loopSubdiv(sphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level_lens);
-        subDivSphereMesh.calcNormals();
-        subDivSphereMesh.setModelTrans(lensModel);
+        Mesh lensMesh = loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude);
+        lensMesh.setModelTrans(lensModel);
 
         // Prepare the lens with the appropriate values:
-        RTMesh rtLens(&subDivSphereMesh, ARTIFICIAL_EYE_PROP.lens_refr_index, false);
-        Lens lensSphere(&sphereMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
+        RTMesh rtLens(&lensMesh, ARTIFICIAL_EYE_PROP.lens_refr_index, false);
+        Lens lens(&lensMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
 
-        SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &sphereMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
+        SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &lensMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
         lensSim.m_constIterations = ARTIFICIAL_EYE_PROP.iterations;
         lensSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 30.f, ARTIFICIAL_EYE_PROP.extspring_drag));
         addInteriorSpringsUVSphere(&lensSim, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.intspring_coeff, ARTIFICIAL_EYE_PROP.intspring_drag);
-        g_constraints = lensSphere.addConstraints(5, &lensSim);
+        g_constraints = lens.addConstraints(5, &lensSim);
         g_allConstraints = lensSim.getConstraints();
 
         // The amount to increment the counter by:
@@ -349,129 +355,52 @@ int main()
 		}
 
 		// Prepare the image buffer and the ray tracer:
-        ImageBuffer imageBuffer(res_width, res_height);
+        ImageBuffer imageBuffer(res_width, res_height); // for rendering:
         RayTracer tracer(&pos, &rtLens, &rtEyeball, &rtSceneSphere, &pupil, ARTIFICIAL_EYE_PROP.threads, ARTIFICIAL_EYE_PROP.samples);
 
         pupil.generateSamples(16);
 
-        // Ray trace the result:
-        std::cout << "ray-tracing initial scene..." << std::endl;
-        auto before = std::chrono::high_resolution_clock::now();
-        tracer.raytraceAll();
-        auto after = std::chrono::high_resolution_clock::now();
-        std::cout << "stopped-tracing initial scene..." << std::endl;
-        std::cout << "time elapsed: " << (after - before).count() << std::endl;
-
-        // Write the paths to an image buffer:
-        auto* photoreceptors = tracer.getColors();
-		for (int w = 0, uniI = 0; w < res_width; w++)
-		{
-			for (int h = 0; h < res_height; h++)
-			{
-				const float color = (*photoreceptors)[uniI];
-				imageBuffer.setPixel(w, h, color);
-				uniI++;
-			}
-		}
-
-        int currentFrameIndex = 1;
-        bool readyToWrite = true;
-
         // Render the image buffer if required:
 		ee::Renderer::generatePlaneBuffer();
-        while (ee::Renderer::isInitialized())
+        for (int frameIndex = 0; frameIndex < g_framePositions.size(); frameIndex++)
         {
-            // update the positions when necessary
-            if (currentFrameIndex < g_framePositions.size())
+            if (!ee::Renderer::isInitialized())
             {
-                rotationEye = glm::mat4_cast(g_framePositions[currentFrameIndex].rotation);
-                positionEye = glm::translate(glm::mat4(1), g_framePositions[currentFrameIndex].position);
-
-                globalModel = positionEye * rotationEye;
-
-                eyeballModel = globalModel * eyeballIntermTransform;
-                lensModel    = globalModel * lensIntermTransform;
-                pupilModel   = globalModel * pupilInterimTransform;
-
-                sphereMesh.setModelTrans(lensModel);
-                subDivSphereMesh.setModelTrans(lensModel);
-                eyeball.setPosition(eyeballModel);
-                pupil.pos = pupilModel;
-
-                currentFrameIndex++;
-            }
-            else
-            {
-                g_startSoftBody = false;
-
-                if (readyToWrite)
-                {
-                    writeCSVLines();
-                    std::cout << "Wrote result to output." << std::endl;
-                    readyToWrite = false;
-                }
+                break;
             }
 
+            const EyePosition currPosition = g_framePositions[frameIndex];
+            rotationEye = glm::mat4_cast(currPosition.rotation);
+            positionEye = glm::translate(glm::mat4(1), currPosition.position);
 
-            if (g_enableWireFram)
-            {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            }
-            else
-            {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            }
+            globalModel = positionEye * rotationEye;
 
-            if (g_defaultP)
-            {
-                lensSim.setP(ARTIFICIAL_EYE_PROP.pressure);
-            }
-            else
-            {
-                lensSim.setP(0.f);
-            }
+            eyeballModel = globalModel * eyeballIntermTransform;
+            lensModel    = globalModel * lensIntermTransform;
+            pupilModel   = globalModel * pupilInterimTransform;
 
-			if (g_switchToEyeView)
-			{
-				ee::Renderer::setPlaneBufferTexture(imageBuffer.getTextureID());
-			}
-			else
-			{
-				ee::Renderer::unsetPlaneBufferTexture();
-			}
+            // update the model information:
+            lensMesh.setModelTrans(lensModel);
+            eyeball.setPosition(eyeballModel);
+            pupil.pos = pupilModel;
 
+            ee::Renderer::setPlaneBufferTexture(imageBuffer.getTextureID());
             ee::Renderer::clearBuffers();
 
-            if (g_startSoftBody || g_startSoftBody_hid)
-            {
-                lensSim.update(ARTIFICIAL_EYE_PROP.time_step);
+            lensSim.update(ARTIFICIAL_EYE_PROP.time_step);
+            lensMesh.calcNormals();
+            tracer.raytraceAll();
 
-                Mesh tempMesh = loopSubdiv(sphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level_lens);
-                subDivSphereMesh.updateVertices(tempMesh.vertexBuffer());
-                subDivSphereMesh.updateMeshFaces(tempMesh.faceBuffer());
-                subDivSphereMesh.calcNormals(); // this might be slow...
-                tracer.raytraceAll();
-
-                auto* photoreceptors = tracer.getColors();
-                for (int w = 0, uniI = 0; w < res_width; w++)
-                {
-                    for (int h = 0; h < res_height; h++)
-                    {
-                        const float color = (*photoreceptors)[uniI];
-                        imageBuffer.setPixel(w, h, color);
-                        uniI++;
-                    }
-                }
-            }
-
-            pushCSVLine(&imageBuffer);
-            std::cout << "Added frame " << currentFrameIndex << " to output." << std::endl;
+            writeCSVLine(frameIndex, tracer, &imageBuffer);
 
             Renderer::drawAll();
             Renderer::update(Renderer::timeElapsed());
             Renderer::swapBuffers();
             Renderer::pollEvents();
         }
+
+        writeCSVLines();
+        std::cout << "Wrote result to output." << std::endl;
     }
     catch (const std::exception& e)
     {

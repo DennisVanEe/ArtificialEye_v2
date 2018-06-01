@@ -6,7 +6,7 @@
 
 namespace ee
 {
-    const int KD_FACES_PER_NODE = 256;
+    const int KD_FACES_PER_NODE = 128;
 
     class KDTree
     {

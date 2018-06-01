@@ -62,6 +62,7 @@ void ee::RayTracer::raytraceOne(int photorecpPos)
     const std::vector<glm::vec3>* const samples = m_pupil->getSamples();
 	for (glm::vec3 pupilSample : *samples)
 	{
+        pupilSample = transPoint3(m_pupil->pos, pupilSample);
         const Ray outray = raytraceFromEye(photorecpPos, pupilSample);
         if (std::isnan(outray.origin.x))
         {
@@ -86,35 +87,37 @@ ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, glm::vec3 pupilPos)
     const glm::vec3 origin = transPoint3(m_eyeball->getSphere()->getPosition(), (*m_photoPos)[photorecpPos]);
     const Ray ray0(origin, glm::normalize(pupilPos - origin));
 
-    RTMeshIntersection intersect;
+    RTMeshIntersection meshIntersect;
 
 	// first we intersect it with the lens:
-    if (!m_lens->intersect(ray0, -1, &intersect))
+    if (!m_lens->intersect(ray0, -1, &meshIntersect))
     {
         return NaNRay;
     }
-	int ignore = intersect.face;
-	glm::vec3 intpoint = intersect.point; // the point of intersection
-	glm::vec3 dir = glm::normalize(ee::refract(ray0.dir, intersect.normal, m_eyeball->getRefraction() / m_lens->getRefraction()));
+	int ignore = meshIntersect.face;
+	glm::vec3 intpoint = meshIntersect.point; // the point of intersection
+	glm::vec3 dir = glm::normalize(ee::refract(ray0.dir, meshIntersect.normal, m_eyeball->getRefraction() / m_lens->getRefraction()));
 	const Ray ray1(intpoint, dir);
 
 	// new we intersect through the lens:
-    if (!m_lens->intersect(ray1, ignore, &intersect))
+    if (!m_lens->intersect(ray1, ignore, &meshIntersect))
     {
         return NaNRay;
     }
-    ignore = intersect.face;
-    intpoint = intersect.point;
-	dir = glm::normalize(ee::refract(ray1.dir, -intersect.normal, m_lens->getRefraction() / m_eyeball->getRefraction()));
+    ignore = meshIntersect.face;
+    intpoint = meshIntersect.point;
+	dir = glm::normalize(ee::refract(ray1.dir, -meshIntersect.normal, m_lens->getRefraction() / m_eyeball->getRefraction()));
 	const Ray ray2(intpoint, dir);
 
+    RTSphereIntersection sphereIntersect;
+
 	// now we intersect through the cornea (and out into the world!)
-    if (!m_eyeball->intersect(ray2))
+    if (!m_eyeball->intersect(ray2, &sphereIntersect))
     {
         return NaNRay;
     }
-	intpoint = intersect.point;
-	dir = glm::normalize(ee::refract(ray1.dir, -intersect.normal, m_eyeball->getRefraction()));
+	intpoint = sphereIntersect.point;
+	dir = glm::normalize(ee::refract(ray1.dir, -sphereIntersect.normal, m_eyeball->getRefraction()));
 	const Ray ray3(intpoint, dir);
 
 	return ray3;

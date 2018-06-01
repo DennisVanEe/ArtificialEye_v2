@@ -58,20 +58,11 @@ void ee::KDTree::initialConstruct(int maxFacesPerNode)
         }
     }
 
-    if (left.empty() && !right.empty())
-    {
-        left = right;
-    }
-    else if (right.empty() && !left.empty())
-    {
-        right = left;
-    }
-
-    if (left.size() >= maxFacesPerNode)
+    if (!left.empty())
     {
         currNode.left = constructTree(left, 0, maxFacesPerNode);
     }
-    if (right.size() >= maxFacesPerNode)
+    if (!right.empty())
     {
         currNode.right = constructTree(right, 0, maxFacesPerNode);
     }
@@ -130,20 +121,11 @@ int ee::KDTree::constructTree(const std::vector<int>& faces, int parent, int max
         }
     }
 
-    if (left.empty() && !right.empty())
-    {
-        left = right;
-    }
-    else if (right.empty() && !left.empty())
-    {
-        right = left;
-    }
-
-    if (left.size() >= maxFacesPerNode)
+    if (!left.empty())
     {
         currNode.left = constructTree(left, nodePosition, maxFacesPerNode);
     }
-    if (right.size() >= maxFacesPerNode)
+    if (!right.empty())
     {
         currNode.right = constructTree(right, nodePosition, maxFacesPerNode);
     }
