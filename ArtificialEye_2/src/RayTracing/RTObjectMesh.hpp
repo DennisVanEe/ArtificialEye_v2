@@ -1,31 +1,25 @@
 #pragma once
 
 #include "RTObject.hpp"
+#include "KDTree.hpp"
 
 namespace ee
 {
-	class RTObjectMesh : public RTObject
+	class RTSphereMesh
 	{
 	public:
-		RTObjectMesh(std::string name, Mesh* mesh, float refraction = std::numeric_limits<float>::quiet_NaN(), bool reflective = false);
+        RTSphereMesh(Mesh* mesh, float refraction, bool reflective);
 
-		bool calcIntersection(Ray ray, int ignoreTriangle, bool towardsPhoto) const override;
-		glm::vec3 intNormalInterpolated() const override;
+		bool calcIntersection(Ray ray, int ignoreTriangle, IntersectionInfo* res) const;
 
-		glm::vec3 intPoint() const override;
-		glm::vec3 intNormalFace() const override;
-		int intFace() const override;
-
-		glm::mat4 getPosition() const override;
+		glm::mat4 getPosition() const;
 
 		const Mesh* getMesh() const;
 
-		RTObject* getCopy() const override;
+		RTObject* getCopy() const;
 
 	private:
-		mutable bool		m_intersected;
-		mutable glm::vec3	m_cachedPoint;
-		mutable int			m_cachedFace;
+
 
 		const Mesh* const m_mesh;
 	};

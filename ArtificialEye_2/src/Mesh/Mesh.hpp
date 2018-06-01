@@ -37,6 +37,37 @@ namespace ee
     };
     static_assert(sizeof(MeshFace) == 3 * sizeof(int), "MeshFace can't have any padding");
 
+    class Triangle
+    {
+    public:
+        glm::vec3& operator[](int index)
+        {
+            return m_vertices[index];
+        }
+
+        const glm::vec3& operator[](int index) const
+        {
+            return m_vertices[index];
+        }
+
+        glm::vec3 midpoint() const
+        {
+            return (m_vertices[0] + m_vertices[1] + m_vertices[2]) / 3.f;
+        }
+
+        Triangle()
+        {
+        }
+
+        Triangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2) :
+            m_vertices({ v0, v1, v2 })
+        {
+        }
+
+    private:
+        std::array<glm::vec3, 3> m_vertices;
+    };
+
 	//
 	// The format is designed to be easily converted to MFnMesh for interfacing with the Maya API
     class Mesh
@@ -141,6 +172,15 @@ namespace ee
             m_updated = true;
 			return reinterpret_cast<const int*>(m_faces.data()); 
 		}
+
+        Triangle getTriangle(int meshFaceIndex) const
+        {
+            const MeshFace firstFace = m_faces[0];
+            const glm::vec3 v0 = m_vertices[firstFace[0]];
+            const glm::vec3 v1 = m_vertices[firstFace[1]];
+            const glm::vec3 v2 = m_vertices[firstFace[2]];
+            return Triangle(v0, v1, v2);
+        }
 
 		//
 		// Access specific items:

@@ -6,6 +6,13 @@
 
 namespace ee
 {
+    struct IntersectionInfo
+    {
+        glm::vec3 point;
+        glm::vec3 normal;
+        int face;
+    };
+
 	// Object that can be intersected with
 	class RTObject
 	{
@@ -23,10 +30,6 @@ namespace ee
 		}
 
 		virtual bool calcIntersection(Ray ray, int ignoreTriangle, bool towardsPhoto) const = 0;
-		virtual glm::vec3 intPoint() const = 0;
-		virtual  glm::vec3 intNormalInterpolated() const = 0;
-		virtual  glm::vec3 intNormalFace() const = 0;
-		virtual int  intFace() const = 0;
 
 		virtual glm::mat4 getPosition() const = 0;
 

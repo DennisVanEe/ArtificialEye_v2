@@ -180,6 +180,8 @@
     <ClCompile Include="src\Mesh\Mesh.cpp" />
     <ClCompile Include="src\Mesh\MeshGenerator.cpp" />
     <ClCompile Include="src\Mesh\Subdivision.cpp" />
+    <ClCompile Include="src\RayTracing\KDTree.cpp" />
+    <ClCompile Include="src\Types\Bound.cpp" />
     <ClCompile Include="src\RayTracing\RayTracer.cpp" />
     <ClCompile Include="src\RayTracing\RTObjectMesh.cpp" />
     <ClCompile Include="src\RayTracing\RTObjectSphere.cpp" />
@@ -218,7 +220,9 @@
     <ClInclude Include="src\Mesh\MeshPool.hpp" />
     <ClInclude Include="src\Mesh\PerfectSphere.hpp" />
     <ClInclude Include="src\Mesh\Subdivision.hpp" />
+    <ClInclude Include="src\Types\Bound.hpp" />
     <ClInclude Include="src\RayTracing\EyeBall.hpp" />
+    <ClInclude Include="src\RayTracing\KDTree.hpp" />
     <ClInclude Include="src\RayTracing\Pupil.hpp" />
     <ClInclude Include="src\RayTracing\RayTracer.hpp" />
     <ClInclude Include="src\RayTracing\RTObject.hpp" />
