@@ -16,6 +16,7 @@ namespace ee
     int nearestIntersectionMesh(const Mesh* mesh, Ray ray, int ignore, glm::vec3* intpoint);
 
     void baryCentric(glm::vec3 p, glm::vec3 a, glm::vec3 b, glm::vec3 c, float* u, float* v, float* w);
+    void baryCentric(glm::vec3 p, Triangle triangle, float* u, float* v, float* w);
 
 	glm::vec3 getNormal(const Mesh* mesh, int triangle, glm::vec3 interPoint);
 

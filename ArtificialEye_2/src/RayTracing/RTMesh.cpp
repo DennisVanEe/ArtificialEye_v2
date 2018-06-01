@@ -1,41 +1,30 @@
-#include "RTObjectMesh.hpp"
+#include "RTMesh.hpp"
 #include "RTUtility.hpp"
 
-ee::RTObjectMesh::RTObjectMesh(std::string name, Mesh* mesh, float refraction, bool reflective) :
-    RTObject(name, refraction, reflective),
-    m_intersected(false),
+ee::RTMesh::RTMesh(const Mesh* mesh, float refraction, bool reflection) :
+    m_tree(mesh),
+    m_refraction(refraction),
+    m_reflection(reflection),
     m_mesh(mesh)
 {
 }
 
-glm::vec3 ee::RTObjectMesh::intPoint() const
+bool ee::RTMesh::intersect(Ray ray, int ignoreFace, RTMeshIntersection* o_int) const
 {
-    return m_intersected ? m_cachedPoint : glm::vec3(NaN);
-}
+    glm::vec3 point;
+    int triangle;
+    if (!m_tree.intersect(0, ray, ignoreFace, &point, &triangle))
+    {
+        return false;
+    }
 
-glm::vec3 ee::RTObjectMesh::intNormalFace() const
-{
-    return m_intersected ? m_mesh->getFaceNormal(m_cachedFace) : glm::vec3(NaN);
-}
+    o_int->face = triangle;
+    o_int->point = point;
 
-int ee::RTObjectMesh::intFace() const
-{
-    return m_intersected ? m_cachedFace : -1;
-}
+    glm::vec3 bc;
+    baryCentric(point, m_mesh->getTransTriangle(triangle), &bc.x, &bc.y, &bc.z);
+    // peform a linear interpolation of the normals:
 
-glm::mat4 ee::RTObjectMesh::getPosition() const
-{
-    return m_mesh->getModelTrans();
-}
-
-ee::RTObject* ee::RTObjectMesh::getCopy() const
-{
-    return new RTObjectMesh(*this);
-}
-
-const ee::Mesh* ee::RTObjectMesh::getMesh() const
-{
-    return m_mesh;
 }
 
 bool ee::RTObjectMesh::calcIntersection(Ray ray, int ignoreTriangle, bool towardsPhoto) const

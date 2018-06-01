@@ -62,6 +62,11 @@ void ee::baryCentric(glm::vec3 p, glm::vec3 a, glm::vec3 b, glm::vec3 c, float* 
     *u = 1.f - *v - *w;
 }
 
+void ee::baryCentric(glm::vec3 p, Triangle triangle, float* u, float* v, float* w)
+{
+    baryCentric(p, triangle[0], triangle[1], triangle[2], u, v, w);
+}
+
 glm::vec3 ee::getNormal(const Mesh* mesh, int triangle, glm::vec3 interPoint)
 {
 	//return mesh->getTransformedFaceNormal(triangle);

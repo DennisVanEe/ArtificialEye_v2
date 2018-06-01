@@ -6,10 +6,14 @@
 
 namespace ee
 {
+    const int KD_FACES_PER_NODE = 32;
+
     class KDTree
     {
     public:
         KDTree(const Mesh* mesh);
+
+        bool intersect(int node, Ray ray, int ignore, glm::vec3* point, int* triangle) const;
 
     private:
         struct Node
@@ -20,11 +24,12 @@ namespace ee
             int right;
             std::vector<int> faces;
 
-            Node() : left(-1), right(-1) {}
+            // It's a leaf if left and right are negative
+            Node() : parent(-1), left(-1), right(-1) {}
         };
 
+        void initialConstruct(int maxFacesPerNode);
         int constructTree(const std::vector<int>& faces, int parent, int maxFacesPerNode);
-        bool intersect(int node, Ray ray, glm::vec3* point, int* triangle) const;
 
         const Mesh* m_mesh;
         std::vector<Node> m_nodes; // first one is root

@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <cassert>
 #include <array>
 #include <glm/matrix.hpp>
 
@@ -182,10 +183,20 @@ namespace ee
             return Triangle(v0, v1, v2);
         }
 
+        Triangle getTransTriangle(int meshFaceIndex) const
+        {
+            const MeshFace firstFace = m_faces[0];
+            const glm::vec3 v0 = transPoint3(getModelTrans(), m_vertices[firstFace[0]]);
+            const glm::vec3 v1 = transPoint3(getModelTrans(), m_vertices[firstFace[1]]);
+            const glm::vec3 v2 = transPoint3(getModelTrans(), m_vertices[firstFace[2]]);
+            return Triangle(v0, v1, v2);
+        }
+
 		//
 		// Access specific items:
 
-        Vec3 getVertex(int vertexID) const { assert(vertexID < m_vertices.size() && vertexID >= 0); return m_vertices[vertexID]; }
+        Vec3 getVertex(int vertexID) const { return m_vertices[vertexID]; }
+        Vec3 getTransVertex(int vertexID) const { return transPoint3(getModelTrans(), m_vertices[vertexID]); }
         Vec3 getTransformedVertex(int vertexID)  const { return transPoint3(getModelTrans(), getVertex(vertexID)); }
 
 		Vec3 getVertexNormal(int vertexID) const { return m_normals[vertexID]; }
