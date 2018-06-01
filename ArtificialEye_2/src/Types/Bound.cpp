@@ -70,9 +70,11 @@ ee::Bound3 ee::combine(const Bound3& b, const glm::vec3& p)
 
 ee::Bound3 ee::boundTriangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2)
 {
-    const glm::vec3 min = glm::min(v0, glm::min(v1, v2));
-    const glm::vec3 max = glm::max(v0, glm::max(v1, v2));
-    return Bound3(min, max);
+    Bound3 result;
+    result = combine(result, v0);
+    result = combine(result, v1);
+    result = combine(result, v2);
+    return result;
 }
 
 ee::Bound3 ee::boundTriangle(glm::vec3 v[3])

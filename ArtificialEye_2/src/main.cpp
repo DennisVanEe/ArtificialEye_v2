@@ -263,6 +263,19 @@ int main()
 
     try
     {
+        // Initialize the OpenGL renderer for rendering the resulting image:
+        CameraParam cameraParams;
+        cameraParams.m_position = glm::vec3(10.f, 0.f, 0.f);
+        cameraParams.m_up = glm::vec3(0.f, 1.f, 0.f);
+        cameraParams.m_yaw = 180.f;
+        cameraParams.m_pitch = 0.f;
+
+        // prepare the renderer:
+        Renderer::initialize(ARTIFICIAL_EYE_PROP.shader_dir, renderParamTemp, cameraParams);
+        Renderer::setCustomKeyboardCallback(setSpaceCallback);
+        Renderer::setClearColor(glm::vec3(0));
+
+
         // These components here are for rotating the eyeball and positioning the eye.
         glm::mat4 rotationEye = glm::mat4_cast(g_framePositions[0].rotation);
         glm::mat4 positionEye = glm::translate(glm::mat4(1), g_framePositions[0].position);
@@ -338,6 +351,8 @@ int main()
 		// Prepare the image buffer and the ray tracer:
         ImageBuffer imageBuffer(res_width, res_height);
         RayTracer tracer(&pos, &rtLens, &rtEyeball, &rtSceneSphere, &pupil, ARTIFICIAL_EYE_PROP.threads, ARTIFICIAL_EYE_PROP.samples);
+
+        pupil.generateSamples(16);
 
         // Ray trace the result:
         std::cout << "ray-tracing initial scene..." << std::endl;
@@ -434,6 +449,7 @@ int main()
                 Mesh tempMesh = loopSubdiv(sphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level_lens);
                 subDivSphereMesh.updateVertices(tempMesh.vertexBuffer());
                 subDivSphereMesh.updateMeshFaces(tempMesh.faceBuffer());
+                subDivSphereMesh.calcNormals(); // this might be slow...
                 tracer.raytraceAll();
 
                 auto* photoreceptors = tracer.getColors();

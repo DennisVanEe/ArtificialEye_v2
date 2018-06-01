@@ -176,7 +176,7 @@ namespace ee
 
         Triangle getTriangle(int meshFaceIndex) const
         {
-            const MeshFace firstFace = m_faces[0];
+            const MeshFace firstFace = m_faces[meshFaceIndex];
             const glm::vec3 v0 = m_vertices[firstFace[0]];
             const glm::vec3 v1 = m_vertices[firstFace[1]];
             const glm::vec3 v2 = m_vertices[firstFace[2]];
@@ -185,7 +185,7 @@ namespace ee
 
         Triangle getTransTriangle(int meshFaceIndex) const
         {
-            const MeshFace firstFace = m_faces[0];
+            const MeshFace firstFace = m_faces[meshFaceIndex];
             const glm::vec3 v0 = transPoint3(getModelTrans(), m_vertices[firstFace[0]]);
             const glm::vec3 v1 = transPoint3(getModelTrans(), m_vertices[firstFace[1]]);
             const glm::vec3 v2 = transPoint3(getModelTrans(), m_vertices[firstFace[2]]);
