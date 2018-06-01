@@ -33,7 +33,7 @@ void ee::KDTree::initialConstruct(int maxFacesPerNode)
     // Then go through and split it up:
     const float factor = 1.f / m_mesh->getNumFaces();
     glm::vec3 globalMidpoint = glm::vec3(0.f);
-    for (int i = 0; i < m_mesh->getNumFaces; i++)
+    for (int i = 0; i < m_mesh->getNumFaces(); i++)
     {
         const Triangle currTriangle = m_mesh->getTriangle(i);
         globalMidpoint += transPoint3(m_mesh->getModelTrans(), currTriangle.midpoint()) * factor;
@@ -43,7 +43,7 @@ void ee::KDTree::initialConstruct(int maxFacesPerNode)
     std::vector<int> right;
     const int   longestAxis = currNode.bound.longestAxis();
     const float globalRef = globalMidpoint[longestAxis];
-    for (int i = 0; i < m_mesh->getNumFaces; i++)
+    for (int i = 0; i < m_mesh->getNumFaces(); i++)
     {
         const Triangle currTriangle = m_mesh->getTriangle(i);
         if (globalRef >= currTriangle.midpoint()[longestAxis])

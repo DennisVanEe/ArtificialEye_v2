@@ -8,10 +8,9 @@
 #include "../Types.hpp"
 #include "../Rendering/DrawLine.hpp"
 #include "../Mesh/Mesh.hpp"
-#include "EyeBall.hpp"
+#include "RTMesh.hpp"
+#include "RTSphere.hpp"
 #include "RTUtility.hpp"
-#include "RTRay.hpp"
-#include "Scene.hpp"
 #include "Pupil.hpp"
 
 namespace ee
@@ -19,77 +18,31 @@ namespace ee
 	class RayTracer
 	{
 	public:
-		static RayTracer& initialize(const std::vector<glm::vec3>* pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene,
-            Pupil* pupil, int nthreads, int samples, bool drawRays)
-		{
-			static RayTracer raytracer(pos, lens, eyeball, scene, pupil, nthreads, samples, drawRays);
-            ms_totalSamples = samples;
-			return raytracer;
-		}
+        RayTracer(const std::vector<glm::vec3>* pos, const RTMesh* lens, const RTSphere* eyeball, const RTSphere* sceneSphere,
+            const Pupil* pupil, int nthreads, int samples);
 
-		/*
-		* Ray traces the rays. */
 		void raytraceAll();
-
-	public:
-		struct PhotoReceptor
-		{
-			glm::vec3 pos;
-			glm::vec3 color;
-		};
-
-		const std::vector<glm::vec3>* getColors() const
-		{
-			return &m_colors;
-		}
+        const std::vector<float>* getColors() const;
 
 	private:
-		RayTracer(const std::vector<glm::vec3>* pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene, 
-            Pupil* pupil, int nthreads, int samples, bool drawRays);
-
 		void raytraceSelect(int pos, int numrays);
 		void raytraceOne(int pos);
 
-        // used for rendering the rays in the scene
-        struct IndividualPath
-        {
-            std::vector<Line> lines;
-            mutable int lastValidLine;
-
-            void addLine(Line line)
-            {
-                lines[lastValidLine] = line;
-                lastValidLine++;
-            }
-
-            IndividualPath() : lastValidLine(0)
-            {
-                lines.resize(4 * ms_totalSamples);
-            }
-        };
-
         // Ray traces fixed from the eyeball.
-        Ray raytraceFromEye(int pos, glm::vec3 pupilPos, IndividualPath* localPaths);
+        Ray raytraceFromEye(int pos, glm::vec3 pupilPos);
 
     private:
-		std::vector<glm::vec3> m_colors;
+		std::vector<float> m_colors;
         const std::vector<glm::vec3>* m_photoPos;
 
-        const bool m_drawLines;
+        const Pupil* const m_pupil;
 
-		const Scene* m_scene;
+		const RTMesh*   const m_lens;
+		const RTSphere* const m_eyeball;
+        const RTSphere* const m_sceneSphere;
 
-		const RTObject* const m_lens;
-		const RTObject* const m_eyeball;
-
-        const int m_totalSamples;
-
-        static int ms_totalSamples;
-
-        Pupil* m_pupil;
+        const int m_samples;
 
 		std::vector<std::thread> m_threads;
-
-        std::vector<IndividualPath> m_individualRayPaths;
     };
 }

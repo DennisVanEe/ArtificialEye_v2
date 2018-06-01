@@ -3,32 +3,20 @@
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
 
-int ee::RayTracer::ms_totalSamples = 0;
-
-ee::RayTracer::RayTracer(const std::vector<glm::vec3>* pos, const RTObject* lens, const RTObject* eyeball, const Scene* scene,
-    Pupil* pupil, int nthreads, int samples, bool drawRays) :
+ee::RayTracer::RayTracer(const std::vector<glm::vec3>* pos, const RTMesh* lens, const RTSphere* eyeball, const RTSphere* scene,
+    const Pupil* pupil, int nthreads, int samples) :
     m_photoPos(pos),
-    m_drawLines(drawRays),
-	m_scene(scene),
-    m_totalSamples(samples),
     m_pupil(pupil),
+    m_lens(lens),
 	m_eyeball(eyeball),
-	m_lens(lens)
+    m_sceneSphere(scene),
+    m_samples(samples)
 {
     assert(samples > 0);
     assert(nthreads > 0);
 
     // The total number of possible ray-paths:
-    const int totalNumSamples = m_totalSamples * m_photoPos->size();
-
-    // Generate the samples:
-    m_pupil->generateSamples(m_totalSamples);
-
-    // don't allocate if not drawing
-    if (m_drawLines)
-    {
-        m_individualRayPaths.resize(m_photoPos->size());
-    }
+    const int totalNumSamples = m_samples * m_photoPos->size();
 
 	m_threads.resize(nthreads);
 	m_colors.resize(m_photoPos->size());
@@ -51,6 +39,11 @@ void ee::RayTracer::raytraceAll()
     }
 }
 
+const std::vector<float>* ee::RayTracer::getColors() const
+{
+    return &m_colors;
+}
+
 void ee::RayTracer::raytraceSelect(int pos, int numrays)
 {
     for (int i = pos, k = 0; k < numrays && i < m_photoPos->size(); i++, k++)
@@ -64,87 +57,65 @@ void ee::RayTracer::raytraceSelect(int pos, int numrays)
 // this is run in one thread
 void ee::RayTracer::raytraceOne(int photorecpPos)
 {
-    if (m_drawLines)
-    {
-        m_individualRayPaths[photorecpPos].lastValidLine = 0;
-    }
-
 	// first we need to sample a bunch of rays off the circular lens (basically prepare a bunch of paths)
-	m_colors[photorecpPos] = glm::vec3(0.f);
-    const std::vector<glm::vec3>* samples = m_pupil->getSamples();
+    m_colors[photorecpPos] = 0.f;
+    const std::vector<glm::vec3>* const samples = m_pupil->getSamples();
 	for (glm::vec3 pupilSample : *samples)
 	{
-        IndividualPath* subset = m_drawLines ? &m_individualRayPaths[photorecpPos] : nullptr;
-        const Ray outray = raytraceFromEye(photorecpPos, pupilSample, subset);
+        const Ray outray = raytraceFromEye(photorecpPos, pupilSample);
         if (std::isnan(outray.origin.x))
         {
             continue;
         }
 
-        // loop over scene:
-        int numsceneItems = m_scene->getNumObjects();
-        for (int i = 0; i < numsceneItems; i++)
+        // intersect with sphere:
+        if (m_sceneSphere->intersect(outray))
         {
-            const RTObject* obj = m_scene->getObject(i);
-            if (obj->calcIntersection(outray, -1, false))
-            {
-                if (m_drawLines)
-                {
-                    m_individualRayPaths[photorecpPos].addLine(Line(outray.origin, obj->intPoint()));
-                }
-                m_colors[photorecpPos] += glm::vec3(1.f, 0.f, 0.f);
-            }
+            m_colors[photorecpPos] += 1.f;
         }
 	}
 
 	// now we average the values to get the color:
-    m_colors[photorecpPos] = m_colors[photorecpPos] / static_cast<float>(m_totalSamples);
+    m_colors[photorecpPos] = m_colors[photorecpPos] / static_cast<float>(m_samples);
 }
 
-ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, glm::vec3 pupilPos, IndividualPath* localPaths)
+ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, glm::vec3 pupilPos)
 {
-    const glm::vec3 origin = glm::vec3(m_eyeball->getPosition() *  glm::vec4((*m_photoPos)[photorecpPos], 1.f));
+    static const Ray NaNRay = Ray(glm::vec3(NaN), glm::vec3(NaN));
+
+    const glm::vec3 origin = transPoint3(m_eyeball->getSphere()->getPosition(), (*m_photoPos)[photorecpPos]);
     const Ray ray0(origin, glm::normalize(pupilPos - origin));
 
+    RTMeshIntersection intersect;
+
 	// first we intersect it with the lens:
-	bool res = m_lens->calcIntersection(ray0, -1, true);
-    if (!res)
+    if (!m_lens->intersect(ray0, -1, &intersect))
     {
-        return Ray(glm::vec3(NaN), glm::vec3(NaN));
+        return NaNRay;
     }
-	int ignore = m_lens->intFace();
-	glm::vec3 intpoint = m_lens->intPoint(); // the point of intersection
-	glm::vec3 dir = glm::normalize(ee::refract(ray0.dir, m_lens->intNormalInterpolated(), m_eyeball->refractiveIndex / m_lens->refractiveIndex));
+	int ignore = intersect.face;
+	glm::vec3 intpoint = intersect.point; // the point of intersection
+	glm::vec3 dir = glm::normalize(ee::refract(ray0.dir, intersect.normal, m_eyeball->getRefraction() / m_lens->getRefraction()));
 	const Ray ray1(intpoint, dir);
 
 	// new we intersect through the lens:
-	res = m_lens->calcIntersection(ray1, ignore, false);
-    if (!res)
+    if (!m_lens->intersect(ray1, ignore, &intersect))
     {
-        return Ray(glm::vec3(NaN), glm::vec3(NaN));
+        return NaNRay;
     }
-	ignore = m_lens->intFace();
-	intpoint = m_lens->intPoint();
-	dir = glm::normalize(ee::refract(ray1.dir, -m_lens->intNormalInterpolated(), m_lens->refractiveIndex / m_eyeball->refractiveIndex));
+    ignore = intersect.face;
+    intpoint = intersect.point;
+	dir = glm::normalize(ee::refract(ray1.dir, -intersect.normal, m_lens->getRefraction() / m_eyeball->getRefraction()));
 	const Ray ray2(intpoint, dir);
 
 	// now we intersect through the cornea (and out into the world!)
-	res = m_eyeball->calcIntersection(ray2, -1, false);
-    if (!res)
+    if (!m_eyeball->intersect(ray2))
     {
-        return Ray(glm::vec3(NaN), glm::vec3(NaN));
+        return NaNRay;
     }
-	intpoint = m_eyeball->intPoint();
-	dir = glm::normalize(ee::refract(ray1.dir, -m_eyeball->intNormalInterpolated(), m_eyeball->refractiveIndex));
+	intpoint = intersect.point;
+	dir = glm::normalize(ee::refract(ray1.dir, -intersect.normal, m_eyeball->getRefraction()));
 	const Ray ray3(intpoint, dir);
-
-    // insert the lins as appropriate:
-    if (m_drawLines && localPaths != nullptr)
-    {
-        localPaths->addLine(Line(ray0.origin, ray1.origin));
-        localPaths->addLine(Line(ray1.origin, ray2.origin));
-        localPaths->addLine(Line(ray2.origin, ray3.origin));
-    }
 
 	return ray3;
 }

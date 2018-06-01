@@ -18,59 +18,28 @@ bool ee::RTMesh::intersect(Ray ray, int ignoreFace, RTMeshIntersection* o_int) c
         return false;
     }
 
-    o_int->face = triangle;
-    o_int->point = point;
-
     glm::vec3 bc;
     baryCentric(point, m_mesh->getTransTriangle(triangle), &bc.x, &bc.y, &bc.z);
     // peform a linear interpolation of the normals:
+    const MeshFace face = m_mesh->getFace(triangle);
+    const glm::vec3 norm0 = m_mesh->getTransVertexNormal(face[0]);
+    const glm::vec3 norm1 = m_mesh->getTransVertexNormal(face[1]);
+    const glm::vec3 norm2 = m_mesh->getTransVertexNormal(face[2]);
+    const glm::vec3 normal = glm::normalize(norm0 * bc.x + norm1 * bc.y + norm2 * bc.z);
 
+    o_int->face = triangle;
+    o_int->point = point;
+    o_int->normal = normal;
+
+    return true;
 }
 
-bool ee::RTObjectMesh::calcIntersection(Ray ray, int ignoreTriangle, bool towardsPhoto) const
+float ee::RTMesh::getRefraction() const
 {
-	int minFace = -1;
-	glm::vec3 minPoint = glm::vec3(0.f, 0.f, 0.f); // the point where the intersection would occur
-	float minDist = std::numeric_limits<float>::infinity();
-
-    const int startPosition = towardsPhoto ? (m_mesh->getNumFaces() / 2.f + 0.5f) : 0;
-    const int endPosition = towardsPhoto ? m_mesh->getNumFaces() : (m_mesh->getNumFaces() / 2.f + 0.5f);
-
-	for (int i = startPosition; i < endPosition; i++)
-	{
-		if (i != ignoreTriangle)
-		{
-			const MeshFace& face = m_mesh->getFace(i);
-
-			// transform those points:
-			const glm::vec3 p0 = transPoint3(m_mesh->getModelTrans(), m_mesh->getVertex(face[0]));
-			const glm::vec3 p1 = transPoint3(m_mesh->getModelTrans(), m_mesh->getVertex(face[1]));
-			const glm::vec3 p2 = transPoint3(m_mesh->getModelTrans(), m_mesh->getVertex(face[2]));
-
-			glm::vec3 intpoint;
-			const bool result = intersectTriangle(ray, p0, p1, p2, &intpoint);
-			if (result) // there was an intersection
-			{
-				const glm::vec3 diff = intpoint - ray.origin;
-				const float len = glm::dot(diff, diff); // find the length
-				if (len < minDist)
-				{
-					minDist = len;
-					minFace = i;
-					minPoint = intpoint;
-				}
-			}
-		}
-	}
-
-	m_cachedFace = minFace;
-	m_cachedPoint = minPoint;
-
-	m_intersected = minFace != -1;
-	return m_intersected;
+    return m_refraction;
 }
 
-glm::vec3 ee::RTObjectMesh::intNormalInterpolated() const
+float ee::RTMesh::getReflection() const
 {
-	return getNormal(m_mesh, m_cachedFace, m_cachedPoint);
+    return m_reflection;
 }

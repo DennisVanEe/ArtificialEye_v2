@@ -21,6 +21,28 @@ ee::Bound3::Bound3(glm::vec3 p0, glm::vec3 p1) :
 {
 }
 
+bool ee::Bound3::intersect(Ray ray) const
+{
+    const glm::vec3 rayDirInv = glm::vec3(1.f) / ray.dir;
+
+    float t1 = (pmin[0] - ray.origin[0]) * rayDirInv[0];
+    float t2 = (pmax[0] - ray.origin[0]) * rayDirInv[0];
+
+    float tmin = std::min(t1, t2);
+    float tmax = std::max(t1, t2);
+
+    for (int i = 1; i < 3; i++)
+    {
+        t1 = (pmin[i] - ray.origin[i]) * rayDirInv[i];
+        t2 = (pmax[i] - ray.origin[i]) * rayDirInv[i];
+
+        tmin = std::max(tmin, std::min(std::min(t1, t2), tmax));
+        tmax = std::min(tmax, std::max(std::max(t1, t2), tmin));
+    }
+
+    return tmax > std::max(tmin, 0.f);
+}
+
 int ee::Bound3::longestAxis() const
 {
     const glm::vec3 diff = pmax - pmin;

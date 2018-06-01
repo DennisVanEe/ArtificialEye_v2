@@ -12,10 +12,8 @@
 #include "Rendering/DrawableMeshContainer.hpp"
 #include "Rendering/PlaneBuffer.hpp"
 #include "RayTracing/RayTracer.hpp"
-#include "RayTracing/Scene.hpp"
-#include "RayTracing/EyeBall.hpp"
-#include "RayTracing/RTObjectMesh.hpp"
-#include "RayTracing/RTObjectSphere.hpp"
+#include "RayTracing/RTMesh.hpp"
+#include "RayTracing/RTSphere.hpp"
 #include "Rendering/Lens.hpp"
 #include "SoftBody/Simulation/SBClosedBodySim.hpp"
 #include "SoftBody/ForceGens/SBGravity.hpp"
@@ -76,7 +74,6 @@ std::vector<ee::SBPointConstraint*> g_constraints;
 std::vector<std::unique_ptr<ee::SBConstraint>>* g_allConstraints;
 const float g_constraintMoveSpeed = 0.1f;
 float g_totalDisplacement = 0.f;
-ee::RayTracer* g_tracer;
 bool g_defaultP = true;
 bool g_switchToEyeView = true;
 bool g_addLine = false;
@@ -171,15 +168,6 @@ void setSpaceCallback(GLFWwindow* window, int key, int scancode, int action, int
             constraint->m_point += g_constraintMoveSpeed * sign * glm::normalize(glm::vec3(constraint->m_point.x, 0.f, constraint->m_point.z));
             g_totalDisplacement += g_constraintMoveSpeed * sign;
         }
-
-        //for (auto& val : *g_allConstraints)
-        //{
-        //    if (val->getID() != 0)
-        //    {
-        //        SBLengthConstraint* len = dynamic_cast<SBLengthConstraint*>(val.get());
-        //        len->m_length += len->m_length * -sign * 0.005;
-        //    }
-        //}
     }
 }
 
@@ -276,7 +264,6 @@ int main()
     try
     {
         // These components here are for rotating the eyeball and positioning the eye.
-
         glm::mat4 rotationEye = glm::mat4_cast(g_framePositions[0].rotation);
         glm::mat4 positionEye = glm::translate(glm::mat4(1), g_framePositions[0].position);
 
@@ -286,98 +273,55 @@ int main()
         g_csvWriter.open(OUTPUT_DIR, std::ofstream::out | std::ofstream::trunc);
         g_csvWriter.close();
 
-        // The default camera parameters:
-        CameraParam cameraParams;
-        cameraParams.m_position = glm::vec3(10.f, 0.f, 0.f);
-        cameraParams.m_up       = glm::vec3(0.f, 1.f, 0.f);
-        cameraParams.m_yaw      = 180.f;
-        cameraParams.m_pitch    = 0.f;
-
-        // prepare the renderer:
-        Renderer::initialize(ARTIFICIAL_EYE_PROP.shader_dir, renderParamTemp, cameraParams);
-        Renderer::setCustomKeyboardCallback(setSpaceCallback);
-        Renderer::setClearColor(glm::vec3(0));
-
-        // loaded cubemap twice, not efficient, but not important right now:
-        void* res = Renderer::addTexturePack("refractTextPack", RefractTextPack(glm::vec3(0.f), g_textureDir + g_cubeMapDir, g_cubeMapFaces, ARTIFICIAL_EYE_PROP.lens_refr_index)); assert(res);
-        res =       Renderer::addTexturePack("skyBoxTextPack", SkyBoxTextPack(g_textureDir + g_cubeMapDir, g_cubeMapFaces)); assert(res);
-
-        Scene scene;
-
-		glm::mat4 sceneSphereMat = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 5.f));
-		sceneSphereMat = glm::scale(sceneSphereMat, glm::vec3(0.5f));
-		RTObjectSphere sceneSphere("sphere", sceneSphereMat, 0.f);
-		scene.addObject(&sceneSphere);
-
-		UniColorTextPack spherepack(glm::vec4(0.f));
-		Renderer::addTexturePack("sphereTextPack", std::move(spherepack));
-
-		Mesh sceneSphereMesh = loadUVsphere(10, 10);
-		sceneSphereMesh.setModelTrans(sceneSphereMat);
-		DrawableMeshContainer sceenSphereDrawable(&sceneSphereMesh, "sphereTextPack");
-
-		Renderer::addDrawable(&sceenSphereDrawable);
-
-        // this is for the eyeball model I am using
-        glm::mat4 eyeballTransform = glm::translate(glm::mat4(1), glm::vec3(0.f, 0.f, -2.f));
-        eyeballTransform = glm::scale(eyeballTransform, glm::vec3(1.55f, 1.55f, 1.55f));
-
-        //eyeballModel.setTransform(eyeballTransform);
+        // 
+        // Scene Sphere
+        
+		glm::mat4 sceneSphereModel = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 5.f));
+        sceneSphereModel = glm::scale(sceneSphereModel, glm::vec3(0.5f));
+        Sphere sceneSphere(sceneSphereModel);
+		RTSphere rtSceneSphere(&sceneSphere, 0.f, false);
 
         //
-        //  Lens System:
+        // Eyeball
+
         //
+        //  Lens & Eyeball
 
         // The "base transform" for the eyeball and lens. Transforms them so that they are in the proper relative positions
-        const glm::mat4 eyeballIntermTransform = glm::scale(glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, -2.f)), glm::vec3(2 * 1.55f, 2 * 1.55f, 2 * 1.55f));
-        const glm::mat4 lensIntermTransform    = glm::scale(glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f)), glm::vec3(1.f, ARTIFICIAL_EYE_PROP.lens_thickness, 1.f));
-        const glm::mat4 pupilInterimTransform   = glm::mat4();
+        const glm::mat4 eyeballIntermTransform  = glm::scale(glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, -2.f)), glm::vec3(2.f * 1.55f));
+        const glm::mat4 lensIntermTransform     = glm::scale(glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f)), glm::vec3(1.f, ARTIFICIAL_EYE_PROP.lens_thickness, 1.f));
+        const glm::mat4 pupilInterimTransform   = glm::mat4(1.f);
 
         // Update the model transforms for each of these (NOTE: this is done each frame, with globalModel changing each frame)
         glm::mat4 eyeballModel = globalModel * eyeballIntermTransform;
         glm::mat4 lensModel    = globalModel * lensIntermTransform;
         glm::mat4 pupilModel   = globalModel * pupilInterimTransform;
 
-        // First load the mesh for the simulation:
-        Mesh uvSphereMesh       = loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude);
-        uvSphereMesh.setModelTrans(lensModel);
-        // Now subdivide the loop and use it for the raytracer:
-        Mesh uvSubDivSphereMesh = loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level_lens);
-        uvSubDivSphereMesh.calcNormals(); // this is a one-time operation
-        uvSubDivSphereMesh.setModelTrans(lensModel);
+        Sphere eyeball(eyeballModel);
+        RTSphere rtEyeball(&eyeball, ARTIFICIAL_EYE_PROP.eyeball_refr_index, false);
 
-        // Prepare the lens with the appropriate values:
-        Lens lensSphere(&uvSubDivSphereMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
-
-        // Prepare the pupil:
         Pupil pupil(pupilModel, 1.f);
 
-        // For raytracing:
-        RTObjectMesh rtLens("lens", &uvSubDivSphereMesh, ARTIFICIAL_EYE_PROP.lens_refr_index);
-        RTObjectSphere rtEyeBall("eyeball", eyeballModel, ARTIFICIAL_EYE_PROP.eyeball_refr_index);
+        Mesh sphereMesh = loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude);
+        Mesh subDivSphereMesh = loopSubdiv(sphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level_lens);
+        subDivSphereMesh.calcNormals();
+        subDivSphereMesh.setModelTrans(lensModel);
 
-        // Prepare the simulation:
-        SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &uvSphereMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
+        // Prepare the lens with the appropriate values:
+        RTMesh rtLens(&subDivSphereMesh, ARTIFICIAL_EYE_PROP.lens_refr_index, false);
+        Lens lensSphere(&sphereMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
+
+        SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &sphereMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
         lensSim.m_constIterations = ARTIFICIAL_EYE_PROP.iterations;
         lensSim.addIntegrator(&ee::SBVerletIntegrator(1.f / 30.f, ARTIFICIAL_EYE_PROP.extspring_drag));
         addInteriorSpringsUVSphere(&lensSim, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.intspring_coeff, ARTIFICIAL_EYE_PROP.intspring_drag);
-        // Get constraints for the relations:
-        g_constraints =    lensSphere.addConstraints(5, &lensSim);
+        g_constraints = lensSphere.addConstraints(5, &lensSim);
         g_allConstraints = lensSim.getConstraints();
-
-        // For drawing and what not, not really that important
-        DrawableMeshContainer lensDrawable(&uvSubDivSphereMesh, "refractTextPack", true);
-        Renderer::addDrawable(&lensDrawable);
-
-        SkyBox skyBox("skyBoxTextPack");
-        Renderer::addDrawable(&skyBox);
 
         // The amount to increment the counter by:
 		const float incHeight = maxHeight / static_cast<float>(res_height);
 		const float incWidth  = maxWidth  / static_cast<float>(res_width);
 
-        // Simple grid-like array of positions:
-        // Generate the positions:
 		std::vector<glm::vec3> pos;
         pos.reserve(res_height * res_width);
 		float width, height;
@@ -393,38 +337,24 @@ int main()
 
 		// Prepare the image buffer and the ray tracer:
         ImageBuffer imageBuffer(res_width, res_height);
-        g_tracer = &ee::RayTracer::initialize(&pos, &rtLens, &rtEyeBall, &scene, &pupil, ARTIFICIAL_EYE_PROP.threads, ARTIFICIAL_EYE_PROP.samples, false);
+        RayTracer tracer(&pos, &rtLens, &rtEyeball, &rtSceneSphere, &pupil, ARTIFICIAL_EYE_PROP.threads, ARTIFICIAL_EYE_PROP.samples);
 
         // Ray trace the result:
         std::cout << "ray-tracing initial scene..." << std::endl;
         auto before = std::chrono::high_resolution_clock::now();
-        g_tracer->raytraceAll();
+        tracer.raytraceAll();
         auto after = std::chrono::high_resolution_clock::now();
         std::cout << "stopped-tracing initial scene..." << std::endl;
         std::cout << "time elapsed: " << (after - before).count() << std::endl;
 
-        // Output the paths drawn (this is for drawing):
-        std::vector<DrawLine> drawpaths;
-        ee::Renderer::addTexturePack("lineTextPack", ee::LineUniColorTextPack(glm::vec3(0.f, 1.f, 0.f)));
-        // auto& paths = g_tracer->getRayPaths();
-        // for (const auto& p : paths)
-        // {
-        //     drawpaths.push_back(DrawLine("lineTextPack", p));
-        // }
-
-        // for (auto& p : drawpaths)
-        // {
-        //     ee::Renderer::addDrawable(&p);
-        // }
-
         // Write the paths to an image buffer:
-        auto* photoreceptors = g_tracer->getColors();
+        auto* photoreceptors = tracer.getColors();
 		for (int w = 0, uniI = 0; w < res_width; w++)
 		{
 			for (int h = 0; h < res_height; h++)
 			{
-				glm::vec3 color = (*photoreceptors)[uniI];
-				imageBuffer.setPixel(w, h, color.x);
+				const float color = (*photoreceptors)[uniI];
+				imageBuffer.setPixel(w, h, color);
 				uniI++;
 			}
 		}
@@ -448,9 +378,9 @@ int main()
                 lensModel    = globalModel * lensIntermTransform;
                 pupilModel   = globalModel * pupilInterimTransform;
 
-                uvSphereMesh.setModelTrans(lensModel);
-                uvSubDivSphereMesh.setModelTrans(lensModel);
-                rtEyeBall.setPosition(eyeballModel);
+                sphereMesh.setModelTrans(lensModel);
+                subDivSphereMesh.setModelTrans(lensModel);
+                eyeball.setPosition(eyeballModel);
                 pupil.pos = pupilModel;
 
                 currentFrameIndex++;
@@ -501,24 +431,18 @@ int main()
             {
                 lensSim.update(ARTIFICIAL_EYE_PROP.time_step);
 
-                Mesh tempMesh = loopSubdiv(uvSphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level_lens);
-                uvSubDivSphereMesh.updateVertices(tempMesh.vertexBuffer());
-                uvSubDivSphereMesh.updateMeshFaces(tempMesh.faceBuffer());
-                g_tracer->raytraceAll();
+                Mesh tempMesh = loopSubdiv(sphereMesh, ARTIFICIAL_EYE_PROP.subdiv_level_lens);
+                subDivSphereMesh.updateVertices(tempMesh.vertexBuffer());
+                subDivSphereMesh.updateMeshFaces(tempMesh.faceBuffer());
+                tracer.raytraceAll();
 
-				//auto& paths = g_tracer->getRayPaths();
-				//for (int i = 0; i < drawpaths.size() && i < paths.size(); i++)
-				//{
-				//	drawpaths[i].setLine(paths[i]);
-				//}
-
-                auto* photoreceptors = g_tracer->getColors();
+                auto* photoreceptors = tracer.getColors();
                 for (int w = 0, uniI = 0; w < res_width; w++)
                 {
                     for (int h = 0; h < res_height; h++)
                     {
-                        glm::vec3 color = (*photoreceptors)[uniI];
-                        imageBuffer.setPixel(w, h, color.x);
+                        const float color = (*photoreceptors)[uniI];
+                        imageBuffer.setPixel(w, h, color);
                         uniI++;
                     }
                 }

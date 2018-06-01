@@ -1,6 +1,5 @@
 #pragma once
 
-#include "RTObject.hpp"
 #include "KDTree.hpp"
 
 namespace ee
@@ -20,11 +19,8 @@ namespace ee
 
 		bool intersect(Ray ray, int ignoreFace, RTMeshIntersection* o_int) const;
 
-		glm::mat4 getPosition() const;
-
-		const Mesh* getMesh() const;
-
-		RTObject* getCopy() const;
+        float getRefraction() const;
+        float getReflection() const;
 
 	private:
         KDTree m_tree;
