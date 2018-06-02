@@ -2,8 +2,6 @@
 
 #include "RTUtility.hpp"
 
-#include <numeric>
-
 ee::KDTree::KDTree(const Mesh* mesh) :
     m_mesh(mesh)
 {
@@ -104,7 +102,9 @@ int ee::KDTree::constructTree(const std::vector<int>& faces, int parent, int max
     }
 
     std::vector<int> left;
+    // left.reserve(m_mesh->getNumVertices);
     std::vector<int> right;
+    // right.reserve(m_mesh->getNumVertices);
     const int longestAxis = currNode.bound.longestAxis();
     const float globalRef = globalMidpoint[longestAxis];
     for (const int i : faces)

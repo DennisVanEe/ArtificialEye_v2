@@ -8,8 +8,6 @@
 
 namespace ee
 {
-    const char PROJ_NAME[] = "ArtificalEye";
-
 	const float NaN = std::numeric_limits<float>::quiet_NaN();
 
     using Float = float;
@@ -23,8 +21,8 @@ namespace ee
 
     struct Ray
     {
-        Vec3 origin;
-        Vec3 dir;
+        glm::vec3 origin;
+        glm::vec3 dir;
 
         Ray() {}
         Ray(Vec3 origin, Vec3 dir) : origin(origin), dir(dir) {}
@@ -32,15 +30,15 @@ namespace ee
 
     struct Line
     {
-        Vec3 start;
-        Vec3 end;
+        glm::vec3 start;
+        glm::vec3 end;
 
         Line() {}
-        Line(Vec3 start, Vec3 end) : start(start), end(end) {}
+        Line(glm::vec3 start, glm::vec3 end) : start(start), end(end) {}
     };
 
     // Zeros the vector if it is close enough to zero
-    inline Vec3 zeroIfCloseVector(Vec3 vec)
+    __forceinline Vec3 zeroIfCloseVector(Vec3 vec)
     {
         int result = !(glm::epsilonEqual(vec, Vec3(), glm::epsilon<Float>()) != glm::bvec3(true, true, true));
         vec *= result;
@@ -48,24 +46,24 @@ namespace ee
     }
 
     // Translates a point direction
-    inline Vec3 transPoint3(const Mat4& mat, const Vec3& vec)
+    __forceinline glm::vec3 transPoint3(const Mat4& mat, const Vec3& vec)
     {
-        return Vec3(mat * Vec4(vec, 1.0));
+        return glm::vec3(mat * glm::vec4(vec, 1.0));
     }
 
     // Translates a vector direction
-    inline Vec3 transVector3(const Mat4& mat, Vec3 vec)
+    __forceinline glm::vec3 transVector3(const Mat4& mat, Vec3 vec)
     {
-        return Vec3(mat * Vec4(vec, 0.0));
+        return glm::vec3(mat * glm::vec4(vec, 0.0));
     }
 
     // Flips the vector if it doesn't face the same direction
-    inline Vec3 flipSameDir(const Vec3& toFlip, const Vec3& ref)
+    __forceinline glm::vec3 flipSameDir(const Vec3& toFlip, const Vec3& ref)
     {
         return glm::dot(toFlip, ref) >= 0 ? toFlip : -toFlip;
     }
 
-    inline glm::vec3 alignDir(const glm::vec3& change, const glm::vec3& ref)
+    __forceinline glm::vec3 alignDir(const glm::vec3& change, const glm::vec3& ref)
     {
         return glm::dot(change, ref) >= 0.f ? change : -change;
     }

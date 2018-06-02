@@ -22,18 +22,20 @@ namespace ee
             const Pupil* pupil, int nthreads, int samples);
 
 		void raytraceAll();
-        const std::vector<float>* getColors() const;
+        const std::vector<float>& getColors() const;
 
 	private:
 		void raytraceSelect(int pos, int numrays);
-		void raytraceOne(int pos);
+		__forceinline void raytraceOne(int pos);
 
         // Ray traces fixed from the eyeball.
-        Ray raytraceFromEye(int pos, glm::vec3 pupilPos);
+        __forceinline Ray raytraceFromEye(int pos, glm::vec3 pupilPos);
 
     private:
 		std::vector<float> m_colors;
         const std::vector<glm::vec3>* m_photoPos;
+
+        const float m_sampleInv;
 
         const Pupil* const m_pupil;
 

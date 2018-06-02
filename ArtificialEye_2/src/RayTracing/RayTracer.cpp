@@ -6,6 +6,7 @@
 ee::RayTracer::RayTracer(const std::vector<glm::vec3>* pos, const RTMesh* lens, const RTSphere* eyeball, const RTSphere* scene,
     const Pupil* pupil, int nthreads, int samples) :
     m_photoPos(pos),
+    m_sampleInv(1.f / static_cast<float>(samples)),
     m_pupil(pupil),
     m_lens(lens),
 	m_eyeball(eyeball),
@@ -39,9 +40,9 @@ void ee::RayTracer::raytraceAll()
     }
 }
 
-const std::vector<float>* ee::RayTracer::getColors() const
+const std::vector<float>& ee::RayTracer::getColors() const
 {
-    return &m_colors;
+    return m_colors;
 }
 
 void ee::RayTracer::raytraceSelect(int pos, int numrays)
@@ -77,7 +78,7 @@ void ee::RayTracer::raytraceOne(int photorecpPos)
 	}
 
 	// now we average the values to get the color:
-    m_colors[photorecpPos] = m_colors[photorecpPos] / static_cast<float>(m_samples);
+    m_colors[photorecpPos] = m_colors[photorecpPos] * m_sampleInv;
 }
 
 ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, glm::vec3 pupilPos)

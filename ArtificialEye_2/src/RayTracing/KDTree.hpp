@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <numeric>
 #include "../Types/Bound.hpp"
 #include "../Mesh/Mesh.hpp"
 
@@ -13,6 +14,7 @@ namespace ee
     public:
         KDTree(const Mesh* mesh);
 
+        // void reconstruct();
         bool intersect(int node, Ray ray, int ignore, glm::vec3* point, int* triangle) const;
 
     private:

@@ -104,7 +104,7 @@ void ee::Renderer::initialize(const std::string rootShaderDir, const RendererPar
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_SAMPLES, 5);
 
-    g_window = glfwCreateWindow(rendererParam.m_screenWidth, rendererParam.m_screenHeight, PROJ_NAME, nullptr, nullptr);
+    g_window = glfwCreateWindow(rendererParam.m_screenWidth, rendererParam.m_screenHeight, "ArtificialEye", nullptr, nullptr);
 
     if (g_window == nullptr)
     {
@@ -118,7 +118,7 @@ void ee::Renderer::initialize(const std::string rootShaderDir, const RendererPar
         throw std::runtime_error("GLAD could not initialize OpenGL.");
     }
 
-    glfwSetInputMode(g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //glfwSetInputMode(g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glfwSetCursorPosCallback(g_window, mouseCallback);
     glfwSetKeyCallback(g_window, keyboardCallback);

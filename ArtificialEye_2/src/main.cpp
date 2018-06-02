@@ -33,6 +33,8 @@
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+// #define INVISIBLE
+
 using namespace ee;
 
 // These are values you can change:
@@ -79,7 +81,6 @@ bool g_switchToEyeView = true;
 bool g_addLine = false;
 bool g_writeFile = false;
 bool g_clearFile = false;
-std::ofstream g_csvWriter;
 
 void pushCSVLine(const std::vector<float>& buffer)
 {
@@ -94,24 +95,24 @@ void clearCSVLine()
     g_csvLines.clear();
 }
 
-void writeCSVLines()
+void writeCSVLines(const std::string& dir)
 {
-    g_csvWriter.open("output.csv", std::ofstream::app);
-    if (!g_csvWriter.is_open())
+    std::ofstream csvWriter(dir, std::ofstream::out | std::ofstream::trunc);
+    if (!csvWriter.is_open())
     {
         throw std::exception("Could not create the file output.csv");
     }
 
     for (const CSVLine& line : g_csvLines)
     {
-        g_csvWriter << line.tension;
+        csvWriter << line.tension;
         for (float b : line.pixels)
         {
-            g_csvWriter << "," << b;
+            csvWriter << "," << std::setprecision(5) << b;
         }
-        g_csvWriter << std::endl;
+        csvWriter << std::endl;
     }
-    g_csvWriter.close();
+    csvWriter.close();
 }
 
 void addConstraints(const std::size_t thickness, ee::SBSimulation* sim, const ee::Mesh* mesh)
@@ -172,18 +173,18 @@ struct EyePosition
 
 std::vector<EyePosition> g_framePositions;
 
-void writeCSVLine(int frameIndex, const RayTracer& tracer, ImageBuffer* imageBuffer)
+void captureFrame(int frameIndex, const RayTracer& tracer, ImageBuffer* imageBuffer)
 {
-    const auto& photoreceptors = *tracer.getColors();
+    const std::vector<float>& photoreceptors = tracer.getColors();
+#ifndef INVISIBLE
     for (int w = 0, uniI = 0; w < res_width; w++)
     {
-        for (int h = 0; h < res_height; h++)
+        for (int h = 0; h < res_height; h++, uniI++)
         {
-            const float color = photoreceptors[uniI];
-            imageBuffer->setPixel(w, h, color);
-            uniI++;
+            imageBuffer->setPixel(w, h, photoreceptors[uniI]);
         }
     }
+#endif
     pushCSVLine(photoreceptors);
     std::cout << "Finished frame: " << frameIndex << std::endl;
 }
@@ -291,9 +292,6 @@ int main()
         // generate the base model transform for placing the object in the world:
         glm::mat4 globalModel = positionEye * rotationEye;
 
-        g_csvWriter.open(OUTPUT_DIR, std::ofstream::out | std::ofstream::trunc);
-        g_csvWriter.close();
-
         // 
         // Scene Sphere
         
@@ -327,7 +325,10 @@ int main()
         lensMesh.setModelTrans(lensModel);
 
         // Prepare the lens with the appropriate values:
+        auto now = std::chrono::high_resolution_clock::now();
         RTMesh rtLens(&lensMesh, ARTIFICIAL_EYE_PROP.lens_refr_index, false);
+        auto later = std::chrono::high_resolution_clock::now();
+        std::cout << "print out: " << (later - now).count() << std::endl;
         Lens lens(&lensMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
 
         SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &lensMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
@@ -361,9 +362,13 @@ int main()
         pupil.generateSamples(16);
 
         // Render the image buffer if required:
+#ifndef INVISIBLE
 		ee::Renderer::generatePlaneBuffer();
+#endif
         for (int frameIndex = 0; frameIndex < g_framePositions.size(); frameIndex++)
         {
+            const auto timeNow = std::chrono::high_resolution_clock::now();
+
             if (!ee::Renderer::isInitialized())
             {
                 break;
@@ -384,22 +389,29 @@ int main()
             eyeball.setPosition(eyeballModel);
             pupil.pos = pupilModel;
 
+#ifndef INVISIBLE
             ee::Renderer::setPlaneBufferTexture(imageBuffer.getTextureID());
             ee::Renderer::clearBuffers();
+#endif
 
             lensSim.update(ARTIFICIAL_EYE_PROP.time_step);
             lensMesh.calcNormals();
             tracer.raytraceAll();
 
-            writeCSVLine(frameIndex, tracer, &imageBuffer);
+            captureFrame(frameIndex, tracer, &imageBuffer);
 
+#ifndef INVISIBLE
             Renderer::drawAll();
             Renderer::update(Renderer::timeElapsed());
             Renderer::swapBuffers();
             Renderer::pollEvents();
+#endif
+            const auto timeLater = std::chrono::high_resolution_clock::now();
+            const auto timeDiff = timeLater - timeNow;
+            std::cout << "Time: " << timeDiff.count() << std::endl;
         }
 
-        writeCSVLines();
+        writeCSVLines(OUTPUT_DIR);
         std::cout << "Wrote result to output." << std::endl;
     }
     catch (const std::exception& e)
