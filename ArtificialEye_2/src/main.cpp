@@ -324,11 +324,7 @@ int main()
         Mesh lensMesh = loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude);
         lensMesh.setModelTrans(lensModel);
 
-        // Prepare the lens with the appropriate values:
-        auto now = std::chrono::high_resolution_clock::now();
         RTMesh rtLens(&lensMesh, ARTIFICIAL_EYE_PROP.lens_refr_index, false);
-        auto later = std::chrono::high_resolution_clock::now();
-        std::cout << "print out: " << (later - now).count() << std::endl;
         Lens lens(&lensMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
 
         SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &lensMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
@@ -395,6 +391,7 @@ int main()
 #endif
 
             lensSim.update(ARTIFICIAL_EYE_PROP.time_step);
+            rtLens.updateCache();
             lensMesh.calcNormals();
             tracer.raytraceAll();
 

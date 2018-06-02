@@ -24,6 +24,11 @@ namespace ee
         {
         }
 
+        void updateCache()
+        {
+            m_tree.reconstruct();
+        }
+
 		bool intersect(Ray ray, int ignoreFace, RTMeshIntersection* o_int) const
         {
             glm::vec3 point;

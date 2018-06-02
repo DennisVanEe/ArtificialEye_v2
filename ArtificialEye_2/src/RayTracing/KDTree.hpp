@@ -7,14 +7,20 @@
 
 namespace ee
 {
-    const int KD_FACES_PER_NODE = 128;
+    const int KD_FACES_PER_NODE = 24;
+    const int KD_AMT_RESERVE = 512;
 
     class KDTree
     {
     public:
         KDTree(const Mesh* mesh);
 
-        // void reconstruct();
+        void reconstruct()
+        {
+            m_nodes.clear();
+            initialConstruct(KD_FACES_PER_NODE);
+        }
+
         bool intersect(int node, Ray ray, int ignore, glm::vec3* point, int* triangle) const;
 
     private:

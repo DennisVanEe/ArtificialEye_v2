@@ -5,13 +5,12 @@
 ee::KDTree::KDTree(const Mesh* mesh) :
     m_mesh(mesh)
 {
-    //int numNodes = static_cast<int>(static_cast<float>(m_mesh->getNumFaces()) / KD_FACES_PER_NODE + 0.5f);
-    //m_nodes.reserve(numNodes);
     initialConstruct(KD_FACES_PER_NODE);
 }
 
 void ee::KDTree::initialConstruct(int maxFacesPerNode)
 {
+    m_nodes.reserve(KD_AMT_RESERVE);
     m_nodes.push_back(Node());
     Node currNode;
 
@@ -39,7 +38,9 @@ void ee::KDTree::initialConstruct(int maxFacesPerNode)
     }
 
     std::vector<int> left;
+    left.reserve(m_mesh->getNumFaces() / 2);
     std::vector<int> right;
+    right.reserve(m_mesh->getNumFaces() / 2);
     const int   longestAxis = currNode.bound.longestAxis();
     const float globalRef = globalMidpoint[longestAxis];
     for (int i = 0; i < m_mesh->getNumFaces(); i++)
@@ -102,9 +103,9 @@ int ee::KDTree::constructTree(const std::vector<int>& faces, int parent, int max
     }
 
     std::vector<int> left;
-    // left.reserve(m_mesh->getNumVertices);
+    left.reserve(m_mesh->getNumFaces() / 2);
     std::vector<int> right;
-    // right.reserve(m_mesh->getNumVertices);
+    right.reserve(m_mesh->getNumFaces() / 2);
     const int longestAxis = currNode.bound.longestAxis();
     const float globalRef = globalMidpoint[longestAxis];
     for (const int i : faces)
