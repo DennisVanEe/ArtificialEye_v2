@@ -324,6 +324,8 @@ int main()
         Mesh lensMesh = loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude);
         lensMesh.setModelTrans(lensModel);
 
+        writeToOBJFile("lens.obj", lensMesh);
+
         RTMesh rtLens(&lensMesh, ARTIFICIAL_EYE_PROP.lens_refr_index, false);
         Lens lens(&lensMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
 

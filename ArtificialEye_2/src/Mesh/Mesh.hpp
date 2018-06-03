@@ -249,4 +249,6 @@ namespace ee
 
         mutable bool m_updated;
     };
+
+    void writeToOBJFile(std::string dir, const Mesh& mesh);
 }

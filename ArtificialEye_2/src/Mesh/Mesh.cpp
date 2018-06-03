@@ -1,6 +1,7 @@
 #include "Mesh.hpp"
 
-#include <omp.h>
+#include <fstream>
+#include <iomanip>
 
 void ee::Mesh::applyPointTrans(glm::mat4 mat)
 {
@@ -70,4 +71,25 @@ void ee::Mesh::calcNormals()
     {
         m_normals[i] = glm::normalize(m_normals[i]);
     }
+}
+
+void ee::writeToOBJFile(std::string dir, const Mesh& mesh)
+{
+    std::ofstream writer(dir, std::ofstream::out | std::ofstream::trunc);
+    // write the vertices:
+    const std::vector<glm::vec3>& vertices = mesh.vertexBuffer();
+    for (glm::vec3 v : vertices)
+    {
+        writer << "v " << std::setprecision(4) << v.x << " " << std::setprecision(4) << v.y << " " << std::setprecision(4) << v.z << std::endl;
+    }
+
+    // write the triangles:
+    const std::vector<MeshFace>& faces = mesh.faceBuffer();
+    for (MeshFace f : faces)
+    {
+        writer << "f " << f[0] << " " << f[1] << " " << f[2] << std::endl;
+    }
+
+    writer.flush();
+    writer.close();
 }
