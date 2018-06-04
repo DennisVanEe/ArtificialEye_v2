@@ -103,7 +103,6 @@ ee::Ray ee::DrawLine::getRay() const
 void ee::DrawLine::draw()
 {
     glBindVertexArray(m_VAO);
-
     const Camera* camera = Renderer::getCamera();
 
     Drawable::m_shader->use();

@@ -249,7 +249,7 @@ int main()
                 currFramePos.position.z = val;
                 break;
             default:
-                std::cout << "[ERROR]: Issue with frame posiiton syntax." << std::endl;
+                std::cout << "[ERROR]: Issue with frame position syntax." << std::endl;
                 return -1;
             }
         }
@@ -263,8 +263,8 @@ int main()
     }
 
     RendererParam renderParamTemp;
-    renderParamTemp.m_screenWidth = 1920;
-    renderParamTemp.m_screenHeight = 1080;
+    renderParamTemp.m_screenWidth = 1280;
+    renderParamTemp.m_screenHeight = 720;
     renderParamTemp.m_fov = 75.f;
     renderParamTemp.m_aspect = 1400.f / 900.f;
     renderParamTemp.m_near = 0.1f;
@@ -284,10 +284,10 @@ int main()
         Renderer::setCustomKeyboardCallback(setSpaceCallback);
         Renderer::setClearColor(glm::vec3(0.f));
 
-        //SkyBoxTextPack skyboxMaterial(g_textureDir + g_cubeMapDir, g_cubeMapFaces);
-        //Renderer::addTexturePack("skyboxMaterial", std::move(skyboxMaterial));
-        //SkyBox skybox("skyboxMaterial");
-        //Renderer::addDrawable(&skybox);
+        SkyBoxTextPack skyboxMaterial(g_textureDir + g_cubeMapDir, g_cubeMapFaces);
+        Renderer::addTexturePack("skyboxMaterial", std::move(skyboxMaterial));
+        SkyBox skybox("skyboxMaterial");
+        Renderer::addDrawable(&skybox);
 
         // These components here are for rotating the eyeball and positioning the eye.
         glm::mat4 rotationEye = glm::mat4_cast(g_framePositions[0].rotation);
@@ -304,19 +304,13 @@ int main()
         Sphere sceneSphere(sceneSphereModel);
         RTSphere rtSceneSphere(&sceneSphere, 0.f, false);
 
-        LineUniColorTextPack pathMaterial(glm::vec3(0.f, 1.f, 0.f));
-        Renderer::addTexturePack("pathMaterial", std::move(pathMaterial));
-        Line aLine(glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 0.f, 0.f));
-        DrawLine aDLine("pathMaterial", aLine);
-        Renderer::addDrawable(&aDLine);
-
         // Add the drawable element of the scene sphere:
-        //UniColorTextPack sceneSphereMaterial(glm::vec4(0.f));
-        //Renderer::addTexturePack("sceneSphereMaterial", std::move(sceneSphereMaterial));
-        //Mesh drawSceneSphereMesh = loadUVsphere(24, 24);
-        //drawSceneSphereMesh.setModelTrans(sceneSphereModel);
-        //DrawableMeshContainer drawSceneSphere(&drawSceneSphereMesh, "sceneSphereMaterial");
-        //Renderer::addDrawable(&drawSceneSphere);
+        UniColorTextPack sceneSphereMaterial(glm::vec4(0.f));
+        Renderer::addTexturePack("sceneSphereMaterial", std::move(sceneSphereMaterial));
+        Mesh drawSceneSphereMesh = loadUVsphere(24, 24);
+        drawSceneSphereMesh.setModelTrans(sceneSphereModel);
+        DrawableMeshContainer drawSceneSphere(&drawSceneSphereMesh, "sceneSphereMaterial");
+        Renderer::addDrawable(&drawSceneSphere);
 
         //
         // Eyeball
@@ -345,11 +339,10 @@ int main()
         RTMesh rtLens(&lensMesh, ARTIFICIAL_EYE_PROP.lens_refr_index, false);
         Lens lens(&lensMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
 
-        // prepare the drawable:
-        //RefractTextPack lensMaterial(glm::vec3(0.f), g_textureDir + g_cubeMapDir, g_cubeMapFaces, ARTIFICIAL_EYE_PROP.lens_refr_index);
-        //Renderer::addTexturePack("lensMaterial", std::move(lensMaterial));
-        //DrawableMeshContainer drawLens(&lensMesh, "lensMaterial", true);
-        //Renderer::addDrawable(&drawLens);
+        RefractTextPack lensMaterial(glm::vec3(0.f), g_textureDir + g_cubeMapDir, g_cubeMapFaces, ARTIFICIAL_EYE_PROP.lens_refr_index);
+        Renderer::addTexturePack("lensMaterial", std::move(lensMaterial));
+        DrawableMeshContainer drawLens(&lensMesh, "lensMaterial", true);
+        Renderer::addDrawable(&drawLens);
 
         SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &lensMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
         lensSim.m_constIterations = ARTIFICIAL_EYE_PROP.iterations;
@@ -375,6 +368,11 @@ int main()
             }
         }
 
+        ee::Renderer::addTexturePack("lineTextPack", ee::LineUniColorTextPack(Vec3(0.0, 1.0, 0.0)));
+        Line p(glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 0.f, 0.f));
+        DrawLine pl("lineTextPack", p);
+        Renderer::addDrawable(&pl);
+
         // Prepare the image buffer and the ray tracer:
         ImageBuffer imageBuffer(res_width, res_height); // for rendering:
         RayTracer tracer(&pos, &rtLens, &rtEyeball, &rtSceneSphere, &pupil, ARTIFICIAL_EYE_PROP.threads, ARTIFICIAL_EYE_PROP.samples);
@@ -386,24 +384,24 @@ int main()
         Renderer::generatePlaneBuffer();
 #endif
 
-        //tracer.raytraceAll();
-        //const std::vector<RayTracer::RayPath>& initPaths = tracer.getLines();
+        tracer.raytraceAll();
+        const std::vector<RayTracer::RayPath>& initPaths = tracer.getLines();
 
-       /* std::vector<DrawLine> drawPaths;
+        std::vector<DrawLine> drawPaths;
+        ee::Renderer::addTexturePack("lineTextPack", ee::LineUniColorTextPack(Vec3(0.0, 1.0, 0.0)));
         for (const RayTracer::RayPath& line : initPaths)
         {
             for (int i = 0; i < 4; i++)
             {
-                drawPaths.push_back(DrawLine("pathMaterial", line.lines[i]));
+                drawPaths.push_back(DrawLine("lineTextPack", line.lines[i]));
             }
         }
 
         for (DrawLine& line : drawPaths)
         {
             Renderer::addDrawable(&line);
-        }*/
+        }
 
-        bool write = true;
         for (int frameIndex = 0; frameIndex < g_framePositions.size(); frameIndex++)
         {
             const auto timeNow = std::chrono::high_resolution_clock::now();
@@ -433,17 +431,19 @@ int main()
             lensMesh.calcNormals();
             tracer.raytraceAll();
 
-            // update all the rays:
-            //const auto& paths = tracer.getLines();
-            //int drawLinesCounter = 0;
-            //for (const RayTracer::RayPath& line : initPaths)
-            //{
-            //    for (int i = 0; i < 4; i++)
-            //    {
-            //        drawPaths[drawLinesCounter].setLine(line.lines[i]);
-            //    }
-            //    drawLinesCounter++;
-            //}
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            Renderer::unsetPlaneBufferTexture();
+
+            const auto& paths = tracer.getLines();
+            int drawLinesCounter = 0;
+            for (int i = 0; i < paths.size() && i < drawPaths.size() / 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    drawPaths[drawLinesCounter].setLine(paths[i].lines[j]);
+                }
+                drawLinesCounter++;
+            }
 
             const auto timeLater = std::chrono::high_resolution_clock::now();
 

@@ -33,11 +33,11 @@ namespace ee
 
     struct Line
     {
-        glm::vec3 start;
-        glm::vec3 end;
+        Vec3 start;
+        Vec3 end;
 
         Line() {}
-        Line(glm::vec3 start, glm::vec3 end) : start(start), end(end) {}
+        Line(Vec3 start, Vec3 end) : start(start), end(end) {}
     };
 
     __forceinline void writeVertex(std::ofstream& of, glm::vec3 v)
