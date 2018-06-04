@@ -224,7 +224,7 @@ int main()
             float val = std::atof(word.c_str());
             switch (wordIndex)
             {
-            // rotation:
+                // rotation:
             case 1:
                 currFramePos.rotation.x = val;
                 break;
@@ -238,7 +238,7 @@ int main()
                 currFramePos.rotation.w = val;
                 break;
 
-            // position:
+                // position:
             case 5:
                 currFramePos.position.x = val;
                 break;
@@ -253,7 +253,7 @@ int main()
                 return -1;
             }
         }
-        currFramePos.position -= glm::vec3(35, - 100, 1848);
+        currFramePos.position -= glm::vec3(35, -100, 1848);
         g_framePositions.push_back(currFramePos);
     }
 
@@ -262,13 +262,13 @@ int main()
         return -1;
     }
 
-	RendererParam renderParamTemp;
-	renderParamTemp.m_screenWidth  = 480;
-	renderParamTemp.m_screenHeight = 480;
-	renderParamTemp.m_fov          = 75.f;
-	renderParamTemp.m_aspect       = 1400.f / 900.f;
-	renderParamTemp.m_near         = 0.1f;
-	renderParamTemp.m_far          = 100.f;
+    RendererParam renderParamTemp;
+    renderParamTemp.m_screenWidth = 1920;
+    renderParamTemp.m_screenHeight = 1080;
+    renderParamTemp.m_fov = 75.f;
+    renderParamTemp.m_aspect = 1400.f / 900.f;
+    renderParamTemp.m_near = 0.1f;
+    renderParamTemp.m_far = 100.f;
 
     try
     {
@@ -282,8 +282,12 @@ int main()
         // prepare the renderer:
         Renderer::initialize(ARTIFICIAL_EYE_PROP.shader_dir, renderParamTemp, cameraParams);
         Renderer::setCustomKeyboardCallback(setSpaceCallback);
-        Renderer::setClearColor(glm::vec3(0));
+        Renderer::setClearColor(glm::vec3(0.f));
 
+        //SkyBoxTextPack skyboxMaterial(g_textureDir + g_cubeMapDir, g_cubeMapFaces);
+        //Renderer::addTexturePack("skyboxMaterial", std::move(skyboxMaterial));
+        //SkyBox skybox("skyboxMaterial");
+        //Renderer::addDrawable(&skybox);
 
         // These components here are for rotating the eyeball and positioning the eye.
         glm::mat4 rotationEye = glm::mat4_cast(g_framePositions[0].rotation);
@@ -294,11 +298,25 @@ int main()
 
         // 
         // Scene Sphere
-        
-		glm::mat4 sceneSphereModel = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 5.f));
+
+        glm::mat4 sceneSphereModel = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 5.f));
         sceneSphereModel = glm::scale(sceneSphereModel, glm::vec3(0.5f));
         Sphere sceneSphere(sceneSphereModel);
-		RTSphere rtSceneSphere(&sceneSphere, 0.f, false);
+        RTSphere rtSceneSphere(&sceneSphere, 0.f, false);
+
+        LineUniColorTextPack pathMaterial(glm::vec3(0.f, 1.f, 0.f));
+        Renderer::addTexturePack("pathMaterial", std::move(pathMaterial));
+        Line aLine(glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 0.f, 0.f));
+        DrawLine aDLine("pathMaterial", aLine);
+        Renderer::addDrawable(&aDLine);
+
+        // Add the drawable element of the scene sphere:
+        //UniColorTextPack sceneSphereMaterial(glm::vec4(0.f));
+        //Renderer::addTexturePack("sceneSphereMaterial", std::move(sceneSphereMaterial));
+        //Mesh drawSceneSphereMesh = loadUVsphere(24, 24);
+        //drawSceneSphereMesh.setModelTrans(sceneSphereModel);
+        //DrawableMeshContainer drawSceneSphere(&drawSceneSphereMesh, "sceneSphereMaterial");
+        //Renderer::addDrawable(&drawSceneSphere);
 
         //
         // Eyeball
@@ -307,14 +325,14 @@ int main()
         //  Lens & Eyeball
 
         // The "base transform" for the eyeball and lens. Transforms them so that they are in the proper relative positions
-        const glm::mat4 eyeballIntermTransform  = glm::scale(glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, -2.f)), glm::vec3(2.f * 1.55f));
-        const glm::mat4 lensIntermTransform     = glm::scale(glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f)), glm::vec3(1.f, ARTIFICIAL_EYE_PROP.lens_thickness, 1.f));
-        const glm::mat4 pupilInterimTransform   = glm::mat4(1.f);
+        const glm::mat4 eyeballIntermTransform = glm::scale(glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, -2.f)), glm::vec3(2.f * 1.55f));
+        const glm::mat4 lensIntermTransform = glm::scale(glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f)), glm::vec3(1.f, ARTIFICIAL_EYE_PROP.lens_thickness, 1.f));
+        const glm::mat4 pupilInterimTransform = glm::mat4(1.f);
 
         // Update the model transforms for each of these (NOTE: this is done each frame, with globalModel changing each frame)
         glm::mat4 eyeballModel = globalModel * eyeballIntermTransform;
-        glm::mat4 lensModel    = globalModel * lensIntermTransform;
-        glm::mat4 pupilModel   = globalModel * pupilInterimTransform;
+        glm::mat4 lensModel = globalModel * lensIntermTransform;
+        glm::mat4 pupilModel = globalModel * pupilInterimTransform;
 
         Sphere eyeball(eyeballModel);
         RTSphere rtEyeball(&eyeball, ARTIFICIAL_EYE_PROP.eyeball_refr_index, false);
@@ -324,10 +342,14 @@ int main()
         Mesh lensMesh = loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude);
         lensMesh.setModelTrans(lensModel);
 
-        writeToOBJFile("lens.obj", lensMesh);
-
         RTMesh rtLens(&lensMesh, ARTIFICIAL_EYE_PROP.lens_refr_index, false);
         Lens lens(&lensMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
+
+        // prepare the drawable:
+        //RefractTextPack lensMaterial(glm::vec3(0.f), g_textureDir + g_cubeMapDir, g_cubeMapFaces, ARTIFICIAL_EYE_PROP.lens_refr_index);
+        //Renderer::addTexturePack("lensMaterial", std::move(lensMaterial));
+        //DrawableMeshContainer drawLens(&lensMesh, "lensMaterial", true);
+        //Renderer::addDrawable(&drawLens);
 
         SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &lensMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
         lensSim.m_constIterations = ARTIFICIAL_EYE_PROP.iterations;
@@ -337,23 +359,23 @@ int main()
         g_allConstraints = lensSim.getConstraints();
 
         // The amount to increment the counter by:
-		const float incHeight = maxHeight / static_cast<float>(res_height);
-		const float incWidth  = maxWidth  / static_cast<float>(res_width);
+        const float incHeight = maxHeight / static_cast<float>(res_height);
+        const float incWidth = maxWidth / static_cast<float>(res_width);
 
-		std::vector<glm::vec3> pos;
+        std::vector<glm::vec3> pos;
         pos.reserve(res_height * res_width);
-		float width, height;
-		width = -maxWidth / 2.f;
-		for (int w = 0; w < res_width; w++, width += incWidth)
-		{
-			height = -maxHeight / 2.f;
-			for (int h = 0; h < res_height; h++, height += incHeight)
-			{
-				pos.push_back(glm::vec3(width, height, -1.f));
-			}
-		}
+        float width, height;
+        width = -maxWidth / 2.f;
+        for (int w = 0; w < res_width; w++, width += incWidth)
+        {
+            height = -maxHeight / 2.f;
+            for (int h = 0; h < res_height; h++, height += incHeight)
+            {
+                pos.push_back(glm::vec3(width, height, -1.f));
+            }
+        }
 
-		// Prepare the image buffer and the ray tracer:
+        // Prepare the image buffer and the ray tracer:
         ImageBuffer imageBuffer(res_width, res_height); // for rendering:
         RayTracer tracer(&pos, &rtLens, &rtEyeball, &rtSceneSphere, &pupil, ARTIFICIAL_EYE_PROP.threads, ARTIFICIAL_EYE_PROP.samples);
 
@@ -361,8 +383,27 @@ int main()
 
         // Render the image buffer if required:
 #ifndef INVISIBLE
-		ee::Renderer::generatePlaneBuffer();
+        Renderer::generatePlaneBuffer();
 #endif
+
+        //tracer.raytraceAll();
+        //const std::vector<RayTracer::RayPath>& initPaths = tracer.getLines();
+
+       /* std::vector<DrawLine> drawPaths;
+        for (const RayTracer::RayPath& line : initPaths)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                drawPaths.push_back(DrawLine("pathMaterial", line.lines[i]));
+            }
+        }
+
+        for (DrawLine& line : drawPaths)
+        {
+            Renderer::addDrawable(&line);
+        }*/
+
+        bool write = true;
         for (int frameIndex = 0; frameIndex < g_framePositions.size(); frameIndex++)
         {
             const auto timeNow = std::chrono::high_resolution_clock::now();
@@ -379,35 +420,45 @@ int main()
             globalModel = positionEye * rotationEye;
 
             eyeballModel = globalModel * eyeballIntermTransform;
-            lensModel    = globalModel * lensIntermTransform;
-            pupilModel   = globalModel * pupilInterimTransform;
+            lensModel = globalModel * lensIntermTransform;
+            pupilModel = globalModel * pupilInterimTransform;
 
             // update the model information:
             lensMesh.setModelTrans(lensModel);
             eyeball.setPosition(eyeballModel);
             pupil.pos = pupilModel;
 
-#ifndef INVISIBLE
-            ee::Renderer::setPlaneBufferTexture(imageBuffer.getTextureID());
-            ee::Renderer::clearBuffers();
-#endif
-
             lensSim.update(ARTIFICIAL_EYE_PROP.time_step);
             rtLens.updateCache();
             lensMesh.calcNormals();
             tracer.raytraceAll();
 
+            // update all the rays:
+            //const auto& paths = tracer.getLines();
+            //int drawLinesCounter = 0;
+            //for (const RayTracer::RayPath& line : initPaths)
+            //{
+            //    for (int i = 0; i < 4; i++)
+            //    {
+            //        drawPaths[drawLinesCounter].setLine(line.lines[i]);
+            //    }
+            //    drawLinesCounter++;
+            //}
+
+            const auto timeLater = std::chrono::high_resolution_clock::now();
+
             captureFrame(frameIndex, tracer, &imageBuffer);
 
 #ifndef INVISIBLE
+            //ee::Renderer::setPlaneBufferTexture(imageBuffer.getTextureID());
+            Renderer::clearBuffers();
             Renderer::drawAll();
             Renderer::update(Renderer::timeElapsed());
             Renderer::swapBuffers();
             Renderer::pollEvents();
 #endif
-            const auto timeLater = std::chrono::high_resolution_clock::now();
             const auto timeDiff = timeLater - timeNow;
-            std::cout << "Time: " << timeDiff.count() << std::endl;
+            std::cout << "Render Duration: " << std::setprecision(5) << static_cast<float>(timeDiff.count()) / 1e9 << " s" << std::endl;
         }
 
         writeCSVLines(OUTPUT_DIR);

@@ -18,24 +18,36 @@ namespace ee
 	class RayTracer
 	{
 	public:
+        struct RayPath
+        {
+            Line lines[4];
+        };
+
         RayTracer(const std::vector<glm::vec3>* pos, const RTMesh* lens, const RTSphere* eyeball, const RTSphere* sceneSphere,
             const Pupil* pupil, int nthreads, int samples);
 
 		void raytraceAll();
         const std::vector<float>& getColors() const;
+        const std::vector<RayPath>& getLines() const
+        {
+            return m_lines;
+        }
 
 	private:
+
 		void raytraceSelect(int pos, int numrays);
 		__forceinline void raytraceOne(int pos);
 
         // Ray traces fixed from the eyeball.
-        __forceinline Ray raytraceFromEye(int pos, glm::vec3 pupilPos);
+        __forceinline Ray raytraceFromEye(int pos, glm::vec3 pupilPos, int samplePos, bool addLines);
 
     private:
 		std::vector<float> m_colors;
         const std::vector<glm::vec3>* m_photoPos;
 
         const float m_sampleInv;
+
+        const int m_moduloDraw;
 
         const Pupil* const m_pupil;
 
@@ -44,6 +56,8 @@ namespace ee
         const RTSphere* const m_sceneSphere;
 
         const int m_samples;
+
+        std::vector<RayPath> m_lines;
 
 		std::vector<std::thread> m_threads;
     };
