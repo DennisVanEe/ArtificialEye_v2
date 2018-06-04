@@ -368,9 +368,19 @@ int main()
             }
         }
 
+        std::srand(0);
+        const int numRaysDraw = 90;
+        std::vector<int> chosenRays;
+        chosenRays.reserve(numRaysDraw);
+        for (int i = 0; i < numRaysDraw; i++)
+        {
+            const int loc = (rand() + 1) % pos.size();
+            chosenRays.push_back(loc);
+        }
+
         // Prepare the image buffer and the ray tracer:
         ImageBuffer imageBuffer(res_width, res_height); // for rendering:
-        RayTracer tracer(&pos, &rtLens, &rtEyeball, &rtSceneSphere, &pupil, ARTIFICIAL_EYE_PROP.threads, ARTIFICIAL_EYE_PROP.samples);
+        RayTracer tracer(&pos, &chosenRays, &rtLens, &rtEyeball, &rtSceneSphere, &pupil, ARTIFICIAL_EYE_PROP.threads, ARTIFICIAL_EYE_PROP.samples);
 
         pupil.generateSamples(16);
 

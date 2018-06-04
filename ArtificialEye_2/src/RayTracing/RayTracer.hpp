@@ -23,7 +23,7 @@ namespace ee
             Line lines[4];
         };
 
-        RayTracer(const std::vector<glm::vec3>* pos, const RTMesh* lens, const RTSphere* eyeball, const RTSphere* sceneSphere,
+        RayTracer(const std::vector<glm::vec3>* pos, const std::vector<int>* chosen, const RTMesh* lens, const RTSphere* eyeball, const RTSphere* sceneSphere,
             const Pupil* pupil, int nthreads, int samples);
 
 		void raytraceAll();
@@ -44,6 +44,9 @@ namespace ee
     private:
 		std::vector<float> m_colors;
         const std::vector<glm::vec3>* m_photoPos;
+        const std::vector<int>* const m_chosenDraw;
+
+        std::vector<int> m_chosenMap;
 
         const float m_sampleInv;
 
