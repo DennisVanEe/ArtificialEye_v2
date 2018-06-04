@@ -397,7 +397,7 @@ int main()
             Renderer::addDrawable(&line);
         }
 
-        for (int frameIndex = 0; frameIndex < g_framePositions.size(); frameIndex++)
+        for (int frameIndex = 0; /*frameIndex < g_framePositions.size()*/ true; frameIndex++)
         {
             const auto timeNow = std::chrono::high_resolution_clock::now();
 
@@ -406,30 +406,30 @@ int main()
                 break;
             }
 
-            const EyePosition currPosition = g_framePositions[frameIndex];
-            rotationEye = glm::mat4_cast(currPosition.rotation);
-            positionEye = glm::translate(glm::mat4(1), currPosition.position);
+            //const EyePosition currPosition = g_framePositions[frameIndex];
+            //rotationEye = glm::mat4_cast(currPosition.rotation);
+            //positionEye = glm::translate(glm::mat4(1), currPosition.position);
 
-            globalModel = positionEye * rotationEye;
+            //globalModel = positionEye * rotationEye;
 
-            eyeballModel = globalModel * eyeballIntermTransform;
-            lensModel = globalModel * lensIntermTransform;
-            pupilModel = globalModel * pupilInterimTransform;
+            //eyeballModel = globalModel * eyeballIntermTransform;
+            //lensModel = globalModel * lensIntermTransform;
+            //pupilModel = globalModel * pupilInterimTransform;
 
-            // update the model information:
-            lensMesh.setModelTrans(lensModel);
-            eyeball.setPosition(eyeballModel);
-            pupil.pos = pupilModel;
+            //// update the model information:
+            //lensMesh.setModelTrans(lensModel);
+            //eyeball.setPosition(eyeballModel);
+            //pupil.pos = pupilModel;
 
-            lensSim.update(ARTIFICIAL_EYE_PROP.time_step);
+            /*lensSim.update(ARTIFICIAL_EYE_PROP.time_step);
             rtLens.updateCache();
             lensMesh.calcNormals();
-            tracer.raytraceAll();
+            tracer.raytraceAll();*/
 
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             Renderer::unsetPlaneBufferTexture();
 
-            const auto& paths = tracer.getLines();
+            /*const auto& paths = tracer.getLines();
             int drawLinesCounter = 0;
             for (int i = 0; i < paths.size() && i < drawPaths.size() / 4; i++)
             {
@@ -438,7 +438,7 @@ int main()
                     drawPaths[drawLinesCounter].setLine(paths[i].lines[j]);
                 }
                 drawLinesCounter++;
-            }
+            }*/
 
             const auto timeLater = std::chrono::high_resolution_clock::now();
 

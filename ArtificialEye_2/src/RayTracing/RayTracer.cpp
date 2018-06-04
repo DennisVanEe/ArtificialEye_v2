@@ -7,7 +7,7 @@ ee::RayTracer::RayTracer(const std::vector<glm::vec3>* pos, const RTMesh* lens, 
     const Pupil* pupil, int nthreads, int samples) :
     m_photoPos(pos),
     m_sampleInv(1.f / static_cast<float>(samples)),
-    m_moduloDraw(128),
+    m_moduloDraw(135),
     m_pupil(pupil),
     m_lens(lens),
 	m_eyeball(eyeball),
