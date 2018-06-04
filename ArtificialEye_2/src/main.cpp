@@ -368,11 +368,6 @@ int main()
             }
         }
 
-        ee::Renderer::addTexturePack("lineTextPack", ee::LineUniColorTextPack(Vec3(0.0, 1.0, 0.0)));
-        Line p(glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 0.f, 0.f));
-        DrawLine pl("lineTextPack", p);
-        Renderer::addDrawable(&pl);
-
         // Prepare the image buffer and the ray tracer:
         ImageBuffer imageBuffer(res_width, res_height); // for rendering:
         RayTracer tracer(&pos, &rtLens, &rtEyeball, &rtSceneSphere, &pupil, ARTIFICIAL_EYE_PROP.threads, ARTIFICIAL_EYE_PROP.samples);

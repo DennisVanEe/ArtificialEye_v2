@@ -7,7 +7,7 @@ ee::RayTracer::RayTracer(const std::vector<glm::vec3>* pos, const RTMesh* lens, 
     const Pupil* pupil, int nthreads, int samples) :
     m_photoPos(pos),
     m_sampleInv(1.f / static_cast<float>(samples)),
-    m_moduloDraw(4),
+    m_moduloDraw(128),
     m_pupil(pupil),
     m_lens(lens),
 	m_eyeball(eyeball),
@@ -20,7 +20,7 @@ ee::RayTracer::RayTracer(const std::vector<glm::vec3>* pos, const RTMesh* lens, 
     // The total number of possible ray-paths:
     const int totalNumSamples = m_samples * m_photoPos->size();
 
-    m_lines.resize(m_samples * m_photoPos->size());
+    m_lines.resize(m_samples * ((m_photoPos->size() + 1) / m_moduloDraw));
 	m_threads.resize(nthreads);
 	m_colors.resize(m_photoPos->size());
 }
@@ -61,6 +61,7 @@ void ee::RayTracer::raytraceSelect(int pos, int numrays)
 void ee::RayTracer::raytraceOne(int photorecpPos)
 {
     const bool draw = photorecpPos % m_moduloDraw == 0;
+    const int drawPosition = photorecpPos / m_moduloDraw;
 
 	// first we need to sample a bunch of rays off the circular lens (basically prepare a bunch of paths)
     m_colors[photorecpPos] = 0.f;
@@ -82,12 +83,12 @@ void ee::RayTracer::raytraceOne(int photorecpPos)
             if (m_sceneSphere->intersect(outray, &intersection))
             {
                 m_colors[photorecpPos] += 1.f;
-                m_lines[4 * photorecpPos + samplePos].lines[4] = Line(outray.origin, intersection.point);
+                m_lines[m_samples * drawPosition + samplePos].lines[4] = Line(outray.origin, intersection.point);
             }
             else
             {
                 Line line(outray.origin, outray.origin + outray.dir * 100.f);
-                m_lines[4 * photorecpPos + samplePos].lines[4] = Line(outray.origin, intersection.point);
+                m_lines[m_samples * drawPosition + samplePos].lines[4] = line;
             }
         }
         else
@@ -106,6 +107,7 @@ void ee::RayTracer::raytraceOne(int photorecpPos)
 
 ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, glm::vec3 pupilPos, int samplePos, bool draw)
 {
+    const int drawPosition = photorecpPos / m_moduloDraw;
     static const Ray NaNRay = Ray(glm::vec3(NaN), glm::vec3(NaN));
 
     const glm::vec3 origin = transPoint3(m_eyeball->getSphere()->getPosition(), (*m_photoPos)[photorecpPos]);
@@ -149,7 +151,7 @@ ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, glm::vec3 pupilPos, int
 
     if (draw)
     {
-        RayPath* path = &m_lines[4 * photorecpPos + samplePos];
+        RayPath* path = &m_lines[m_samples * drawPosition + samplePos];
         path->lines[0] = line0;
         path->lines[1] = line1;
         path->lines[2] = line2;
