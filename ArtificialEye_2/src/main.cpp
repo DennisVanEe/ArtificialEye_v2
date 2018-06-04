@@ -30,6 +30,7 @@
 #include <fstream>
 #include <iomanip>
 #include <sstream>
+#include <random>
 #include <glm/matrix.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -368,19 +369,23 @@ int main()
             }
         }
 
-        std::srand(0);
-        const int numRaysDraw = 90;
+        const int NUM_RAYS_DRAW = 512;
+        const int TOTAL_NUM_RAYS = ARTIFICIAL_EYE_PROP.samples * pos.size();
+        std::random_device rd;
+        std::mt19937 mt(rd());
+        std::uniform_int_distribution<int> dist(0, TOTAL_NUM_RAYS);
+
         std::vector<int> chosenRays;
-        chosenRays.reserve(numRaysDraw);
-        for (int i = 0; i < numRaysDraw; i++)
+        chosenRays.reserve(NUM_RAYS_DRAW);
+        for (int i = 0; i < NUM_RAYS_DRAW; i++)
         {
-            const int loc = (rand() + 1) % pos.size();
+            const int loc = dist(mt);
             chosenRays.push_back(loc);
         }
 
         // Prepare the image buffer and the ray tracer:
         ImageBuffer imageBuffer(res_width, res_height); // for rendering:
-        RayTracer tracer(&pos, &chosenRays, &rtLens, &rtEyeball, &rtSceneSphere, &pupil, ARTIFICIAL_EYE_PROP.threads, ARTIFICIAL_EYE_PROP.samples);
+        RayTracer tracer(&pos, chosenRays, &rtLens, &rtEyeball, &rtSceneSphere, &pupil, ARTIFICIAL_EYE_PROP.threads, ARTIFICIAL_EYE_PROP.samples);
 
         pupil.generateSamples(16);
 
@@ -390,19 +395,16 @@ int main()
 #endif
 
         tracer.raytraceAll();
-        const std::vector<RayTracer::RayPath>& initPaths = tracer.getLines();
+        const std::vector<Path>& initPaths = tracer.getPath();
 
-        std::vector<DrawLine> drawPaths;
-        ee::Renderer::addTexturePack("lineTextPack", ee::LineUniColorTextPack(Vec3(0.0, 1.0, 0.0)));
-        for (const RayTracer::RayPath& line : initPaths)
+        std::vector<DrawPath> drawPaths;
+        ee::Renderer::addTexturePack("pathMaterial", ee::LineUniColorTextPack(glm::vec3(0.0, 1.0, 0.0)));
+        for (const Path& path : initPaths)
         {
-            for (int i = 0; i < 4; i++)
-            {
-                drawPaths.push_back(DrawLine("lineTextPack", line.lines[i]));
-            }
+            drawPaths.push_back(DrawPath("pathMaterial", path, 0, GL_DYNAMIC_DRAW));
         }
 
-        for (DrawLine& line : drawPaths)
+        for (DrawPath& line : drawPaths)
         {
             Renderer::addDrawable(&line);
         }
@@ -431,24 +433,20 @@ int main()
             //eyeball.setPosition(eyeballModel);
             //pupil.pos = pupilModel;
 
-            /*lensSim.update(ARTIFICIAL_EYE_PROP.time_step);
-            rtLens.updateCache();
-            lensMesh.calcNormals();
-            tracer.raytraceAll();*/
+            //lensSim.update(ARTIFICIAL_EYE_PROP.time_step);
+            //rtLens.updateCache();
+            //lensMesh.calcNormals();
+            //tracer.raytraceAll();
 
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            //Renderer::setPlaneBufferTexture(imageBuffer.getTextureID());
             Renderer::unsetPlaneBufferTexture();
 
-            /*const auto& paths = tracer.getLines();
-            int drawLinesCounter = 0;
-            for (int i = 0; i < paths.size() && i < drawPaths.size() / 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    drawPaths[drawLinesCounter].setLine(paths[i].lines[j]);
-                }
-                drawLinesCounter++;
-            }*/
+            //const auto& paths = tracer.getPath();
+            //for (int i = 0; i < paths.size() && i < drawPaths.size(); i++)
+            //{
+            //    drawPaths[i].updatePath(paths[i]);
+            //}
 
             const auto timeLater = std::chrono::high_resolution_clock::now();
 

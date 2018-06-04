@@ -2,14 +2,12 @@
 
 #include <iostream>
 #include <glm/gtx/string_cast.hpp>
+#include <unordered_map>
 
-ee::RayTracer::RayTracer(const std::vector<glm::vec3>* pos, const std::vector<int>* chosen, const RTMesh* lens, const RTSphere* eyeball, const RTSphere* scene,
+ee::RayTracer::RayTracer(const std::vector<glm::vec3>* pos, const std::vector<int>& drawnSamples, const RTMesh* lens, const RTSphere* eyeball, const RTSphere* scene,
     const Pupil* pupil, int nthreads, int samples) :
     m_photoPos(pos),
-    m_chosenDraw(chosen),
-    m_chosenMap(pos->size(), -1),
     m_sampleInv(1.f / static_cast<float>(samples)),
-    m_moduloDraw(135),
     m_pupil(pupil),
     m_lens(lens),
 	m_eyeball(eyeball),
@@ -23,13 +21,13 @@ ee::RayTracer::RayTracer(const std::vector<glm::vec3>* pos, const std::vector<in
     const int totalNumSamples = m_samples * m_photoPos->size();
 
     int counter = 0;
-    for (int i : *chosen)
+    for (int i : drawnSamples)
     {
-        m_chosenMap[i] = counter;
+        m_drawableRays.insert(std::make_pair(i, counter));
         counter++;
     }
 
-    m_lines.resize(m_samples * m_chosenDraw->size());
+    m_paths.resize(counter);
 	m_threads.resize(nthreads);
 	m_colors.resize(m_photoPos->size());
 }
@@ -69,17 +67,18 @@ void ee::RayTracer::raytraceSelect(int pos, int numrays)
 // this is run in one thread
 void ee::RayTracer::raytraceOne(int photorecpPos)
 {
-    const bool draw = m_chosenMap[photorecpPos] != -1;
-    const int drawPosition = m_chosenMap[photorecpPos];
-
 	// first we need to sample a bunch of rays off the circular lens (basically prepare a bunch of paths)
     m_colors[photorecpPos] = 0.f;
     const std::vector<glm::vec3>* const samples = m_pupil->getSamples();
-    int samplePos = 0;
+    int sampleNumber = 0;
 	for (glm::vec3 pupilSample : *samples)
 	{
+        const auto drawIt = m_drawableRays.find(m_samples * photorecpPos + sampleNumber);
+        const bool draw = drawIt != m_drawableRays.end();
+        const int pathBufferPos = draw ? drawIt->second : -1;
+
         pupilSample = transPoint3(m_pupil->pos, pupilSample);
-        const Ray outray = raytraceFromEye(photorecpPos, pupilSample, samplePos, draw);
+        const Ray outray = raytraceFromEye(photorecpPos, pupilSample, pathBufferPos, draw);
         if (std::isnan(outray.origin.x))
         {
             continue;
@@ -92,12 +91,12 @@ void ee::RayTracer::raytraceOne(int photorecpPos)
             if (m_sceneSphere->intersect(outray, &intersection))
             {
                 m_colors[photorecpPos] += 1.f;
-                m_lines[m_samples * drawPosition + samplePos].lines[4] = Line(outray.origin, intersection.point);
+                m_paths[pathBufferPos].points[4] = intersection.point;
             }
             else
             {
                 Line line(outray.origin, outray.origin + outray.dir * 100.f);
-                m_lines[m_samples * drawPosition + samplePos].lines[4] = line;
+                m_paths[pathBufferPos].points[4] = outray.origin + outray.dir * 100.f;
             }
         }
         else
@@ -107,20 +106,20 @@ void ee::RayTracer::raytraceOne(int photorecpPos)
                 m_colors[photorecpPos] += 1.f;
             }
         }
-        samplePos++;
+        sampleNumber++;
 	}
 
 	// now we average the values to get the color:
     m_colors[photorecpPos] = m_colors[photorecpPos] * m_sampleInv;
 }
 
-ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, glm::vec3 pupilPos, int samplePos, bool draw)
+ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, glm::vec3 pupilPos, int pathPosition, bool draw)
 {
-    const int drawPosition = m_chosenMap[photorecpPos];
     static const Ray NaNRay = Ray(glm::vec3(NaN), glm::vec3(NaN));
 
     const glm::vec3 origin = transPoint3(m_eyeball->getSphere()->getPosition(), (*m_photoPos)[photorecpPos]);
     const Ray ray0(origin, glm::normalize(pupilPos - origin));
+    const glm::vec3 point0 = glm::vec3(origin.x * 0.015f, origin.y * 0.015f, origin.z);
 
     RTMeshIntersection meshIntersect;
 
@@ -132,12 +131,12 @@ ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, glm::vec3 pupilPos, int
 	int ignore = meshIntersect.face;
 	glm::vec3 intpoint = meshIntersect.point; // the point of intersection
 	glm::vec3 dir = glm::normalize(ee::refract(ray0.dir, meshIntersect.normal, m_eyeball->getRefraction() / m_lens->getRefraction()));
-	const Ray ray1(intpoint, dir);
-    glm::vec3 point = ray0.origin;
-    point.y *= 0.015f;
-    point.x *= 0.015f;
-    Line line0(point, intpoint);
-    bool aligned0 = glm::dot(dir, glm::vec3(1.f, 0.f, 0.f)) >= 0.f;
+    const Ray ray1(intpoint, dir);
+    const glm::vec3 point1 = intpoint;
+    if (!sameDir(ray0.dir, ray1.dir))
+    {
+        return NaNRay;
+    }
 
 	// new we intersect through the lens:
     if (!m_lens->intersect(ray1, ignore, &meshIntersect))
@@ -147,9 +146,12 @@ ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, glm::vec3 pupilPos, int
     ignore = meshIntersect.face;
     intpoint = meshIntersect.point;
 	dir = glm::normalize(ee::refract(ray1.dir, -meshIntersect.normal, m_lens->getRefraction() / m_eyeball->getRefraction()));
-	const Ray ray2(intpoint, dir);
-    Line line1(ray1.origin, intpoint);
-    bool aligned1 = glm::dot(dir, glm::vec3(1.f, 0.f, 0.f)) >= 0.f;
+    const Ray ray2(intpoint, dir);
+    const glm::vec3 point2 = intpoint;
+    if (!sameDir(ray1.dir, ray2.dir))
+    {
+        return NaNRay;
+    }
 
     RTSphereIntersection sphereIntersect;
 
@@ -160,16 +162,20 @@ ee::Ray ee::RayTracer::raytraceFromEye(int photorecpPos, glm::vec3 pupilPos, int
     }
 	intpoint = sphereIntersect.point;
 	dir = glm::normalize(ee::refract(ray1.dir, -sphereIntersect.normal, m_eyeball->getRefraction()));
-	const Ray ray3(intpoint, dir);
-    Line line2(ray2.origin, intpoint);
-    bool aligned2 = glm::dot(dir, glm::vec3(1.f, 0.f, 0.f)) >= 0.f;
+    const Ray ray3(intpoint, dir);
+    const glm::vec3 point3 = intpoint;
+    if (!sameDir(ray2.dir, ray3.dir))
+    {
+        return NaNRay;
+    }
 
     if (draw)
     {
-        RayPath* path = &m_lines[m_samples * drawPosition + samplePos];
-        path->lines[0] = aligned0 ? line0 : Line(glm::vec3(0.f), glm::vec3(0.f));
-        path->lines[1] = aligned1 ? line1 : Line(glm::vec3(0.f), glm::vec3(0.f));
-        path->lines[2] = aligned2 ? line2 : Line(glm::vec3(0.f), glm::vec3(0.f));
+        Path& path = m_paths[pathPosition];
+        path.points[0] = point0;
+        path.points[1] = point1;
+        path.points[2] = point2;
+        path.points[3] = point3;
     }
 
 	return ray3;

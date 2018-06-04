@@ -40,6 +40,21 @@ namespace ee
         Line(Vec3 start, Vec3 end) : start(start), end(end) {}
     };
 
+    struct Path
+    {
+        glm::vec3 points[5];
+
+        Path() {}
+        Path(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 p4)
+        {
+            points[0] = p0;
+            points[1] = p1;
+            points[2] = p2;
+            points[3] = p3;
+            points[4] = p4;
+        }
+    };
+
     __forceinline void writeVertex(std::ofstream& of, glm::vec3 v)
     {
         of << "v " << std::setprecision(4) << v.x << " " << std::setprecision(4) << v.y << " " << std::setprecision(4) << v.z << std::endl;
@@ -95,5 +110,10 @@ namespace ee
     __forceinline glm::vec3 alignDir(const glm::vec3& change, const glm::vec3& ref)
     {
         return glm::dot(change, ref) >= 0.f ? change : -change;
+    }
+
+    __forceinline bool sameDir(const glm::vec3& v0, const glm::vec3& v1)
+    {
+        return glm::dot(v0, v1) > 0.f;
     }
 }
