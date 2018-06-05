@@ -21,6 +21,16 @@ namespace ee
 
         void setShaderMaterial(ShaderMaterial mat);
 
+        void setWireFrame(bool set)
+        {
+            m_wireFrame = set;
+        }
+
+        bool isWireFrame() const
+        {
+            return m_wireFrame;
+        }
+
         int getPriority() const;
 
         bool willDraw() const;
@@ -32,6 +42,7 @@ namespace ee
         Shader*         m_shader;
         ShaderMaterial  m_shaderMaterial;
         int             m_priority;
+        bool            m_wireFrame;
     };
 
     struct DrawableCompare

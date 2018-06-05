@@ -4,7 +4,8 @@
 
 ee::Drawable::Drawable(const std::string& textPack, const int priority) :
     m_texturePack(Renderer::getTexturePack(textPack)),
-    m_priority(priority)
+    m_priority(priority),
+    m_wireFrame(false)
 {
     if (m_texturePack == nullptr)
     {
@@ -35,7 +36,8 @@ ee::Drawable::Drawable(const std::string& textPack, const int priority) :
 
 ee::Drawable::Drawable(const std::string& vertName, const std::string& fragName) :
     m_shader(Renderer::loadShader(vertName, fragName)),
-    m_texturePack(nullptr)
+    m_texturePack(nullptr),
+    m_wireFrame(false)
 {
     if (m_shader == nullptr)
     {

@@ -118,7 +118,7 @@ void ee::Renderer::initialize(const std::string rootShaderDir, const RendererPar
         throw std::runtime_error("GLAD could not initialize OpenGL.");
     }
 
-    glfwSetInputMode(g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //glfwSetInputMode(g_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glfwSetCursorPosCallback(g_window, mouseCallback);
     glfwSetKeyCallback(g_window, keyboardCallback);
@@ -280,7 +280,7 @@ void ee::Renderer::addDrawable(Drawable* d)
     {
         if (renderLastSet)
         {
-            throw std::logic_error("Can't have two drawables set to RENDER_FIRST");
+            throw std::logic_error("Can't have two drawables set to RENDER_LAST");
         }
         else
         {
@@ -308,7 +308,12 @@ void ee::Renderer::drawAll()
 
     for (auto& d : g_drawables) 
     { 
+        if (d->isWireFrame())
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        }
         d->draw(); 
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     } 
 }
 

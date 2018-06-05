@@ -1,0 +1,423 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 04.10.2013 19:05:09
+
+newmtl baked_plane
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.023529 0.529412 0.023529
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka Line008VRayCompleteMap.jpg
+	map_Kd Line008VRayCompleteMap.jpg
+
+newmtl Plate_2
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.000000 0.000000 0.000000
+	Kd 0.000000 0.000000 0.000000
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_d section2.tga
+
+newmtl plate_1
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.000000 0.000000 0.000000
+	Kd 0.000000 0.000000 0.000000
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_d section.tga
+
+newmtl Viterus_FluidWhole
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.694118 0.580392 0.105882
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka Vitreous wholeVRayDiffuseFilterMap.jpg
+	map_Kd Vitreous wholeVRayDiffuseFilterMap.jpg
+	map_bump -bm 0.300000 Vitreous wholeVRayBumpNormalsMap.jpg
+	bump -bm 0.300000 Vitreous wholeVRayBumpNormalsMap.jpg
+
+newmtl CorneaWhole
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.694118 0.580392 0.105882
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka Cornea_WholeVRayDiffuseFilterMap.jpg
+	map_Kd Cornea_WholeVRayDiffuseFilterMap.jpg
+
+newmtl Eye_FluidWhole
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.694118 0.580392 0.105882
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka eye fluid_WholeVRayCompleteMap.jpg
+	map_Kd eye fluid_WholeVRayCompleteMap.jpg
+
+newmtl Lens2Whole
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.223529 0.031373 0.533333
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka lens_WholeVRayDiffuseFilterMap.tga
+	map_Kd lens_WholeVRayDiffuseFilterMap.tga
+
+newmtl LigamentsWhole
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.694118 0.580392 0.105882
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka ligamentsWholeVRayDiffuseFilterMap.jpg
+	map_Kd ligamentsWholeVRayDiffuseFilterMap.jpg
+	map_d ligamentsWholeVRayMatteShadowMap.jpg
+	map_bump -bm 0.300000 ligamentsWholeVRayBumpNormalsMap.jpg
+	bump -bm 0.300000 ligamentsWholeVRayBumpNormalsMap.jpg
+
+newmtl Artrerie
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.529412 0.023529 0.023529
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka Arterie RightVRayCompleteMap.jpg
+	map_Kd Arterie RightVRayCompleteMap.jpg
+
+newmtl Veins
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.031373 0.031373 0.533333
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka VeinRightBottomVRayCompleteMap.jpg
+	map_Kd VeinRightBottomVRayCompleteMap.jpg
+
+newmtl retina
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.529412 0.023529 0.023529
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka retina_right_newVRayDiffuseFilterMap.jpg
+	map_Kd retina_right_newVRayDiffuseFilterMap.jpg
+	map_bump -bm 0.300000 retina_right_newVRayBumpNormalsMap.jpg
+	bump -bm 0.300000 retina_right_newVRayBumpNormalsMap.jpg
+
+newmtl Cornea
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.894118 0.600000 0.721569
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka Cornea_RightVRayDiffuseFilterMap.tga
+	map_Kd Cornea_RightVRayDiffuseFilterMap.tga
+
+newmtl Eye_Fluid
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.894118 0.600000 0.721569
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+
+newmtl Lens2
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.223529 0.031373 0.533333
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+
+newmtl Sclera
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.603922 0.843137 0.898039
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka sclera rightVRayDiffuseFilterMap.jpg
+	map_Kd sclera rightVRayDiffuseFilterMap.jpg
+	map_bump -bm 0.300000 sclera rightVRayBumpNormalsMap.jpg
+	bump -bm 0.300000 sclera rightVRayBumpNormalsMap.jpg
+
+newmtl Viterus_Fluid
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.894118 0.600000 0.721569
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka Vitreous rightVRayDiffuseFilterMap.jpg
+	map_Kd Vitreous rightVRayDiffuseFilterMap.jpg
+	map_bump -bm 0.300000 Vitreous rightVRayBumpNormalsMap.jpg
+	bump -bm 0.300000 Vitreous rightVRayBumpNormalsMap.jpg
+
+newmtl Ligaments
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.894118 0.600000 0.721569
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka ligaments rightVRayDiffuseFilterMap.jpg
+	map_Kd ligaments rightVRayDiffuseFilterMap.jpg
+	map_bump -bm 0.300000 ligaments rightVRayBumpNormalsMap.jpg
+	bump -bm 0.300000 ligaments rightVRayBumpNormalsMap.jpg
+
+newmtl 2iris_Chloreid
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.529412 0.023529 0.023529
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka ChloroidRightVRayDiffuseFilterMap.jpg
+	map_Kd ChloroidRightVRayDiffuseFilterMap.jpg
+	map_bump -bm 0.300000 ChloroidRightVRayBumpNormalsMap.jpg
+	bump -bm 0.300000 ChloroidRightVRayBumpNormalsMap.jpg
+
+newmtl ArtrerieLeft
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.529412 0.023529 0.023529
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka Arterie LeftVRayCompleteMap.jpg
+	map_Kd Arterie LeftVRayCompleteMap.jpg
+
+newmtl VeinsLeft
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.031373 0.031373 0.533333
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka Vein Left TopVRayCompleteMap.jpg
+	map_Kd Vein Left TopVRayCompleteMap.jpg
+
+newmtl VeinsLeft2
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.031373 0.031373 0.533333
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka Vein Left BottomVRayCompleteMap.jpg
+	map_Kd Vein Left BottomVRayCompleteMap.jpg
+
+newmtl retinaLeft
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.529412 0.023529 0.023529
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka retina_left_newVRayDiffuseFilterMap.jpg
+	map_Kd retina_left_newVRayDiffuseFilterMap.jpg
+	map_bump -bm 0.300000 retina_left_newVRayBumpNormalsMap.jpg
+	bump -bm 0.300000 retina_left_newVRayBumpNormalsMap.jpg
+
+newmtl ScleraLeft
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.603922 0.843137 0.898039
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka Sclera LeftVRayDiffuseFilterMap.jpg
+	map_Kd Sclera LeftVRayDiffuseFilterMap.jpg
+	map_bump -bm 0.300000 Sclera LeftVRayBumpNormalsMap.jpg
+	bump -bm 0.300000 Sclera LeftVRayBumpNormalsMap.jpg
+
+newmtl CorneaLeft
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.882353 0.560784 0.341176
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka Cornea_LeftVRayDiffuseFilterMap.tga
+	map_Kd Cornea_LeftVRayDiffuseFilterMap.tga
+
+newmtl Eye_FluidLeft
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.882353 0.560784 0.341176
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+
+newmtl Viterus_FluidLeft
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.882353 0.560784 0.341176
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka Vitreous leftVRayDiffuseFilterMap.jpg
+	map_Kd Vitreous leftVRayDiffuseFilterMap.jpg
+	map_bump -bm 0.300000 Vitreous leftVRayBumpNormalsMap.jpg
+	bump -bm 0.300000 Vitreous leftVRayBumpNormalsMap.jpg
+
+newmtl Lens2Left
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.223529 0.031373 0.533333
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+
+newmtl LigamentsLeft
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.882353 0.560784 0.341176
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka ligaments leftVRayDiffuseFilterMap.jpg
+	map_Kd ligaments leftVRayDiffuseFilterMap.jpg
+	map_bump -bm 0.300000 ligaments leftVRayBumpNormalsMap.jpg
+	bump -bm 0.300000 ligaments leftVRayBumpNormalsMap.jpg
+
+newmtl 2iris_ChloreidLeft
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.529412 0.023529 0.023529
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka Chloroid leftVRayDiffuseFilterMap.jpg
+	map_Kd Chloroid leftVRayDiffuseFilterMap.jpg
+	map_bump -bm 0.300000 Chloroid leftVRayBumpNormalsMap.jpg
+	bump -bm 0.300000 Chloroid leftVRayBumpNormalsMap.jpg

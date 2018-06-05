@@ -5,6 +5,7 @@
 #include "Rendering/Renderer.hpp"
 #include "Rendering/TexturePacks/UniColorTextPack.hpp"
 #include "Rendering/TexturePacks/LightUniColorTextpack.hpp"
+#include "Rendering/TexturePacks/EyeballTextPack.hpp"
 #include "Rendering/SkyBox.hpp"
 #include "Rendering/TexturePacks/SkyBoxTextPack.hpp"
 #include "Rendering/TexturePacks/RefractTextPack.hpp"
@@ -23,6 +24,8 @@
 #include "SoftBody/SBUtilities.hpp"
 #include "Mesh/MeshGenerator.hpp"
 #include "Mesh/Subdivision.hpp"
+#include "Mesh/OBJModel.hpp"
+#include "Mesh/OBJModel.hpp"
 
 #include <string>
 #include <iostream>
@@ -264,8 +267,8 @@ int main()
     }
 
     RendererParam renderParamTemp;
-    renderParamTemp.m_screenWidth = 1280;
-    renderParamTemp.m_screenHeight = 720;
+    renderParamTemp.m_screenWidth = 1920;
+    renderParamTemp.m_screenHeight = 1080;
     renderParamTemp.m_fov = 75.f;
     renderParamTemp.m_aspect = 1400.f / 900.f;
     renderParamTemp.m_near = 0.1f;
@@ -283,12 +286,12 @@ int main()
         // prepare the renderer:
         Renderer::initialize(ARTIFICIAL_EYE_PROP.shader_dir, renderParamTemp, cameraParams);
         Renderer::setCustomKeyboardCallback(setSpaceCallback);
-        Renderer::setClearColor(glm::vec3(0.f));
+        Renderer::setClearColor(glm::vec3(0.12f));
 
-        SkyBoxTextPack skyboxMaterial(g_textureDir + g_cubeMapDir, g_cubeMapFaces);
-        Renderer::addTexturePack("skyboxMaterial", std::move(skyboxMaterial));
-        SkyBox skybox("skyboxMaterial");
-        Renderer::addDrawable(&skybox);
+        //SkyBoxTextPack skyboxMaterial(g_textureDir + g_cubeMapDir, g_cubeMapFaces);
+        //Renderer::addTexturePack("skyboxMaterial", std::move(skyboxMaterial));
+        //SkyBox skybox("skyboxMaterial");
+        //Renderer::addDrawable(&skybox);
 
         // These components here are for rotating the eyeball and positioning the eye.
         glm::mat4 rotationEye = glm::mat4_cast(g_framePositions[0].rotation);
@@ -300,18 +303,18 @@ int main()
         // 
         // Scene Sphere
 
-        glm::mat4 sceneSphereModel = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 5.f));
+        glm::mat4 sceneSphereModel = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 10.f));
         sceneSphereModel = glm::scale(sceneSphereModel, glm::vec3(0.5f));
         Sphere sceneSphere(sceneSphereModel);
         RTSphere rtSceneSphere(&sceneSphere, 0.f, false);
 
         // Add the drawable element of the scene sphere:
-        UniColorTextPack sceneSphereMaterial(glm::vec4(0.f));
-        Renderer::addTexturePack("sceneSphereMaterial", std::move(sceneSphereMaterial));
-        Mesh drawSceneSphereMesh = loadUVsphere(24, 24);
-        drawSceneSphereMesh.setModelTrans(sceneSphereModel);
-        DrawableMeshContainer drawSceneSphere(&drawSceneSphereMesh, "sceneSphereMaterial");
-        Renderer::addDrawable(&drawSceneSphere);
+        //UniColorTextPack sceneSphereMaterial(glm::vec4(205.f / 255.f, 205.f / 255.f, 0.f, 1.f));
+        //Renderer::addTexturePack("sceneSphereMaterial", std::move(sceneSphereMaterial));
+        //Mesh drawSceneSphereMesh = loadUVsphere(24, 24);
+        //drawSceneSphereMesh.setModelTrans(sceneSphereModel);
+        //DrawableMeshContainer drawSceneSphere(&drawSceneSphereMesh, "sceneSphereMaterial");
+        //Renderer::addDrawable(&drawSceneSphere);
 
         //
         // Eyeball
@@ -329,6 +332,18 @@ int main()
         glm::mat4 lensModel = globalModel * lensIntermTransform;
         glm::mat4 pupilModel = globalModel * pupilInterimTransform;
 
+        // The eyeball model I am using instead because everything else is breaking:
+        //Mesh eyballMesh = loadIcosphere(4);
+        //eyballMesh.setModelTrans(eyeballModel);
+
+        //EyeballTextPack eyeballMaterial(glm::vec4(250.f / 255.f, 235.f / 255.f, 215.f / 255.f, 1.f));
+        //Renderer::addTexturePack("eyeballMaterial", std::move(eyeballMaterial));
+        //DrawableMeshContainer eyeballMeshDraw(&eyballMesh, "eyeballMaterial", false, false, false, RENDER_LAST - 1);
+        //eyeballMeshDraw.setWireFrame(false);
+        //Renderer::addDrawable(&eyeballMeshDraw);
+
+        OBJModel model("Models/eyeball_model/eye_section.obj");
+
         Sphere eyeball(eyeballModel);
         RTSphere rtEyeball(&eyeball, ARTIFICIAL_EYE_PROP.eyeball_refr_index, false);
 
@@ -336,13 +351,16 @@ int main()
 
         Mesh lensMesh = loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude);
         lensMesh.setModelTrans(lensModel);
+        Mesh drawLensMesh = loopSubdiv(lensMesh, 3);
+        drawLensMesh.setModelTrans(lensModel);
 
         RTMesh rtLens(&lensMesh, ARTIFICIAL_EYE_PROP.lens_refr_index, false);
         Lens lens(&lensMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
 
         RefractTextPack lensMaterial(glm::vec3(0.f), g_textureDir + g_cubeMapDir, g_cubeMapFaces, ARTIFICIAL_EYE_PROP.lens_refr_index);
         Renderer::addTexturePack("lensMaterial", std::move(lensMaterial));
-        DrawableMeshContainer drawLens(&lensMesh, "lensMaterial", true);
+        DrawableMeshContainer drawLens(&drawLensMesh, "lensMaterial", true);
+        drawLens.setWireFrame(true);
         Renderer::addDrawable(&drawLens);
 
         SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &lensMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
@@ -398,7 +416,7 @@ int main()
         const std::vector<Path>& initPaths = tracer.getPath();
 
         std::vector<DrawPath> drawPaths;
-        ee::Renderer::addTexturePack("pathMaterial", ee::LineUniColorTextPack(glm::vec3(0.0, 1.0, 0.0)));
+        ee::Renderer::addTexturePack("pathMaterial", ee::LineUniColorTextPack(glm::vec3(30.f / 255.f, 144.f / 255.f, 1.f)));
         for (const Path& path : initPaths)
         {
             drawPaths.push_back(DrawPath("pathMaterial", path, 0, GL_DYNAMIC_DRAW));
@@ -431,16 +449,19 @@ int main()
             //// update the model information:
             //lensMesh.setModelTrans(lensModel);
             //eyeball.setPosition(eyeballModel);
+            //eyeballMesh.setModelTrans(eyeballModel);
             //pupil.pos = pupilModel;
 
-            //lensSim.update(ARTIFICIAL_EYE_PROP.time_step);
-            //rtLens.updateCache();
+            lensSim.update(ARTIFICIAL_EYE_PROP.time_step);
+            Mesh tempMesh = loopSubdiv(lensMesh, 3);
+            drawLensMesh.updateVertices(tempMesh.vertexBuffer());
+            rtLens.updateCache();
             //lensMesh.calcNormals();
             //tracer.raytraceAll();
 
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            //Renderer::setPlaneBufferTexture(imageBuffer.getTextureID());
-            Renderer::unsetPlaneBufferTexture();
+            ////glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            ////Renderer::setPlaneBufferTexture(imageBuffer.getTextureID());
+            //Renderer::unsetPlaneBufferTexture();
 
             //const auto& paths = tracer.getPath();
             //for (int i = 0; i < paths.size() && i < drawPaths.size(); i++)

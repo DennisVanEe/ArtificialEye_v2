@@ -218,6 +218,8 @@
     <ClInclude Include="src\Mesh\Mesh.hpp" />
     <ClInclude Include="src\Mesh\MeshGenerator.hpp" />
     <ClInclude Include="src\Mesh\MeshPool.hpp" />
+    <ClInclude Include="src\Mesh\OBJLoader.hpp" />
+    <ClInclude Include="src\Mesh\OBJModel.hpp" />
     <ClInclude Include="src\Mesh\PerfectSphere.hpp" />
     <ClInclude Include="src\Mesh\Sphere.hpp" />
     <ClInclude Include="src\Mesh\Subdivision.hpp" />
