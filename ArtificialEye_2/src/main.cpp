@@ -269,8 +269,8 @@ int main()
     }
 
     RendererParam renderParamTemp;
-    renderParamTemp.m_screenWidth = 1920;
-    renderParamTemp.m_screenHeight = 1080;
+    renderParamTemp.m_screenWidth = 256;
+    renderParamTemp.m_screenHeight = 256;
     renderParamTemp.m_fov = 75.f;
     renderParamTemp.m_aspect = 1400.f / 900.f;
     renderParamTemp.m_near = 0.1f;
@@ -351,7 +351,7 @@ int main()
 
         Mesh lensMesh = loadUVsphere(ARTIFICIAL_EYE_PROP.longitude, ARTIFICIAL_EYE_PROP.latitude);
         lensMesh.setModelTrans(lensModel);
-        Mesh drawLensMesh = loopSubdiv(lensMesh, 3);
+        Mesh drawLensMesh = lensMesh;
         drawLensMesh.setModelTrans(lensModel);
 
         RTMesh rtLens(&lensMesh, ARTIFICIAL_EYE_PROP.lens_refr_index, false);
@@ -443,17 +443,17 @@ int main()
         tracer.raytraceAll();
         const std::vector<Path>& initPaths = tracer.getPath();
 
-        std::vector<DrawPath> drawPaths;
-        ee::Renderer::addTexturePack("pathMaterial", ee::LineUniColorTextPack(glm::vec3(129.f / 255.f, 196.f / 255.f, 243.f / 255.f)));
-        for (const Path& path : initPaths)
-        {
-            drawPaths.push_back(DrawPath("pathMaterial", path, 0, GL_DYNAMIC_DRAW));
-        }
+        //std::vector<DrawPath> drawPaths;
+        //ee::Renderer::addTexturePack("pathMaterial", ee::LineUniColorTextPack(glm::vec3(129.f / 255.f, 196.f / 255.f, 243.f / 255.f)));
+        //for (const Path& path : initPaths)
+        //{
+        //    drawPaths.push_back(DrawPath("pathMaterial", path, 0, GL_DYNAMIC_DRAW));
+        //}
 
-        for (DrawPath& line : drawPaths)
-        {
-            Renderer::addDrawable(&line);
-        }
+        //for (DrawPath& line : drawPaths)
+        //{
+        //    Renderer::addDrawable(&line);
+        //}
 
         for (int frameIndex = 0; /*frameIndex < g_framePositions.size()*/ true; frameIndex++)
         {
@@ -463,6 +463,14 @@ int main()
             {
                 break;
             }
+
+            const float timeElapsed = glfwGetTime();
+            const float sceneSphereZPos = 10.f + 5.f * std::sin(timeElapsed * 0.25);
+
+            glm::mat4 sceneSphereModel = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, sceneSphereZPos));
+            sceneSphereModel = glm::scale(sceneSphereModel, glm::vec3(0.5f));
+            sceneSphere.setPosition(sceneSphereModel);
+
 
             //const EyePosition currPosition = g_framePositions[frameIndex];
             //rotationEye = glm::mat4_cast(currPosition.rotation);
@@ -481,24 +489,24 @@ int main()
             //pupil.pos = pupilModel;
 
             lensSim.update(ARTIFICIAL_EYE_PROP.time_step);
-            Mesh tempMesh = loopSubdiv(lensMesh, 3);
-            drawLensMesh.updateVertices(tempMesh.vertexBuffer());
+            //Mesh tempMesh = loopSubdiv(lensMesh, 3);
+            //drawLensMesh = lensMesh;
             rtLens.updateCache();
             lensMesh.calcNormals();
             tracer.raytraceAll();
 
-            //Renderer::setPlaneBufferTexture(imageBuffer.getTextureID());
-            Renderer::unsetPlaneBufferTexture();
+            captureFrame(frameIndex, tracer, &imageBuffer);
 
-            const auto& paths = tracer.getPath();
-            for (int i = 0; i < paths.size() && i < drawPaths.size(); i++)
-            {
-                drawPaths[i].updatePath(paths[i]);
-            }
+            Renderer::setPlaneBufferTexture(imageBuffer.getTextureID());
+            //Renderer::unsetPlaneBufferTexture();
+
+            //const auto& paths = tracer.getPath();
+            //for (int i = 0; i < paths.size() && i < drawPaths.size(); i++)
+            //{
+            //    drawPaths[i].updatePath(paths[i]);
+            //}
 
             const auto timeLater = std::chrono::high_resolution_clock::now();
-
-            captureFrame(frameIndex, tracer, &imageBuffer);
 
 #ifndef INVISIBLE
             //ee::Renderer::setPlaneBufferTexture(imageBuffer.getTextureID());
