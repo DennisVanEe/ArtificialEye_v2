@@ -73,7 +73,7 @@
     <IncludePath>$(SolutionDir)dependencies\ini;$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\assimp\include;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)output/$(Platform)/$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)interm/$(Platform)/$(Configuration)/</IntDir>
-    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(SolutionDir)dependencies\assimp\lib\debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(SolutionDir)dependencies\assimp\lib\Debug;$(LibraryPath)</LibraryPath>
     <SourcePath>$(VC_SourcePath)src;</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -81,7 +81,7 @@
     <IncludePath>$(SolutionDir)dependencies\ini;$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\stbi\include;$(SolutionDir)dependencies\assimp\include;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)output/$(Platform)/$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)interm/$(Platform)/$(Configuration)/</IntDir>
-    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(SolutionDir)dependencies\assimp\lib\release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)dependencies\glfw\lib;$(SolutionDir)dependencies\assimp\lib\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(SolutionDir)dependencies\glm\include;$(SolutionDir)dependencies\glad\include;$(SolutionDir)dependencies\glfw\include;$(SolutionDir)dependencies\stbi\include;$(IncludePath)</IncludePath>
@@ -113,7 +113,7 @@
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc140-mt.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -136,13 +136,13 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <FloatingPointModel>Fast</FloatingPointModel>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
@@ -152,7 +152,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp-vc140-mt.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -163,6 +163,8 @@
     <None Include="Shaders\eyeview_vert.glsl" />
     <None Include="Shaders\lineUniColor_frag.glsl" />
     <None Include="Shaders\lineUniColor_vert.glsl" />
+    <None Include="Shaders\modelHalfUniColor_frag.glsl" />
+    <None Include="Shaders\modelHalfUniColor_vert.glsl" />
     <None Include="Shaders\modelLightUniColor_frag.glsl" />
     <None Include="Shaders\modelLightUniColor_vert.glsl" />
     <None Include="Shaders\modelRefract_frag.glsl" />
@@ -178,11 +180,13 @@
     <ClCompile Include="..\dependencies\glad\src\glad.c" />
     <ClCompile Include="src\Initialization.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Mesh\LoadableModel.cpp" />
     <ClCompile Include="src\Mesh\Mesh.cpp" />
     <ClCompile Include="src\Mesh\MeshGenerator.cpp" />
     <ClCompile Include="src\Mesh\Sphere.cpp" />
     <ClCompile Include="src\Mesh\Subdivision.cpp" />
     <ClCompile Include="src\RayTracing\KDTree.cpp" />
+    <ClCompile Include="src\Rendering\TexturePacks\HalfUniColorTextPack.cpp" />
     <ClCompile Include="src\Types\Bound.cpp" />
     <ClCompile Include="src\RayTracing\RayTracer.cpp" />
     <ClCompile Include="src\RayTracing\RTSphere.cpp" />
@@ -215,6 +219,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Initialization.hpp" />
+    <ClInclude Include="src\Mesh\LoadableModel.hpp" />
     <ClInclude Include="src\Mesh\Mesh.hpp" />
     <ClInclude Include="src\Mesh\MeshGenerator.hpp" />
     <ClInclude Include="src\Mesh\MeshPool.hpp" />
@@ -223,6 +228,7 @@
     <ClInclude Include="src\Mesh\PerfectSphere.hpp" />
     <ClInclude Include="src\Mesh\Sphere.hpp" />
     <ClInclude Include="src\Mesh\Subdivision.hpp" />
+    <ClInclude Include="src\Rendering\TexturePacks\HalfUniColorTextPack.hpp" />
     <ClInclude Include="src\Types\Bound.hpp" />
     <ClInclude Include="src\RayTracing\KDTree.hpp" />
     <ClInclude Include="src\RayTracing\Pupil.hpp" />

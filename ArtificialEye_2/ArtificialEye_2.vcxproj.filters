@@ -34,6 +34,8 @@
     <None Include="Shaders\eyeball_vert.glsl" />
     <None Include="Shaders\eyeview_frag.glsl" />
     <None Include="Shaders\eyeview_vert.glsl" />
+    <None Include="Shaders\modelHalfUniColor_vert.glsl" />
+    <None Include="Shaders\modelHalfUniColor_frag.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Mesh\Mesh.cpp">
@@ -145,6 +147,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Mesh\Sphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mesh\LoadableModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\TexturePacks\HalfUniColorTextPack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -312,6 +320,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Mesh\OBJModel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mesh\LoadableModel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\TexturePacks\HalfUniColorTextPack.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

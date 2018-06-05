@@ -5,6 +5,7 @@
 #include "Rendering/Renderer.hpp"
 #include "Rendering/TexturePacks/UniColorTextPack.hpp"
 #include "Rendering/TexturePacks/LightUniColorTextpack.hpp"
+#include "Rendering/TexturePacks/HalfUniColorTextPack.hpp"
 #include "Rendering/TexturePacks/EyeballTextPack.hpp"
 #include "Rendering/SkyBox.hpp"
 #include "Rendering/TexturePacks/SkyBoxTextPack.hpp"
@@ -26,6 +27,7 @@
 #include "Mesh/Subdivision.hpp"
 #include "Mesh/OBJModel.hpp"
 #include "Mesh/OBJModel.hpp"
+#include "Mesh/LoadableModel.hpp"
 
 #include <string>
 #include <iostream>
@@ -309,12 +311,12 @@ int main()
         RTSphere rtSceneSphere(&sceneSphere, 0.f, false);
 
         // Add the drawable element of the scene sphere:
-        //UniColorTextPack sceneSphereMaterial(glm::vec4(205.f / 255.f, 205.f / 255.f, 0.f, 1.f));
-        //Renderer::addTexturePack("sceneSphereMaterial", std::move(sceneSphereMaterial));
-        //Mesh drawSceneSphereMesh = loadUVsphere(24, 24);
-        //drawSceneSphereMesh.setModelTrans(sceneSphereModel);
-        //DrawableMeshContainer drawSceneSphere(&drawSceneSphereMesh, "sceneSphereMaterial");
-        //Renderer::addDrawable(&drawSceneSphere);
+        UniColorTextPack sceneSphereMaterial(glm::vec4(205.f / 255.f, 205.f / 255.f, 0.f, 1.f));
+        Renderer::addTexturePack("sceneSphereMaterial", std::move(sceneSphereMaterial));
+        Mesh drawSceneSphereMesh = loadUVsphere(24, 24);
+        drawSceneSphereMesh.setModelTrans(sceneSphereModel);
+        DrawableMeshContainer drawSceneSphere(&drawSceneSphereMesh, "sceneSphereMaterial");
+        Renderer::addDrawable(&drawSceneSphere);
 
         //
         // Eyeball
@@ -342,8 +344,6 @@ int main()
         //eyeballMeshDraw.setWireFrame(false);
         //Renderer::addDrawable(&eyeballMeshDraw);
 
-        OBJModel model("Models/eyeball_model/eye_section.obj");
-
         Sphere eyeball(eyeballModel);
         RTSphere rtEyeball(&eyeball, ARTIFICIAL_EYE_PROP.eyeball_refr_index, false);
 
@@ -357,11 +357,39 @@ int main()
         RTMesh rtLens(&lensMesh, ARTIFICIAL_EYE_PROP.lens_refr_index, false);
         Lens lens(&lensMesh, ARTIFICIAL_EYE_PROP.latitude, ARTIFICIAL_EYE_PROP.longitude);
 
-        RefractTextPack lensMaterial(glm::vec3(0.f), g_textureDir + g_cubeMapDir, g_cubeMapFaces, ARTIFICIAL_EYE_PROP.lens_refr_index);
+        UniColorTextPack lensMaterial(glm::vec4(65.f / 255.f, 105.f / 255.f, 1.f, 1.f)); // glm::vec3(0.f), g_textureDir + g_cubeMapDir, g_cubeMapFaces, ARTIFICIAL_EYE_PROP.lens_refr_index);
         Renderer::addTexturePack("lensMaterial", std::move(lensMaterial));
         DrawableMeshContainer drawLens(&drawLensMesh, "lensMaterial", true);
         drawLens.setWireFrame(true);
         Renderer::addDrawable(&drawLens);
+
+        LoadableModel eyeballModelDraw;
+        eyeballModelDraw.load("Models/eyeball/eyebal_fbx.fbx");
+        auto& v = eyeballModelDraw.getMeshes();
+
+        glm::mat4 eyeballMeshModelMat = glm::translate(glm::mat4(), glm::vec3(0.f, 0.f, -2.0f));
+        eyeballMeshModelMat = glm::scale(eyeballMeshModelMat, glm::vec3(1.55f, 1.55f, 1.55f));
+
+        Mesh eyeballMesh(v[3]);
+        eyeballMesh.setModelTrans(eyeballMeshModelMat);
+        HalfUniColorTextPack eyeballMaterial(glm::vec4(0.99f, 0.99f, 0.99f, 1.f));
+        Renderer::addTexturePack("eyeballMaterial", std::move(eyeballMaterial));
+        DrawableMeshContainer eyeballMeshDraw(&eyeballMesh, "eyeballMaterial");
+        Renderer::addDrawable(&eyeballMeshDraw);
+
+        Mesh irisMesh(v[1]);
+        irisMesh.setModelTrans(eyeballMeshModelMat);
+        HalfUniColorTextPack irisMaterial(glm::vec4(0.f, 52.f / 255.f, 32.f / 255.f, 1.f));
+        Renderer::addTexturePack("irisMaterial", std::move(irisMaterial));
+        DrawableMeshContainer irisMeshDraw(&irisMesh, "irisMaterial");
+        Renderer::addDrawable(&irisMeshDraw);
+
+        Mesh pupilMesh(v[0]);
+        pupilMesh.setModelTrans(eyeballMeshModelMat);
+        HalfUniColorTextPack pupilMaterial(glm::vec4(0.f, 0.f, 0.f, 1.f));
+        Renderer::addTexturePack("pupilMaterial", std::move(pupilMaterial));
+        DrawableMeshContainer pupilMeshDraw(&pupilMesh, "pupilMaterial");
+        Renderer::addDrawable(&pupilMeshDraw);
 
         SBClosedBodySim lensSim(ARTIFICIAL_EYE_PROP.pressure, &lensMesh, ARTIFICIAL_EYE_PROP.mass, ARTIFICIAL_EYE_PROP.extspring_coeff, ARTIFICIAL_EYE_PROP.extspring_drag);
         lensSim.m_constIterations = ARTIFICIAL_EYE_PROP.iterations;
@@ -416,7 +444,7 @@ int main()
         const std::vector<Path>& initPaths = tracer.getPath();
 
         std::vector<DrawPath> drawPaths;
-        ee::Renderer::addTexturePack("pathMaterial", ee::LineUniColorTextPack(glm::vec3(30.f / 255.f, 144.f / 255.f, 1.f)));
+        ee::Renderer::addTexturePack("pathMaterial", ee::LineUniColorTextPack(glm::vec3(129.f / 255.f, 196.f / 255.f, 243.f / 255.f)));
         for (const Path& path : initPaths)
         {
             drawPaths.push_back(DrawPath("pathMaterial", path, 0, GL_DYNAMIC_DRAW));
@@ -456,18 +484,17 @@ int main()
             Mesh tempMesh = loopSubdiv(lensMesh, 3);
             drawLensMesh.updateVertices(tempMesh.vertexBuffer());
             rtLens.updateCache();
-            //lensMesh.calcNormals();
-            //tracer.raytraceAll();
+            lensMesh.calcNormals();
+            tracer.raytraceAll();
 
-            ////glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            ////Renderer::setPlaneBufferTexture(imageBuffer.getTextureID());
-            //Renderer::unsetPlaneBufferTexture();
+            //Renderer::setPlaneBufferTexture(imageBuffer.getTextureID());
+            Renderer::unsetPlaneBufferTexture();
 
-            //const auto& paths = tracer.getPath();
-            //for (int i = 0; i < paths.size() && i < drawPaths.size(); i++)
-            //{
-            //    drawPaths[i].updatePath(paths[i]);
-            //}
+            const auto& paths = tracer.getPath();
+            for (int i = 0; i < paths.size() && i < drawPaths.size(); i++)
+            {
+                drawPaths[i].updatePath(paths[i]);
+            }
 
             const auto timeLater = std::chrono::high_resolution_clock::now();
 

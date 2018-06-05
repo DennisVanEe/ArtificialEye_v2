@@ -31,6 +31,16 @@ ee::DrawableMeshContainer::DrawableMeshContainer(const Mesh* const mesh, const s
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	}
+    if (m_mesh->hasTextCoord())
+    {
+        const std::vector<glm::vec2>& textCoord = m_mesh->textCoordBuffer();
+        glGenBuffers(1, &m_VBO_textCoord);
+        glBindBuffer(GL_ARRAY_BUFFER, m_VBO_textCoord);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * textCoord.size(), textCoord.data(), m_type);
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+    }
 
     // Prepare the indices:
 	const std::vector<MeshFace>& updatedMeshFaces = m_mesh->faceBuffer();
@@ -57,6 +67,13 @@ void ee::DrawableMeshContainer::draw()
 			glBindBuffer(GL_ARRAY_BUFFER, m_VBO_normal);
 			glBufferSubData(GL_ARRAY_BUFFER, 0, updatedNormals.size() * sizeof(glm::vec3), updatedNormals.data());
 		}
+        if (m_mesh->hasTextCoord())
+        {
+            const std::vector<glm::vec2>& textCoord = m_mesh->textCoordBuffer();
+            glBindBuffer(GL_ARRAY_BUFFER, m_VBO_textCoord);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, textCoord.size() * sizeof(glm::vec2), textCoord.data());
+
+        }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         m_mesh->resetUpdated();

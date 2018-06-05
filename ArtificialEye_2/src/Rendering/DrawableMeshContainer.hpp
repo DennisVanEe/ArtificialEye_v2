@@ -34,6 +34,7 @@ namespace ee
         GLuint m_VAO;
         GLuint m_VBO_vertex;
         GLuint m_VBO_normal;
+        GLuint m_VBO_textCoord;
         GLuint m_EBO;
     };
 }

@@ -89,11 +89,12 @@ namespace ee
 			}
 		}
 
-		void create(std::vector<glm::vec3> vertices, std::vector<MeshFace> faces, std::vector<glm::vec3> normals)
+        void create(std::vector<glm::vec3> vertices, std::vector<MeshFace> faces, std::vector<glm::vec3> normals, std::vector<glm::vec2> textCoord)
 		{
 			m_vertices = vertices;
 			m_faces = faces;
 			m_normals = normals;
+            m_textCoord = textCoord;
 		}
 
         // Actually modifies the points
@@ -227,6 +228,16 @@ namespace ee
         void updateVertices(const std::vector<glm::vec3>& vertices) { m_updated = true; m_vertices = vertices; }
         void updateMeshFaces(const std::vector<MeshFace>& faces) { m_updated = true; m_faces = faces; }
 
+        bool hasTextCoord() const
+        {
+            return !m_textCoord.empty();
+        }
+
+        const std::vector<glm::vec2>& textCoordBuffer() const
+        {
+            return m_textCoord;
+        }
+
         bool wasUpdated() const
         {
             return m_updated;
@@ -245,6 +256,7 @@ namespace ee
         // Used with calculating normals
 		std::vector<glm::vec3> m_normals;
         std::vector<glm::vec3> m_vertices;
+        std::vector<glm::vec2> m_textCoord;
         std::vector<MeshFace>  m_faces;
 
         mutable bool m_updated;
