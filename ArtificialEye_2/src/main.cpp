@@ -195,6 +195,20 @@ void captureFrame(int frameIndex, const RayTracer& tracer, ImageBuffer* imageBuf
     std::cout << "Finished frame: " << frameIndex << std::endl;
 }
 
+float focusScore(const std::vector<float>& image)
+{
+    float total = 0.f;
+    float pastValue = image[0];
+    for (const float currValue : image)
+    {
+        const float deltaValue = std::abs(currValue - pastValue);
+        total += deltaValue;
+        pastValue = currValue;
+    }
+
+    return total / (image.size() - 1);
+}
+
 int main()
 {
     // THESE ARE CONSTANTS YOU SHOULD CHANGE:
@@ -495,7 +509,9 @@ int main()
             lensMesh.calcNormals();
             tracer.raytraceAll();
 
+            const float sharpness = focusScore(tracer.getColors());
             captureFrame(frameIndex, tracer, &imageBuffer);
+            std::cout << "Sharpness: " << sharpness < std::endl;
 
             Renderer::setPlaneBufferTexture(imageBuffer.getTextureID());
             //Renderer::unsetPlaneBufferTexture();
@@ -517,7 +533,7 @@ int main()
             Renderer::pollEvents();
 #endif
             const auto timeDiff = timeLater - timeNow;
-            std::cout << "Render Duration: " << std::setprecision(5) << static_cast<float>(timeDiff.count()) / 1e9 << " s" << std::endl;
+            // std::cout << "Render Duration: " << std::setprecision(5) << static_cast<float>(timeDiff.count()) / 1e9 << " s" << std::endl;
         }
 
         writeCSVLines(OUTPUT_DIR);
